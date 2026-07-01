@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { auth } from "@/lib/auth";
+import { getAdminAuthSession } from "@/lib/admin-auth-session";
 import { updateSettingsValues } from "@/services/admin-visitor-service";
 
 const settingsSchema = z.object({
@@ -11,9 +11,7 @@ const settingsSchema = z.object({
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getAdminAuthSession(await headers());
 
   if (!session) {
     return NextResponse.json(

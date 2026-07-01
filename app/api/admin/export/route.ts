@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import ExcelJS from "exceljs";
 
-import { auth } from "@/lib/auth";
+import { getAdminAuthSession } from "@/lib/admin-auth-session";
 import {
   getAdminVisitorsForExport,
   parseDateFilter,
@@ -11,9 +11,7 @@ import {
 } from "@/services/admin-visitor-service";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getAdminAuthSession(await headers());
 
   if (!session) {
     return NextResponse.json(

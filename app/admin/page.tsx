@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { auth } from "@/lib/auth";
+import { getAdminAuthSession } from "@/lib/admin-auth-session";
 import { cn } from "@/lib/utils";
 import type {
   AdminAuditLogItem,
@@ -67,9 +67,7 @@ const adminSections: Array<{
 ];
 
 export default async function AdminPage(props: PageProps<"/admin">) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getAdminAuthSession(await headers());
 
   if (!session) {
     redirect("/login?callbackUrl=/admin");
