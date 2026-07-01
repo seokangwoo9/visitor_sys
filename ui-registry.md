@@ -132,10 +132,10 @@ Last updated: 2026-07-01
 | Border radius | `rounded-[1.75rem]`, `rounded-2xl` |
 | Text - primary | `text-visitor-ink` |
 | Text - secondary | `text-text-secondary`, `text-text-muted` |
-| Spacing | `p-6`, `px-4 py-3`, `gap-3`, `mt-6` |
+| Spacing | `p-5`, `p-6`, `px-4 py-3`, `gap-3`, `mt-6` |
 | Hover state | `hover:bg-visitor-success/15` |
 | Shadow | `shadow-xl shadow-admin-shadow/10` |
 | Accent usage | `text-visitor-success-deep`, `bg-visitor-success-soft` |
 
 **Pattern notes:**
-Admin detail dialogs use the same card treatment as control-center panels: white `bg-card`, `rounded-[1.75rem]`, token border, and soft admin shadow. Trigger buttons stay compact at `h-9 rounded-2xl` with green soft background and icon+text labeling. Detail fields are displayed as `rounded-2xl bg-bg-base` tiles with uppercase muted labels and bold visitor-ink values.
+Admin detail dialogs use the same card treatment as control-center panels: white `bg-card`, `rounded-[1.75rem]`, token border, and soft admin shadow. Trigger buttons stay compact at `h-9 rounded-2xl` with green soft background and icon+text labeling. Detail fields are displayed as `rounded-2xl bg-bg-base` tiles with uppercase muted labels and bold visitor-ink values. The dialog content must override the generated dialog's narrow default max width with viewport-safe sizing, keep internal scrolling under `100dvh`, and allow the detail tile grid to expand from one column to two and then three columns on wide admin screens.

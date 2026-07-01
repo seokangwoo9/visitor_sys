@@ -37,6 +37,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Excel export check-in and check-out times match the admin dashboard display format.
 - Production hardening pass added security headers, stricter API parsing, safer login redirects, focused admin data loading, and a health check endpoint.
 - Visitor registration now captures and persists the number of people in the visiting group.
+- Admin visitor detail modal now uses responsive sizing with a wider desktop layout and mobile-safe viewport bounds.
 
 ## In Progress
 
@@ -138,3 +139,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Restricted admin login callback redirects to `/admin` paths only.
 - Added `/api/health` for production uptime checks.
 - Added `Visitor.partySize` with a default of `1`, registration validation, visitor status display, admin table/detail visibility, party-size summed dashboard metrics/trends, search support, audit metadata, and Excel export coverage.
+- Expanded the admin visitor View modal so complete audit details remain readable across mobile, tablet, and desktop viewports.

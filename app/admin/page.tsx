@@ -751,7 +751,7 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
         <Eye className="size-4" aria-hidden="true" />
         View
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100vh-2rem)] max-w-2xl overflow-y-auto rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-admin-shadow/10 sm:!max-w-[calc(100vw-3rem)] sm:p-6 lg:!max-w-5xl xl:!max-w-6xl">
         <DialogHeader>
           <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
             Visitor Details
@@ -768,7 +768,7 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
             <StatusBadge status={visitor.status} />
           </div>
         </DialogHeader>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <VisitorDetailItem label="IC / Passport" value={visitor.identificationNumber ?? "-"} />
           <VisitorDetailItem label="Phone Number" value={visitor.contactNumber} />
           <VisitorDetailItem label="Email" value={visitor.email ?? "-"} />
@@ -787,12 +787,12 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
             value={visitor.checkOutAt ? formatDateTime(visitor.checkOutAt) : "-"}
           />
           <VisitorDetailItem
-            className="sm:col-span-2"
+            className="md:col-span-2 lg:col-span-1"
             label="Duration"
             value={formatDuration(visitor.checkInAt, visitor.checkOutAt)}
           />
           <VisitorDetailItem
-            className="sm:col-span-2"
+            className="md:col-span-2 lg:col-span-3"
             label="Purpose of Visit"
             value={visitor.purposeOfVisit}
           />
