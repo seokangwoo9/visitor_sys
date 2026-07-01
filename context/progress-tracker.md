@@ -33,6 +33,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - IP-address-only VPS deployment guide added.
 - Admin route proxy and server session checks support secure signed Better Auth cookies.
 - Resolved post-rebase conflict markers that were blocking production builds.
+- Admin visitor history View action opens a full visitor detail dialog.
+- Excel export check-in and check-out times match the admin dashboard display format.
 
 ## In Progress
 
@@ -125,3 +127,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added `VPS_DEPLOYMENT_GUIDE_IP_ADDRESS.md` with IP-only deployment steps using Nginx and a self-signed HTTPS certificate.
 - Fixed admin authentication behind HTTPS reverse proxies by recognizing `__Secure-` Better Auth cookie names and validating signed session-cookie values against the database.
 - Removed unresolved Git conflict markers from `lib/admin-auth-session.ts` and `context/progress-tracker.md`, restoring production build parsing.
+- Wired the admin Visitors table View button to a token-matched detail dialog showing visitor identity, contact, company, PIC, pass, vehicle, timing, duration, status, and purpose information.
+- Updated Excel visitor exports to write formatted check-in and check-out timestamp text instead of raw spreadsheet date values, preventing timezone/display shifts between Excel and the dashboard.

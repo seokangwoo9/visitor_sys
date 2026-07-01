@@ -19,6 +19,14 @@ import type { VisitorStatus } from "@prisma/client";
 
 import { buttonVariants } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -710,13 +718,7 @@ function VisitorHistoryTable({ visitors }: { visitors: AdminVisitorListItem[] })
                     </TableCell>
                     <TableCell className="pr-4">
                       <div className="flex justify-end gap-2">
-                        <button
-                          className="inline-flex h-9 items-center gap-2 rounded-2xl bg-visitor-success-soft px-4 text-xs font-bold text-visitor-success-deep"
-                          type="button"
-                        >
-                          <Eye className="size-4" aria-hidden="true" />
-                          View
-                        </button>
+                        <VisitorDetailDialog visitor={visitor} />
                         <AdminDeleteVisitorButton visitorId={visitor.id} />
                       </div>
                     </TableCell>
@@ -734,6 +736,89 @@ function VisitorHistoryTable({ visitors }: { visitors: AdminVisitorListItem[] })
         </div>
       </div>
     </section>
+  );
+}
+
+function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
+  return (
+    <Dialog>
+      <DialogTrigger
+        render={
+          <button
+            className="inline-flex h-9 items-center gap-2 rounded-2xl bg-visitor-success-soft px-4 text-xs font-bold text-visitor-success-deep transition hover:bg-visitor-success/15"
+            type="button"
+          />
+        }
+      >
+        <Eye className="size-4" aria-hidden="true" />
+        View
+      </DialogTrigger>
+      <DialogContent className="max-h-[calc(100vh-2rem)] max-w-2xl overflow-y-auto rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+        <DialogHeader>
+          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+            Visitor Details
+          </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <DialogTitle className="text-2xl font-bold text-visitor-ink">
+                {visitor.fullName}
+              </DialogTitle>
+              <DialogDescription className="mt-2 text-sm text-text-secondary">
+                Complete audit-ready information for this visitor record.
+              </DialogDescription>
+            </div>
+            <StatusBadge status={visitor.status} />
+          </div>
+        </DialogHeader>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <VisitorDetailItem label="IC / Passport" value={visitor.identificationNumber ?? "-"} />
+          <VisitorDetailItem label="Phone Number" value={visitor.contactNumber} />
+          <VisitorDetailItem label="Email" value={visitor.email ?? "-"} />
+          <VisitorDetailItem label="Company" value={visitor.companyName} />
+          <VisitorDetailItem label="Person to Meet / PIC" value={visitor.hostName} />
+          <VisitorDetailItem label="Department" value={visitor.department ?? "-"} />
+          <VisitorDetailItem label="Visitor Pass ID" value={visitor.visitorPassId} />
+          <VisitorDetailItem
+            label="Vehicle"
+            value={visitor.hasVehicle ? visitor.vehiclePlateNumber : "No vehicle"}
+          />
+          <VisitorDetailItem label="Check In" value={formatDateTime(visitor.checkInAt)} />
+          <VisitorDetailItem
+            label="Check Out"
+            value={visitor.checkOutAt ? formatDateTime(visitor.checkOutAt) : "-"}
+          />
+          <VisitorDetailItem
+            className="sm:col-span-2"
+            label="Duration"
+            value={formatDuration(visitor.checkInAt, visitor.checkOutAt)}
+          />
+          <VisitorDetailItem
+            className="sm:col-span-2"
+            label="Purpose of Visit"
+            value={visitor.purposeOfVisit}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function VisitorDetailItem({
+  className,
+  label,
+  value,
+}: {
+  className?: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className={cn("rounded-2xl bg-bg-base px-4 py-3", className)}>
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-text-muted">
+        {label}
+      </p>
+      <p className="mt-2 break-words text-sm font-bold text-visitor-ink">{value}</p>
+    </div>
   );
 }
 

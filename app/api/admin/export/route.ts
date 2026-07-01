@@ -69,8 +69,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       hostName: visitor.hostName,
       visitorPassId: visitor.visitorPassId,
       status: visitor.status,
-      checkInAt: visitor.checkInAt,
-      checkOutAt: visitor.checkOutAt ?? "",
+      checkInAt: formatExportDateTime(visitor.checkInAt),
+      checkOutAt: visitor.checkOutAt ? formatExportDateTime(visitor.checkOutAt) : "",
       durationMinutes: visitor.checkOutAt
         ? Math.max(
             Math.round(
@@ -100,4 +100,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },
   });
+}
+
+function formatExportDateTime(date: Date): string {
+  return new Intl.DateTimeFormat("en-MY", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
 }

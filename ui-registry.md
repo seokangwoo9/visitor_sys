@@ -119,3 +119,23 @@ Last updated: 2026-06-30
 
 **Pattern notes:**
 Admin pages use a fixed left TVMS control-center sidebar on desktop and compact tab grid on mobile. The sidebar brand displays `TVMS Admin` above `TOE Visitor Management System`. Section hero panels are large white `rounded-[1.75rem]` cards with uppercase green eyebrow text, followed by operational metric cards, filter panels, tables, or settings/export cards. Inputs and selects use `h-12 rounded-2xl`; primary admin actions use green `rounded-2xl` buttons with subtle brand shadows. Settings utility cards, including printable QR generation, use `rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10` with white inner content blocks. QR canvases are rendered as rounded-corner PNGs inside `rounded-2xl` display surfaces so downloaded and printed QR assets match the Settings card design. Tables sit inside a `px-5 pb-5` or `p-5` gutter with an inner `rounded-2xl border border-border` table frame, pale header rows, uppercase headers, compact token-backed status pills, and no nested card structures. First/last table cells use explicit `pl-4`/`pr-4` padding so row content does not crowd rounded container edges.
+
+### Admin Visitor Detail Dialog
+
+File: app/admin/page.tsx
+Last updated: 2026-07-01
+
+| Property | Class |
+| ---------------- | --------------- |
+| Background | `bg-card`, `bg-bg-base`, `bg-visitor-success-soft` |
+| Border | `border-border` |
+| Border radius | `rounded-[1.75rem]`, `rounded-2xl` |
+| Text - primary | `text-visitor-ink` |
+| Text - secondary | `text-text-secondary`, `text-text-muted` |
+| Spacing | `p-6`, `px-4 py-3`, `gap-3`, `mt-6` |
+| Hover state | `hover:bg-visitor-success/15` |
+| Shadow | `shadow-xl shadow-admin-shadow/10` |
+| Accent usage | `text-visitor-success-deep`, `bg-visitor-success-soft` |
+
+**Pattern notes:**
+Admin detail dialogs use the same card treatment as control-center panels: white `bg-card`, `rounded-[1.75rem]`, token border, and soft admin shadow. Trigger buttons stay compact at `h-9 rounded-2xl` with green soft background and icon+text labeling. Detail fields are displayed as `rounded-2xl bg-bg-base` tiles with uppercase muted labels and bold visitor-ink values.
