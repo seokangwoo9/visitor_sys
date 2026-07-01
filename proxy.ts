@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const AUTH_COOKIE_PREFIX = "better-auth";
+const AUTH_COOKIE_NAME_FRAGMENT = "better-auth";
 const LOGIN_PATH = "/login";
 const ADMIN_PATH_PREFIX = "/admin";
 
@@ -13,7 +13,7 @@ export function proxy(request: NextRequest) {
 
   const hasAuthCookie = request.cookies
     .getAll()
-    .some((cookie) => cookie.name.startsWith(AUTH_COOKIE_PREFIX));
+    .some((cookie) => cookie.name.includes(AUTH_COOKIE_NAME_FRAGMENT));
 
   if (hasAuthCookie) {
     return NextResponse.next();
