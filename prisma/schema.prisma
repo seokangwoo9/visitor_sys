@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum VisitorStatus {
+  PENDING
+  CHECKED_IN
+  CHECKED_OUT
+  EXPIRED
+}
+
+enum AuditActorType {
+  VISITOR
+  ADMIN
+  SYSTEM
+}
+
+model Visitor {
+  id                   String           @id @default(uuid()) @db.Uuid
+  fullName             String           @db.VarChar(200)
+  companyName          String           @db.VarChar(200)
+  contactNumber        String           @db.VarChar(50)
+  email                String?          @db.VarChar(320)
+  identificationNumber String?          @db.VarChar(100)
+  hasVehicle           Boolean          @default(true)
+  vehiclePlateNumber   String           @default("") @db.VarChar(50)
+  department           String?          @db.VarChar(200)
+  visitorPassId        String           @default("") @db.VarChar(100)
+  hostName             String           @db.VarChar(200)
+  purposeOfVisit       String           @db.Text
+  checkInAt            DateTime
+  checkOutAt           DateTime?
+  status               VisitorStatus    @default(CHECKED_IN)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  sessions             VisitorSession[]
+  auditLogs            AuditLog[]
+
+  @@index([status])
+  @@index([checkInAt])
+  @@index([checkOutAt])
+  @@map("visitors")
+}
+
+model VisitorSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  visitorId        String    @db.Uuid
+  sessionTokenHash String    @unique @db.VarChar(255)
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  destroyedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  visitor          Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+
+  @@index([visitorId])
+  @@index([expiresAt])
+  @@map("visitor_sessions")
+}
+
+model Admin {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @db.VarChar(200)
+  email     String     @unique @db.VarChar(320)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+
+  @@index([isActive])
+  @@map("admins")
+}
+
+model Users {
+  id            String     @id
+  name          String
+  email         String
+  emailVerified Boolean    @default(false)
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  sessions      Sessions[]
+  accounts      Accounts[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Sessions {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Accounts {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  users                 Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verifications {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid()) @db.Uuid
+  key       String   @unique @db.VarChar(120)
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model AuditLog {
+  id        String         @id @default(uuid()) @db.Uuid
+  eventType String         @db.VarChar(120)
+  actorType AuditActorType
+  actorId   String?        @db.Uuid
+  visitorId String?        @db.Uuid
+  adminId   String?        @db.Uuid
+  metadata  Json?
+  createdAt DateTime       @default(now())
+  visitor   Visitor?       @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  admin     Admin?         @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([actorType])
+  @@index([visitorId])
+  @@index([adminId])
+  @@map("audit_logs")
+}

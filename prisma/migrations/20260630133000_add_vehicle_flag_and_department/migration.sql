@@ -1,0 +1,2 @@
+ALTER TABLE "visitors" ADD COLUMN "hasVehicle" BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE "visitors" ADD COLUMN "department" VARCHAR(200);
