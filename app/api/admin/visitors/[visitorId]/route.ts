@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { auth } from "@/lib/auth";
+import { getAdminAuthSession } from "@/lib/admin-auth-session";
 import { removeVisitorRecord } from "@/services/admin-visitor-service";
 
 const visitorIdSchema = z.string().uuid();
@@ -11,9 +11,7 @@ export async function DELETE(
   _request: Request,
   context: RouteContext<"/api/admin/visitors/[visitorId]">
 ): Promise<NextResponse> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getAdminAuthSession(await headers());
 
   if (!session) {
     return NextResponse.json(
