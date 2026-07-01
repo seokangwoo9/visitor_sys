@@ -19,7 +19,7 @@ import { authClient } from "@/lib/auth-client";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin";
+  const callbackUrl = normalizeAdminCallbackUrl(searchParams.get("callbackUrl"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -97,4 +97,12 @@ export function LoginForm() {
       </CardContent>
     </Card>
   );
+}
+
+function normalizeAdminCallbackUrl(callbackUrl: string | null): string {
+  if (!callbackUrl) {
+    return "/admin";
+  }
+
+  return callbackUrl.startsWith("/admin") ? callbackUrl : "/admin";
 }

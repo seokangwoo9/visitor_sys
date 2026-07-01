@@ -92,21 +92,6 @@ export default async function AdminPage(props: PageProps<"/admin">) {
   const status = parseVisitorStatus(requestedStatus);
   const pageValue = Number(normalizeSearchParam(searchParams.page) ?? "1");
   const page = Number.isFinite(pageValue) ? pageValue : 1;
-  const [dashboardData, visitorPage, settingsValues, auditLogs] = await Promise.all([
-    getAdminDashboardData(),
-    getAdminVisitors({
-      query,
-      status,
-      dateFilter,
-      customFrom,
-      customTo,
-      sort: sortMode,
-      page,
-      pageSize: 10,
-    }),
-    getSettingsValues(),
-    getAdminAuditLogs(),
-  ]);
 
   return (
     <main className="min-h-screen bg-admin-page text-text-primary">
@@ -147,7 +132,7 @@ export default async function AdminPage(props: PageProps<"/admin">) {
             </div>
 
             {section === "dashboard" ? (
-              <DashboardView data={dashboardData} />
+              <DashboardView data={await getAdminDashboardData()} />
             ) : section === "visitors" ? (
               <VisitorsView
                 customFrom={customFrom}
@@ -155,7 +140,16 @@ export default async function AdminPage(props: PageProps<"/admin">) {
                 dateFilter={dateFilter}
                 query={query}
                 sortMode={sortMode}
-                visitorPage={visitorPage}
+                visitorPage={await getAdminVisitors({
+                  query,
+                  status,
+                  dateFilter,
+                  customFrom,
+                  customTo,
+                  sort: sortMode,
+                  page,
+                  pageSize: 10,
+                })}
               />
             ) : section === "export" ? (
               <ExportView
@@ -166,9 +160,9 @@ export default async function AdminPage(props: PageProps<"/admin">) {
                 sortMode={sortMode}
               />
             ) : section === "settings" ? (
-              <SettingsView settingsValues={settingsValues} />
+              <SettingsView settingsValues={await getSettingsValues()} />
             ) : (
-              <AuditView auditLogs={auditLogs} />
+              <AuditView auditLogs={await getAdminAuditLogs()} />
             )}
           </div>
         </section>

@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { apiError } from "@/lib/api-response";
 import {
   decodeVisitorSessionCookie,
   VISITOR_SESSION_COOKIE_NAME,
 } from "@/lib/visitor-session";
 import { checkOutVisitor } from "@/services/visitor-session-service";
+
+export const runtime = "nodejs";
 
 export async function POST(): Promise<NextResponse> {
   const cookieStore = await cookies();
@@ -39,15 +42,7 @@ export async function POST(): Promise<NextResponse> {
 
     response.cookies.delete(VISITOR_SESSION_COOKIE_NAME);
     return response;
-  } catch (error) {
-    console.error("Visitor check-out failed", error);
-
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Unable to check out visitor. Please try again.",
-      },
-      { status: 500 }
-    );
+  } catch {
+    return apiError("Unable to check out visitor. Please try again.", 500);
   }
 }

@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import ExcelJS from "exceljs";
 
+import { apiError } from "@/lib/api-response";
 import { getAdminAuthSession } from "@/lib/admin-auth-session";
 import {
   getAdminVisitorsForExport,
@@ -10,17 +11,13 @@ import {
   parseVisitorStatus,
 } from "@/services/admin-visitor-service";
 
+export const runtime = "nodejs";
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const session = await getAdminAuthSession(await headers());
 
   if (!session) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Authentication required.",
-      },
-      { status: 401 }
-    );
+    return apiError("Authentication required.", 401);
   }
 
   const query = request.nextUrl.searchParams.get("query") ?? undefined;
@@ -98,6 +95,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         .slice(0, 10)}.xlsx"`,
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
     },
   });
 }

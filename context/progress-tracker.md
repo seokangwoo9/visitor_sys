@@ -35,6 +35,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Resolved post-rebase conflict markers that were blocking production builds.
 - Admin visitor history View action opens a full visitor detail dialog.
 - Excel export check-in and check-out times match the admin dashboard display format.
+- Production hardening pass added security headers, stricter API parsing, safer login redirects, focused admin data loading, and a health check endpoint.
 
 ## In Progress
 
@@ -64,6 +65,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/api/admin/export` as a protected server-side Excel export endpoint.
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
+- Use `/api/health` as a no-store application health endpoint for deployment/process checks.
 - Visitor registration collects name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
 
 ## Session Notes
@@ -129,3 +131,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Removed unresolved Git conflict markers from `lib/admin-auth-session.ts` and `context/progress-tracker.md`, restoring production build parsing.
 - Wired the admin Visitors table View button to a token-matched detail dialog showing visitor identity, contact, company, PIC, pass, vehicle, timing, duration, status, and purpose information.
 - Updated Excel visitor exports to write formatted check-in and check-out timestamp text instead of raw spreadsheet date values, preventing timezone/display shifts between Excel and the dashboard.
+- Added app-wide production security headers and disabled the `X-Powered-By` framework header.
+- Added shared API response/request parsing helpers and hardened protected route handlers with explicit Node runtime, stricter JSON body handling, no-store export headers, and less internal error leakage.
+- Optimized `/admin` section loading so each section fetches only the data it renders.
+- Restricted admin login callback redirects to `/admin` paths only.
+- Added `/api/health` for production uptime checks.

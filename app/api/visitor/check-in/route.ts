@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { apiError, parseJsonRequest } from "@/lib/api-response";
 import {
   decodeVisitorSessionCookie,
   encodeVisitorSessionCookie,
@@ -9,6 +10,8 @@ import {
 import { visitorRegistrationSchema } from "@/lib/validations/visitor";
 import { registerVisitor } from "@/services/visitor-registration-service";
 import { getActiveVisitorSession } from "@/services/visitor-session-service";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const cookieStore = await cookies();
@@ -27,7 +30,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
-  const payload: unknown = await request.json().catch(() => null);
+  const payload = await parseJsonRequest(request);
   const parsedPayload = visitorRegistrationSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
@@ -67,15 +70,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
 
     return response;
-  } catch (error) {
-    console.error("Visitor registration failed", error);
-
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Unable to register visitor. Please try again.",
-      },
-      { status: 500 }
-    );
+  } catch {
+    return apiError("Unable to register visitor. Please try again.", 500);
   }
 }
