@@ -31,12 +31,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Settings QR code generation added for printable visitor registration entry.
 - Project README and beginner VPS deployment guide added.
 - IP-address-only VPS deployment guide added.
-<<<<<<< HEAD
-- Admin route proxy recognizes secure Better Auth cookie names.
-- Admin server session checks validate Better Auth session cookies directly against the database.
-=======
 - Admin route proxy and server session checks support secure signed Better Auth cookies.
->>>>>>> f3b7cde (fixed remaining issue)
+- Resolved post-rebase conflict markers that were blocking production builds.
 
 ## In Progress
 
@@ -127,9 +123,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Updated Settings QR generation so the displayed, downloaded, and printed QR code uses rounded corners.
 - Replaced the starter README with a TVMS project guide and added `VPS_DEPLOYMENT_GUIDE.md` for first-time VPS deployment.
 - Added `VPS_DEPLOYMENT_GUIDE_IP_ADDRESS.md` with IP-only deployment steps using Nginx and a self-signed HTTPS certificate.
-<<<<<<< HEAD
-- Fixed admin route protection so HTTPS Better Auth cookies prefixed with `__Secure-` are recognized by the proxy guard.
-- Added a server-side admin auth session helper so `/admin` and protected admin APIs validate Better Auth session tokens directly from cookie headers in reverse-proxy deployments.
-=======
 - Fixed admin authentication behind HTTPS reverse proxies by recognizing `__Secure-` Better Auth cookie names and validating signed session-cookie values against the database.
->>>>>>> f3b7cde (fixed remaining issue)
+- Removed unresolved Git conflict markers from `lib/admin-auth-session.ts` and `context/progress-tracker.md`, restoring production build parsing.

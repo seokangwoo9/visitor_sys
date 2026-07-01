@@ -1,10 +1,7 @@
 import "server-only";
 
-<<<<<<< HEAD
-=======
 import { createHmac, timingSafeEqual } from "node:crypto";
 
->>>>>>> f3b7cde (fixed remaining issue)
 import { prisma } from "@/lib/prisma";
 
 const betterAuthCookieNames = [
@@ -74,24 +71,16 @@ function getBetterAuthSessionToken(cookieHeader: string | null): string | null {
 
   for (const cookieName of betterAuthCookieNames) {
     const cookieValue = cookies.get(cookieName);
-<<<<<<< HEAD
-
-    if (cookieValue) {
-      return cookieValue;
-=======
     const sessionToken = cookieValue ? getSignedCookieValue(cookieValue) : null;
 
     if (sessionToken) {
       return sessionToken;
->>>>>>> f3b7cde (fixed remaining issue)
     }
   }
 
   return null;
 }
 
-<<<<<<< HEAD
-=======
 function getSignedCookieValue(cookieValue: string): string | null {
   const signatureStartIndex = cookieValue.lastIndexOf(".");
 
@@ -112,7 +101,9 @@ function isValidCookieSignature(value: string, signature: string): boolean {
     return false;
   }
 
-  const expectedSignature = createHmac("sha256", secret).update(value).digest("base64");
+  const expectedSignature = createHmac("sha256", secret)
+    .update(value)
+    .digest("base64");
 
   try {
     return timingSafeEqual(
@@ -124,7 +115,6 @@ function isValidCookieSignature(value: string, signature: string): boolean {
   }
 }
 
->>>>>>> f3b7cde (fixed remaining issue)
 function parseCookieHeader(cookieHeader: string): Map<string, string> {
   const cookies = new Map<string, string>();
 
