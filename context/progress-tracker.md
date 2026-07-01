@@ -29,6 +29,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor check-out now redirects to a dedicated checked-out success screen.
 - Admin control center restyled with sidebar navigation, dashboard metrics/trends, visitor filters/sort/delete, export screen, persisted settings, and audit log view.
 - Settings QR code generation added for printable visitor registration entry.
+- Project README and beginner VPS deployment guide added.
+- IP-address-only VPS deployment guide added.
 
 ## In Progress
 
@@ -117,3 +119,5 @@ Update this file whenever the current phase, active feature, or implementation s
 - Renamed the product identity to TOE Visitor Management System (TVMS) across app metadata, admin brand, and project context.
 - Added Settings tab QR code generation that derives the visitor registration URL from the active deployment origin.
 - Updated Settings QR generation so the displayed, downloaded, and printed QR code uses rounded corners.
+- Replaced the starter README with a TVMS project guide and added `VPS_DEPLOYMENT_GUIDE.md` for first-time VPS deployment.
+- Added `VPS_DEPLOYMENT_GUIDE_IP_ADDRESS.md` with IP-only deployment steps using Nginx and a self-signed HTTPS certificate.
