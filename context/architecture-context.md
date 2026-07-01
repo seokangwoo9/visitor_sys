@@ -126,7 +126,7 @@ visitor-management-system/
 Responsible for:
 
 - Registration
-- Collecting required visitor details: name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID
+- Collecting required visitor details: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID
 - Check-in
 - Check-out
 - Session verification

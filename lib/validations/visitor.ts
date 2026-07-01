@@ -12,6 +12,11 @@ export const visitorRegistrationSchema = z.object({
   identificationNumber: requiredText("IC / ID number", 100),
   companyName: requiredText("Company name", 200),
   contactNumber: requiredText("Contact number", 50),
+  partySize: z.coerce
+    .number()
+    .int("Number of people must be a whole number.")
+    .min(1, "Number of people must be at least 1.")
+    .max(100, "Number of people must be 100 or fewer."),
   email: z
     .string()
     .trim()

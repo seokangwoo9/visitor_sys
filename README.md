@@ -159,6 +159,7 @@ Current Prisma models include:
    - Full name
    - IC/passport number
    - Phone number
+   - Number of people in the visiting group
    - Email
    - Vehicle/no-vehicle selection
    - Vehicle plate number when applicable

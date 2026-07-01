@@ -22,7 +22,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor status and check-out implemented with server-clock check-out timestamp, session destruction, audit logging, and cookie clearing.
 - Admin dashboard implemented with statistics, visitor history, search/filtering, pagination, and protected Excel export.
 - Basic settings visibility added to the admin dashboard for session duration and export format.
-- Visitor registration fields aligned to collect name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor registration fields aligned to collect name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
 - Index route `/` now renders the visitor registration page directly, with `/register` kept as the same registration experience.
 - Navigation/header bars removed from visitor registration, visitor status, and admin screens.
 - Visitor checked-in screen restyled as the approved green pass card.
@@ -36,6 +36,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Admin visitor history View action opens a full visitor detail dialog.
 - Excel export check-in and check-out times match the admin dashboard display format.
 - Production hardening pass added security headers, stricter API parsing, safer login redirects, focused admin data loading, and a health check endpoint.
+- Visitor registration now captures and persists the number of people in the visiting group.
 
 ## In Progress
 
@@ -66,7 +67,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
 - Use `/api/health` as a no-store application health endpoint for deployment/process checks.
-- Visitor registration collects name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor registration collects name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
 
 ## Session Notes
 
@@ -136,3 +137,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Optimized `/admin` section loading so each section fetches only the data it renders.
 - Restricted admin login callback redirects to `/admin` paths only.
 - Added `/api/health` for production uptime checks.
+- Added `Visitor.partySize` with a default of `1`, registration validation, visitor status display, admin table/detail visibility, party-size summed dashboard metrics/trends, search support, audit metadata, and Excel export coverage.

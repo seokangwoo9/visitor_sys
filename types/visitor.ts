@@ -4,6 +4,7 @@ export interface VisitorRegistrationInput {
   fullName: string;
   companyName: string;
   contactNumber: string;
+  partySize: number;
   email?: string;
   identificationNumber: string;
   hasVehicle: boolean;
@@ -34,6 +35,7 @@ export interface ActiveVisitorSession {
   contactNumber: string;
   email: string | null;
   identificationNumber: string | null;
+  partySize: number;
   hasVehicle: boolean;
   vehiclePlateNumber: string;
   department: string | null;
@@ -60,6 +62,7 @@ export interface AdminVisitorListItem {
   contactNumber: string;
   email: string | null;
   identificationNumber: string | null;
+  partySize: number;
   hasVehicle: boolean;
   vehiclePlateNumber: string;
   department: string | null;

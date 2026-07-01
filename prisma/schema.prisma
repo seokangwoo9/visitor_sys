@@ -26,6 +26,7 @@ model Visitor {
   contactNumber        String           @db.VarChar(50)
   email                String?          @db.VarChar(320)
   identificationNumber String?          @db.VarChar(100)
+  partySize            Int              @default(1)
   hasVehicle           Boolean          @default(true)
   vehiclePlateNumber   String           @default("") @db.VarChar(50)
   department           String?          @db.VarChar(200)
@@ -43,6 +44,7 @@ model Visitor {
   @@index([status])
   @@index([checkInAt])
   @@index([checkOutAt])
+  @@index([partySize])
   @@map("visitors")
 }
 

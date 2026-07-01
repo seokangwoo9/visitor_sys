@@ -41,7 +41,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - QR code entry point.
 - Mobile-first registration form.
 - Server-side form validation.
-- Visitor information collection: name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor information collection: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
 - Secure session creation.
 - Automatic server-side check-in timestamp.
 

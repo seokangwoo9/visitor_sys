@@ -23,6 +23,7 @@ export async function registerVisitor(
       contactNumber: input.contactNumber,
       email: input.email,
       identificationNumber: input.identificationNumber,
+      partySize: input.partySize,
       hasVehicle: input.hasVehicle,
       vehiclePlateNumber: input.hasVehicle ? input.vehiclePlateNumber : "",
       department: input.department,
@@ -35,6 +36,9 @@ export async function registerVisitor(
     sessionTokenHash,
     expiresAt,
     auditEventType: "VISITOR_CHECKED_IN",
+    auditMetadata: {
+      partySize: input.partySize,
+    },
   });
 
   return {

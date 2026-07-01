@@ -84,12 +84,19 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
               </p>
             </DetailPanel>
             <DetailPanel>
-              <p className="text-sm font-semibold text-text-muted">Meeting</p>
+              <p className="text-sm font-semibold text-text-muted">People</p>
               <p className="mt-2 text-base font-bold text-visitor-ink">
-                {activeSession.hostName}
+                {activeSession.partySize}
               </p>
             </DetailPanel>
           </div>
+
+          <DetailPanel>
+            <p className="text-sm font-semibold text-text-muted">Meeting</p>
+            <p className="mt-2 text-base font-bold text-visitor-ink">
+              {activeSession.hostName}
+            </p>
+          </DetailPanel>
 
           <DetailPanel>
             <p className="text-sm font-semibold text-text-muted">Visitor Pass</p>

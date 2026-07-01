@@ -47,6 +47,7 @@ export async function getActiveVisitorSession(
     contactNumber: sessionRecord.visitor.contactNumber,
     email: sessionRecord.visitor.email,
     identificationNumber: sessionRecord.visitor.identificationNumber,
+    partySize: sessionRecord.visitor.partySize,
     hasVehicle: sessionRecord.visitor.hasVehicle,
     vehiclePlateNumber: sessionRecord.visitor.vehiclePlateNumber,
     department: sessionRecord.visitor.department,

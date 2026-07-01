@@ -68,13 +68,13 @@ export function AdminFilterForm({
       <label className="space-y-2">
         <span className="flex items-center gap-2 text-sm font-semibold text-text-secondary">
           <Search className="size-4 text-visitor-success-deep" aria-hidden="true" />
-          Search Name, Company, Vehicle, Pass, PIC, Phone
+          Search Name, Company, People, Vehicle, Pass, PIC, Phone
         </span>
         <Input
           className="h-12 rounded-2xl bg-bg-base"
           defaultValue={initialQuery}
           name="query"
-          placeholder="e.g. Ahmad, ACME, V1234"
+          placeholder="e.g. Ahmad, ACME, 3, V1234"
         />
       </label>
       <label className="space-y-2">

@@ -10,6 +10,7 @@ export interface CreateCheckedInVisitorRecordInput {
   sessionTokenHash: string;
   expiresAt: Date;
   auditEventType: string;
+  auditMetadata?: Prisma.InputJsonObject;
 }
 
 export async function createCheckedInVisitorRecord(
@@ -37,6 +38,7 @@ export async function createCheckedInVisitorRecord(
         visitorId: visitor.id,
         metadata: {
           status: visitor.status,
+          ...input.auditMetadata,
         },
       },
     });
@@ -98,6 +100,7 @@ export async function completeVisitorCheckout(
         visitorId: visitor.id,
         metadata: {
           status: visitor.status,
+          partySize: visitor.partySize,
         },
       },
     });
@@ -113,6 +116,15 @@ export async function expireVisitorSession(
   prismaClient: PrismaClient = prisma
 ): Promise<void> {
   await prismaClient.$transaction(async (transaction) => {
+    const visitor = await transaction.visitor.findUnique({
+      where: {
+        id: visitorId,
+      },
+      select: {
+        partySize: true,
+      },
+    });
+
     await transaction.visitor.updateMany({
       where: {
         id: visitorId,
@@ -139,6 +151,7 @@ export async function expireVisitorSession(
         visitorId,
         metadata: {
           expiredAt,
+          partySize: visitor?.partySize ?? 1,
         },
       },
     });
@@ -154,10 +167,10 @@ export async function getVisitorSummary(
 
   const [totalVisitors, currentVisitors, todayCheckIns, checkedOutVisitors] =
     await Promise.all([
-      prismaClient.visitor.count(),
-      prismaClient.visitor.count({ where: { status: "CHECKED_IN" } }),
-      prismaClient.visitor.count({ where: { checkInAt: { gte: startOfDay } } }),
-      prismaClient.visitor.count({ where: { status: "CHECKED_OUT" } }),
+      sumVisitorPartySize({}, prismaClient),
+      sumVisitorPartySize({ status: "CHECKED_IN" }, prismaClient),
+      sumVisitorPartySize({ checkInAt: { gte: startOfDay } }, prismaClient),
+      sumVisitorPartySize({ status: "CHECKED_OUT" }, prismaClient),
     ]);
 
   return {
@@ -189,7 +202,8 @@ function buildVisitorWhere(
   }
 
   if (input.query) {
-    where.OR = [
+    const numericQuery = Number(input.query);
+    const searchConditions: Prisma.VisitorWhereInput[] = [
       { fullName: { contains: input.query, mode: "insensitive" } },
       { identificationNumber: { contains: input.query, mode: "insensitive" } },
       { vehiclePlateNumber: { contains: input.query, mode: "insensitive" } },
@@ -199,6 +213,12 @@ function buildVisitorWhere(
       { contactNumber: { contains: input.query, mode: "insensitive" } },
       { hostName: { contains: input.query, mode: "insensitive" } },
     ];
+
+    if (Number.isInteger(numericQuery)) {
+      searchConditions.push({ partySize: numericQuery });
+    }
+
+    where.OR = searchConditions;
   }
 
   const dateRange = buildDateRange(input.dateFilter, input.customFrom, input.customTo);
@@ -338,6 +358,7 @@ export async function deleteVisitorRecord(
           deletedVisitorId: visitor.id,
           visitorName: visitor.fullName,
           visitorPassId: visitor.visitorPassId,
+          partySize: visitor.partySize,
         },
       },
     });
@@ -349,14 +370,29 @@ export async function countVisitorsBetween(
   end: Date,
   prismaClient: PrismaClient = prisma
 ): Promise<number> {
-  return prismaClient.visitor.count({
-    where: {
+  return sumVisitorPartySize(
+    {
       checkInAt: {
         gte: start,
         lt: end,
       },
     },
+    prismaClient
+  );
+}
+
+async function sumVisitorPartySize(
+  where: Prisma.VisitorWhereInput,
+  prismaClient: PrismaClient
+): Promise<number> {
+  const result = await prismaClient.visitor.aggregate({
+    where,
+    _sum: {
+      partySize: true,
+    },
   });
+
+  return result._sum.partySize ?? 0;
 }
 
 export async function getAverageCompletedVisitDurationMinutes(

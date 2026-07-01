@@ -38,6 +38,7 @@ const fieldLabels: Record<FieldName, string> = {
   fullName: "Full Name",
   identificationNumber: "IC / Passport",
   contactNumber: "Phone Number",
+  partySize: "Number of People",
   email: "Email",
   hasVehicle: "No Vehicle",
   vehiclePlateNumber: "Vehicle Plate Number",
@@ -64,6 +65,7 @@ export function VisitorRegistrationForm() {
       fullName: "",
       companyName: "",
       contactNumber: "",
+      partySize: 1,
       email: "",
       identificationNumber: "",
       hasVehicle: true,
@@ -142,6 +144,16 @@ export function VisitorRegistrationForm() {
           placeholder="0123456789"
           registration={register("contactNumber")}
           type="tel"
+        />
+        <Field
+          disabled={isSubmitting}
+          error={errors.partySize?.message}
+          label={fieldLabels.partySize}
+          max={100}
+          min={1}
+          placeholder="Total people in this visit"
+          registration={register("partySize", { valueAsNumber: true })}
+          type="number"
         />
         <Field
           autoComplete="email"
@@ -274,6 +286,8 @@ interface FieldProps {
   disabled: boolean;
   error?: string;
   label: string;
+  max?: number;
+  min?: number;
   placeholder: string;
   registration: UseFormRegisterReturn;
   type?: string;
@@ -284,6 +298,8 @@ function Field({
   disabled,
   error,
   label,
+  max,
+  min,
   placeholder,
   registration,
   type = "text",
@@ -302,6 +318,8 @@ function Field({
         )}
         disabled={disabled}
         id={registration.name}
+        max={max}
+        min={min}
         placeholder={placeholder}
         type={type}
         {...registration}
