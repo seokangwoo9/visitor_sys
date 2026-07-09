@@ -9,6 +9,7 @@ import {
 import { getActiveVisitorSession } from "@/services/visitor-session-service";
 
 import { ConfirmCheckOutButton } from "./confirm-check-out-button";
+import { FallbackCheckOutForm } from "./fallback-check-out-form";
 
 export default async function CheckOutPage() {
   const cookieStore = await cookies();
@@ -100,20 +101,25 @@ export default async function CheckOutPage() {
 function NoActiveCheckoutSession() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center shadow-2xl shadow-visitor-success/10 sm:px-10">
+      <section className="w-full max-w-[25.5rem] rounded-3xl bg-card px-6 py-7 shadow-2xl shadow-visitor-success/10">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <CircleAlert className="size-8" aria-hidden="true" />
         </div>
-        <p className="mt-8 text-xs font-bold uppercase text-visitor-success-deep">
-          Check Out Unavailable
-        </p>
-        <h1 className="mt-5 text-3xl font-bold text-visitor-ink">
-          No active visit found
-        </h1>
-        <p className="mx-auto mt-5 max-w-sm text-base leading-8 text-text-secondary">
-          Please use the same phone browser that was used for check in, or contact
-          the front desk for assistance.
-        </p>
+        <div className="text-center">
+          <p className="mt-8 text-xs font-bold uppercase text-visitor-success-deep">
+            Session Not Found
+          </p>
+          <h1 className="mt-5 text-3xl font-bold text-visitor-ink">
+            Find your active visit
+          </h1>
+          <p className="mx-auto mt-5 max-w-sm text-base leading-8 text-text-secondary">
+            Enter the same visitor pass ID and contact number used during check in.
+          </p>
+        </div>
+
+        <div className="mt-6">
+          <FallbackCheckOutForm />
+        </div>
       </section>
     </main>
   );

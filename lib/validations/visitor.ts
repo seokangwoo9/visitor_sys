@@ -45,5 +45,11 @@ export const visitorRegistrationSchema = z.object({
   }
 });
 
+export const visitorFallbackCheckoutSchema = z.object({
+  visitorPassId: requiredText("Visitor pass ID", 100),
+  contactNumber: requiredText("Contact number", 50),
+});
+
 export type VisitorRegistrationFormInput = z.input<typeof visitorRegistrationSchema>;
 export type VisitorRegistrationSchema = z.infer<typeof visitorRegistrationSchema>;
+export type VisitorFallbackCheckoutSchema = z.infer<typeof visitorFallbackCheckoutSchema>;

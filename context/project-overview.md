@@ -30,11 +30,12 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 8. Visitor is redirected to the Visitor Status page.
 9. Visitor remains checked in while inside the factory.
 10. Visitor scans the factory check-out QR code before leaving.
-11. System finds the active visitor session from the same browser session cookie.
-12. Visitor confirms check-out on the check-out confirmation page.
-13. System records the check-out time.
-14. Visitor session is destroyed.
-15. Administrator can review the completed visitor record from the dashboard.
+11. System first finds the active visitor session from the same browser session cookie.
+12. If the browser session cookie is unavailable, visitor enters Visitor Pass ID and contact number to find the active visit.
+13. Visitor confirms check-out on the check-out confirmation page.
+14. System records the check-out time.
+15. Visitor session is destroyed.
+16. Administrator can review the completed visitor record from the dashboard.
 
 ## Features
 
@@ -52,6 +53,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Separate check-out QR code entry point.
 - Visitor status page without an inline check-out action.
 - Check-out confirmation page.
+- Fallback check-out lookup using Visitor Pass ID and contact number when the original browser session cookie is unavailable.
 - Automatic server-side check-out timestamp.
 - Session termination after successful check-out.
 
@@ -61,6 +63,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - 24-hour session expiration.
 - Prevention of duplicate submissions.
 - Protection against repeated QR code abuse.
+- Rate-limited fallback check-out attempts.
 
 ### Admin Dashboard
 
@@ -121,3 +124,4 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 7. Visitor sessions expire automatically after 24 hours.
 8. The application is secure, mobile-first, and ready for production deployment.
 9. A visitor can check out by scanning the check-out QR code from the same phone browser used during check-in.
+10. A visitor can still check out without the original browser session cookie by entering a matching Visitor Pass ID and contact number for a unique active visit.

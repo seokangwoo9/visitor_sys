@@ -45,6 +45,9 @@ model Visitor {
   @@index([checkInAt])
   @@index([checkOutAt])
   @@index([partySize])
+  @@index([visitorPassId])
+  @@index([contactNumber])
+  @@index([visitorPassId, contactNumber, status])
   @@map("visitors")
 }
 

@@ -133,6 +133,7 @@ Responsible for:
 - Visitor status page
 - Static check-out QR entry point
 - Check-out confirmation page
+- Fallback check-out lookup when the visitor session cookie is unavailable
 
 Must NOT:
 
@@ -234,6 +235,8 @@ Sessions expire automatically after 24 hours.
 
 The check-out QR code is a static deployment URL. It does not contain visitor-specific tokens. Check-out session lookup depends on the same browser sending the existing secure visitor session cookie that was issued at check-in.
 
+If the secure visitor session cookie is unavailable, the check-out page may use a fallback lookup with Visitor Pass ID and contact number. The fallback must be rate-limited, must only operate on a unique `CHECKED_IN` visitor, and must never expose session tokens to the browser.
+
 After expiration:
 
 - Visitor cannot reuse the same session.
@@ -318,6 +321,10 @@ Example:
 /api/visitor/check-in
 
 /api/visitor/check-out
+
+/api/visitor/check-out/fallback/lookup
+
+/api/visitor/check-out/fallback/confirm
 
 /api/admin/visitors
 

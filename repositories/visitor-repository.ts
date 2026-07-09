@@ -65,11 +65,47 @@ export async function findVisitorSessionByHash(
   });
 }
 
+export async function findVisitorsForFallbackCheckout(
+  visitorPassId: string,
+  contactNumber: string,
+  prismaClient: PrismaClient = prisma
+) {
+  return prismaClient.visitor.findMany({
+    where: {
+      visitorPassId: {
+        equals: visitorPassId,
+        mode: "insensitive",
+      },
+      contactNumber: {
+        equals: contactNumber,
+        mode: "insensitive",
+      },
+    },
+    include: {
+      sessions: {
+        where: {
+          revokedAt: null,
+          destroyedAt: null,
+        },
+        orderBy: {
+          expiresAt: "desc",
+        },
+      },
+    },
+    orderBy: {
+      checkInAt: "desc",
+    },
+    take: 5,
+  });
+}
+
 export async function completeVisitorCheckout(
   visitorId: string,
   sessionId: string,
   checkOutAt: Date,
-  prismaClient: PrismaClient = prisma
+  prismaClient: PrismaClient = prisma,
+  auditEventType = "VISITOR_CHECKED_OUT",
+  auditMetadata: Prisma.InputJsonObject = {}
 ) {
   return prismaClient.$transaction(async (transaction) => {
     const visitor = await transaction.visitor.update({
@@ -94,18 +130,36 @@ export async function completeVisitorCheckout(
 
     await transaction.auditLog.create({
       data: {
-        eventType: "VISITOR_CHECKED_OUT",
+        eventType: auditEventType,
         actorType: "VISITOR",
         actorId: visitor.id,
         visitorId: visitor.id,
         metadata: {
           status: visitor.status,
           partySize: visitor.partySize,
+          ...auditMetadata,
         },
       },
     });
 
     return visitor;
+  });
+}
+
+export async function createVisitorFallbackCheckoutAuditLog(
+  eventType: string,
+  metadata: Prisma.InputJsonObject,
+  visitorId?: string,
+  prismaClient: PrismaClient = prisma
+): Promise<void> {
+  await prismaClient.auditLog.create({
+    data: {
+      eventType,
+      actorType: "VISITOR",
+      actorId: visitorId,
+      visitorId,
+      metadata,
+    },
   });
 }
 

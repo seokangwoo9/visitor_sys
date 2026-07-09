@@ -55,6 +55,34 @@ export interface VisitorCheckoutResult {
   checkOutAt: Date;
 }
 
+export interface VisitorFallbackCheckoutInput {
+  visitorPassId: string;
+  contactNumber: string;
+}
+
+export interface VisitorFallbackCheckoutMatch {
+  visitorId: string;
+  fullName: string;
+  companyName: string;
+  contactNumber: string;
+  partySize: number;
+  visitorPassId: string;
+  checkInAt: Date;
+  expiresAt: Date;
+}
+
+export type VisitorFallbackCheckoutStatus =
+  | "FOUND"
+  | "NOT_FOUND"
+  | "AMBIGUOUS"
+  | "ALREADY_CHECKED_OUT"
+  | "EXPIRED";
+
+export interface VisitorFallbackCheckoutLookupResult {
+  status: VisitorFallbackCheckoutStatus;
+  match?: VisitorFallbackCheckoutMatch;
+}
+
 export interface AdminVisitorListItem {
   id: string;
   fullName: string;

@@ -82,23 +82,23 @@ Visitor-facing registration is the index experience at `/` and is also available
 
 ### Visitor Status And Check-Out
 
-Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/confirm-check-out-button.tsx
+Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/confirm-check-out-button.tsx, app/check-out/fallback-check-out-form.tsx
 Last updated: 2026-07-09
 
 | Property | Class |
 | ---------------- | --------------- |
-| Background | `bg-visitor-page`, `bg-card`, `bg-visitor-success`, `bg-visitor-ink`, `bg-visitor-success-soft`, `bg-visitor-surface` |
+| Background | `bg-visitor-page`, `bg-card`, `bg-visitor-success`, `bg-visitor-ink`, `bg-visitor-success-soft`, `bg-visitor-surface`, `bg-muted` |
 | Border | `border-visitor-success/10`, `border-visitor-success-deep` |
 | Border radius | `rounded-2xl`, `rounded-3xl`, `rounded-full` |
 | Text - primary | `text-visitor-ink`, `text-primary-foreground` |
 | Text - secondary | `text-text-secondary`, `text-text-muted`, `text-visitor-success-deep` |
-| Spacing | `px-4 py-8`, `px-6 py-6`, `p-4`, `space-y-4`, `space-y-5` |
+| Spacing | `px-4 py-8`, `px-6 py-6`, `px-6 py-7`, `p-4`, `p-5`, `space-y-4`, `space-y-5` |
 | Hover state | `hover:bg-visitor-success-deep` |
 | Shadow | `shadow-2xl shadow-visitor-success/10`, `shadow-xl shadow-visitor-success/20` |
 | Accent usage | checked-in header `bg-visitor-success`, check-out confirmation header `bg-visitor-ink`, action `bg-visitor-success`, success badge `bg-visitor-success-soft` |
 
 **Pattern notes:**
-Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a centered instruction panel telling visitors to scan the exit check-out QR. The check-out action lives only on `/check-out`, which uses the same pass-card proportions with a dark header, active-session summary, and a full-width green confirmation button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
+Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a centered instruction panel telling visitors to scan the exit check-out QR. The check-out action lives only on `/check-out`, which uses the same pass-card proportions with a dark header, active-session summary, and a full-width green confirmation button. When the visitor session cookie is missing, `/check-out` uses a centered white fallback card with a muted icon, two `h-14 rounded-2xl` fields, a dark find button, a soft green active-visit summary, and a green confirmation button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
 
 ### Admin Control Center
 

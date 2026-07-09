@@ -42,6 +42,9 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor checked-in status no longer shows an inline check-out button; visitors are instructed to scan the exit check-out QR.
 - Visitor check-out now uses a dedicated confirmation page that finds the active session from the same browser session cookie before allowing check-out.
 - Admin Settings QR generation now produces separate printable/downloadable check-in and check-out QR codes.
+- Phase 4 fallback visitor check-out implemented using Visitor Pass ID and contact number when the browser session cookie is unavailable.
+- Fallback check-out attempts are rate-limited and require a unique active `CHECKED_IN` visitor before checkout can be confirmed.
+- Fallback check-out database indexes added for visitor pass ID, contact number, and status lookups.
 
 ## In Progress
 
@@ -53,7 +56,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Open Questions
 
-- Whether to add a fallback check-out flow for cases where the visitor scans the check-out QR with a different browser or after losing the visitor session cookie.
+- None currently.
 
 ## Architecture Decisions
 
@@ -71,6 +74,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/check-in` as the explicit visitor check-in QR landing page while keeping `/` and `/register` compatible with the same registration experience.
 - Use `/check-out` as the static visitor check-out QR landing page; it must not embed visitor-specific session tokens in the QR code.
 - Check-out QR session lookup depends on the same browser sending the secure `visitor_session` cookie issued during check-in.
+- If the `visitor_session` cookie is unavailable, fallback check-out uses Visitor Pass ID and contact number through rate-limited lookup and confirm endpoints.
 - Use `/api/admin/export` as a protected server-side Excel export endpoint.
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
@@ -153,3 +157,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Updated Admin Settings QR card to generate, download, and print separate check-in and check-out QR codes.
 - Verified `npm run lint` and `npm run build` pass after the split QR flow implementation.
 - Smoke-tested the split QR lifecycle locally: `/check-in` returns `200`, `/check-out` without a cookie returns `200`, check-in API returns `201`, checked-in status returns `200`, check-out confirmation returns `200`, and check-out API returns `200`.
+- Added `/api/visitor/check-out/fallback/lookup` and `/api/visitor/check-out/fallback/confirm` for cookie-less fallback checkout.
+- Added `lib/rate-limit.ts` for rate-limiting fallback checkout attempts and `lib/visitor-fallback-checkout-api.ts` for shared fallback response handling.
+- Added Prisma migration `20260709045728_add_checkout_fallback_indexes` for visitor pass/contact/status lookup indexes.
+- Updated `/check-out` no-cookie state to show a fallback lookup form, active visit confirmation summary, and fallback checkout confirmation action.
+- Smoke-tested Phase 4 fallback checkout locally: check-in API returned `201`, fallback lookup returned `200`, fallback confirm returned `200`, and repeated fallback confirm returned `409`.
