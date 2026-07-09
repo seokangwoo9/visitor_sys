@@ -48,6 +48,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Phone-number checkout flow verified with check-in, lookup, confirm, repeated-confirm conflict, removed cookie-route check, and ambiguous same-phone blocking.
 - Admin Settings QR generation now converts localhost check-in/check-out URLs to the server machine's internal IPv4 address when available.
 - Visitor registration now saves an in-progress draft to browser session storage so accidental mobile page refreshes do not wipe the form.
+- Next.js local development now allows the server machine's private IPv4 origins so QR pages opened from phones can load dev assets and hydrate client-side forms.
 
 ## In Progress
 
@@ -168,3 +169,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Smoke-tested phone-only checkout locally: check-in returned `201`, lookup returned `200`, confirm returned `200`, repeated confirm returned `409`, removed cookie checkout route returned `404`, and ambiguous same-phone lookup returned `409`.
 - Updated Settings QR URL generation so check-in/check-out QR codes use an internal IPv4 origin instead of localhost during local network use.
 - Added session-storage draft restore for visitor registration and cleared the draft after successful check-in or active-session redirect.
+- Added automatic `allowedDevOrigins` configuration for local private IPv4 addresses after iPhone QR testing showed checkout form submissions refreshing because React handlers were not hydrated.

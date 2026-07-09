@@ -1,6 +1,8 @@
+import { getPrivateIpv4Addresses } from "./lib/network-addresses";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: getPrivateIpv4Addresses(),
   poweredByHeader: false,
   async headers() {
     return [

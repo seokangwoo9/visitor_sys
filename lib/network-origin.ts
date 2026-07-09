@@ -1,6 +1,6 @@
 import "server-only";
 
-import { networkInterfaces } from "node:os";
+import { getPreferredPrivateIpv4Address } from "@/lib/network-addresses";
 
 const localhostNames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
@@ -51,28 +51,4 @@ function parseHostHeader(hostHeader: string): { hostname: string; port: string }
     hostname: hostHeader.slice(0, lastColonIndex),
     port: hostHeader.slice(lastColonIndex + 1),
   };
-}
-
-function getPreferredPrivateIpv4Address(): string | null {
-  const addresses = Object.values(networkInterfaces())
-    .flat()
-    .filter((address): address is NonNullable<typeof address> => Boolean(address))
-    .filter((address) => address.family === "IPv4" && !address.internal)
-    .map((address) => address.address);
-
-  return addresses.find(isPrivateIpv4Address) ?? addresses[0] ?? null;
-}
-
-function isPrivateIpv4Address(address: string): boolean {
-  const octets = address.split(".").map(Number);
-
-  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet))) {
-    return false;
-  }
-
-  const [first, second] = octets;
-
-  return first === 10
-    || (first === 172 && second >= 16 && second <= 31)
-    || (first === 192 && second === 168);
 }
