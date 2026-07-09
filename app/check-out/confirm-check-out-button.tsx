@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderCircle, LogOut } from "lucide-react";
+import { CheckCircle2, LoaderCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-export function CheckOutButton() {
+export function ConfirmCheckOutButton() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  async function handleCheckOut() {
+  async function handleConfirmCheckOut() {
     setErrorMessage("");
     setIsCheckingOut(true);
 
@@ -22,7 +22,8 @@ export function CheckOutButton() {
     setIsCheckingOut(false);
 
     if (!response.ok) {
-      setErrorMessage("Unable to check out. Please try again.");
+      setErrorMessage("No active visitor session was found. Please contact the front desk.");
+      router.refresh();
       return;
     }
 
@@ -33,9 +34,9 @@ export function CheckOutButton() {
   return (
     <div className="space-y-3">
       <Button
-        className="h-14 w-full rounded-2xl bg-visitor-ink text-base font-bold text-primary-foreground shadow-xl shadow-visitor-ink/20 hover:bg-visitor-ink/90"
+        className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground shadow-xl shadow-visitor-success/20 hover:bg-visitor-success-deep"
         disabled={isCheckingOut}
-        onClick={handleCheckOut}
+        onClick={handleConfirmCheckOut}
         type="button"
       >
         {isCheckingOut ? (
@@ -45,8 +46,8 @@ export function CheckOutButton() {
           </>
         ) : (
           <>
-            <LogOut className="size-5" aria-hidden="true" />
-            Check out
+            <CheckCircle2 className="size-5" aria-hidden="true" />
+            Confirm Check Out
           </>
         )}
       </Button>

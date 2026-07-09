@@ -1,22 +1,16 @@
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
-import { Check, CheckCircle2, Clock, ShieldCheck } from "lucide-react";
+import { CircleAlert, Clock, LogOut, ShieldCheck } from "lucide-react";
 
 import {
   decodeVisitorSessionCookie,
   VISITOR_SESSION_COOKIE_NAME,
 } from "@/lib/visitor-session";
-import { cn } from "@/lib/utils";
 import { getActiveVisitorSession } from "@/services/visitor-session-service";
 
-export default async function VisitorStatusPage(props: PageProps<"/visitor/status">) {
-  const searchParams = await props.searchParams;
-  const checkedOut = searchParams.checkedOut === "1";
+import { ConfirmCheckOutButton } from "./confirm-check-out-button";
 
-  if (checkedOut) {
-    return <CheckedOutCard />;
-  }
-
+export default async function CheckOutPage() {
   const cookieStore = await cookies();
   const sessionCookie = decodeVisitorSessionCookie(
     cookieStore.get(VISITOR_SESSION_COOKIE_NAME)?.value
@@ -24,31 +18,31 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
   const activeSession = await getActiveVisitorSession(sessionCookie);
 
   if (!activeSession) {
-    return <NoActiveVisitCard />;
+    return <NoActiveCheckoutSession />;
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
       <section className="w-full max-w-[25.5rem] overflow-hidden rounded-3xl bg-card shadow-2xl shadow-visitor-success/10">
-        <div className="bg-visitor-success px-6 pb-8 pt-8 text-primary-foreground">
+        <div className="bg-visitor-ink px-6 pb-8 pt-8 text-primary-foreground">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-foreground/20">
-              <ShieldCheck className="size-7" aria-hidden="true" />
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-foreground/15">
+              <LogOut className="size-7" aria-hidden="true" />
             </div>
-            <div className="rounded-3xl bg-primary-foreground px-5 py-2 text-xs font-bold uppercase text-visitor-success-deep">
-              Checked In
+            <div className="rounded-3xl bg-primary-foreground px-5 py-2 text-xs font-bold uppercase text-visitor-ink">
+              Check Out
             </div>
           </div>
 
           <div className="mt-8 space-y-4">
-            <p className="text-sm font-bold uppercase">
-              Welcome
+            <p className="text-sm font-bold uppercase text-primary-foreground/80">
+              Leaving Premises
             </p>
             <div className="space-y-3">
               <h1 className="text-2xl font-bold">{activeSession.fullName}</h1>
-              <p className="flex items-center gap-2 text-base">
-                <CheckCircle2 className="size-5" aria-hidden="true" />
-                Checked in successfully
+              <p className="flex items-center gap-2 text-base text-primary-foreground/85">
+                <ShieldCheck className="size-5" aria-hidden="true" />
+                Confirm your visitor check out
               </p>
             </div>
           </div>
@@ -57,20 +51,14 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
         <div className="space-y-4 px-6 py-6">
           <div className="rounded-3xl border border-visitor-success/10 bg-visitor-success-soft px-5 py-6 text-center">
             <p className="text-xs font-bold uppercase text-visitor-success-deep">
-              Status
+              Active Visit Found
             </p>
             <p className="mt-3 text-3xl font-extrabold uppercase text-visitor-success-deep">
-              Checked In
+              Ready
             </p>
           </div>
 
-          <div className="rounded-3xl border border-visitor-success/10 bg-card px-5 py-5 text-center">
-            <p className="text-sm font-semibold leading-6 text-text-secondary">
-              Please scan the check-out QR code at the exit before leaving the premises.
-            </p>
-          </div>
-
-          <DetailPanel className="col-span-full">
+          <DetailPanel>
             <div className="flex items-center gap-2 text-sm font-semibold text-text-muted">
               <Clock className="size-4" aria-hidden="true" />
               Check In Time
@@ -96,61 +84,35 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
           </div>
 
           <DetailPanel>
-            <p className="text-sm font-semibold text-text-muted">Meeting</p>
-            <p className="mt-2 text-base font-bold text-visitor-ink">
-              {activeSession.hostName}
-            </p>
-          </DetailPanel>
-
-          <DetailPanel>
             <p className="text-sm font-semibold text-text-muted">Visitor Pass</p>
             <p className="mt-2 text-xl font-extrabold text-visitor-ink">
               {activeSession.visitorPassId}
             </p>
           </DetailPanel>
 
+          <ConfirmCheckOutButton />
         </div>
       </section>
     </main>
   );
 }
 
-function CheckedOutCard() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center shadow-2xl shadow-visitor-success/10 sm:px-10">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-visitor-success-soft">
-          <div className="flex size-11 items-center justify-center rounded-full border-4 border-visitor-success-deep text-visitor-success-deep">
-            <Check className="size-6 stroke-[4]" aria-hidden="true" />
-          </div>
-        </div>
-        <p className="mt-8 text-xs font-bold uppercase text-visitor-success-deep">
-          Checked Out Successfully
-        </p>
-        <h1 className="mt-5 text-3xl font-bold text-visitor-ink">
-          Thank you for your visit
-        </h1>
-        <p className="mx-auto mt-5 max-w-sm text-base leading-8 text-text-secondary">
-          Your visitor session has ended. Please scan the QR code again if you
-          need to register another visit.
-        </p>
-      </section>
-    </main>
-  );
-}
-
-function NoActiveVisitCard() {
+function NoActiveCheckoutSession() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
       <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center shadow-2xl shadow-visitor-success/10 sm:px-10">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <Clock className="size-8" aria-hidden="true" />
+          <CircleAlert className="size-8" aria-hidden="true" />
         </div>
-        <h1 className="mt-6 text-3xl font-bold text-visitor-ink">
-          No active visit
+        <p className="mt-8 text-xs font-bold uppercase text-visitor-success-deep">
+          Check Out Unavailable
+        </p>
+        <h1 className="mt-5 text-3xl font-bold text-visitor-ink">
+          No active visit found
         </h1>
-        <p className="mx-auto mt-4 max-w-sm text-base leading-8 text-text-secondary">
-          Please scan the QR code again if you need to register another visit.
+        <p className="mx-auto mt-5 max-w-sm text-base leading-8 text-text-secondary">
+          Please use the same phone browser that was used for check in, or contact
+          the front desk for assistance.
         </p>
       </section>
     </main>
@@ -159,16 +121,10 @@ function NoActiveVisitCard() {
 
 function DetailPanel({
   children,
-  className,
 }: {
   children: ReactNode;
-  className?: string;
 }) {
-  return (
-    <div className={cn("rounded-2xl bg-visitor-surface p-4", className)}>
-      {children}
-    </div>
-  );
+  return <div className="rounded-2xl bg-visitor-surface p-4">{children}</div>;
 }
 
 function formatDateTime(date: Date): string {

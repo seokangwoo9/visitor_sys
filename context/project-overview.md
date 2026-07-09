@@ -4,7 +4,7 @@
 
 TOE Visitor Management System (TVMS) is a mobile-first web application designed to digitize factory visitor registration.
 
-Visitors scan a QR code upon arrival, complete a registration form, and check in to the factory. The system securely records the check-in time, generates a temporary visitor session, and allows visitors to check out when leaving the premises. Administrators can monitor visitors in real time, search historical records, and export professional Excel reports.
+Visitors scan a check-in QR code upon arrival, complete a registration form, and check in to the factory. The system securely records the check-in time, generates a temporary visitor session, and allows visitors to check out by scanning a separate check-out QR code when leaving the premises. Administrators can monitor visitors in real time, search historical records, and export professional Excel reports.
 
 The system replaces traditional paper logbooks with a secure, efficient, and enterprise-grade digital solution.
 
@@ -21,7 +21,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 ## Core User Flow
 
 1. Visitor arrives at the factory.
-2. Visitor scans the factory QR code.
+2. Visitor scans the factory check-in QR code.
 3. Visitor opens the registration page.
 4. Visitor completes the registration form.
 5. System validates all submitted information.
@@ -29,16 +29,18 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 7. System creates a secure visitor session.
 8. Visitor is redirected to the Visitor Status page.
 9. Visitor remains checked in while inside the factory.
-10. Visitor presses the Check Out button before leaving.
-11. System records the check-out time.
-12. Visitor session is destroyed.
-13. Administrator can review the completed visitor record from the dashboard.
+10. Visitor scans the factory check-out QR code before leaving.
+11. System finds the active visitor session from the same browser session cookie.
+12. Visitor confirms check-out on the check-out confirmation page.
+13. System records the check-out time.
+14. Visitor session is destroyed.
+15. Administrator can review the completed visitor record from the dashboard.
 
 ## Features
 
 ### Visitor Registration
 
-- QR code entry point.
+- Check-in QR code entry point.
 - Mobile-first registration form.
 - Server-side form validation.
 - Visitor information collection: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
@@ -47,8 +49,9 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 
 ### Visitor Check-out
 
-- Visitor status page.
-- One-click check-out.
+- Separate check-out QR code entry point.
+- Visitor status page without an inline check-out action.
+- Check-out confirmation page.
 - Automatic server-side check-out timestamp.
 - Session termination after successful check-out.
 
@@ -68,7 +71,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Visitor detail view.
 - Excel export.
 - Basic system settings.
-- Deployment-aware visitor registration QR code generation for printing.
+- Deployment-aware visitor check-in and check-out QR code generation for printing.
 
 ### Reporting
 
@@ -83,6 +86,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 ### In Scope
 
 - QR code visitor registration
+- Separate visitor check-in and check-out QR codes
 - Visitor check-in
 - Visitor check-out
 - Secure visitor session management
@@ -108,7 +112,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 
 ## Success Criteria
 
-1. A visitor can successfully register by scanning the QR code.
+1. A visitor can successfully register by scanning the check-in QR code.
 2. The system records accurate server-side check-in and check-out timestamps.
 3. Visitors cannot submit duplicate registrations within the active session.
 4. Administrators can monitor visitors currently inside the factory.
@@ -116,3 +120,4 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 6. Administrators can export professional Excel reports.
 7. Visitor sessions expire automatically after 24 hours.
 8. The application is secure, mobile-first, and ready for production deployment.
+9. A visitor can check out by scanning the check-out QR code from the same phone browser used during check-in.

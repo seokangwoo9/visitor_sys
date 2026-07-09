@@ -6,11 +6,11 @@ This project is an enterprise-grade TOE Visitor Management System (TVMS) designe
 
 The system allows visitors to:
 
-- Scan a QR Code
+- Scan a check-in QR Code
 - Complete a visitor registration form
 - Check in
 - View their visitor status
-- Check out when leaving
+- Scan a separate check-out QR Code and confirm check-out when leaving
 
 Administrators can:
 
@@ -131,6 +131,8 @@ Responsible for:
 - Check-out
 - Session verification
 - Visitor status page
+- Static check-out QR entry point
+- Check-out confirmation page
 
 Must NOT:
 
@@ -150,7 +152,7 @@ Responsible for:
 - Statistics
 - Excel export
 - Settings
-- Deployment-aware QR code generation for the visitor registration entry point
+- Deployment-aware QR code generation for the visitor check-in and check-out entry points
 - Audit logs
 
 Must NOT:
@@ -230,6 +232,8 @@ The database stores:
 
 Sessions expire automatically after 24 hours.
 
+The check-out QR code is a static deployment URL. It does not contain visitor-specific tokens. Check-out session lookup depends on the same browser sending the existing secure visitor session cookie that was issued at check-in.
+
 After expiration:
 
 - Visitor cannot reuse the same session.
@@ -261,7 +265,7 @@ Visitor
 
 ↓
 
-Scan QR
+Scan Check-in QR
 
 ↓
 
@@ -289,7 +293,11 @@ Visitor Status Page
 
 ↓
 
-Check Out
+Scan Check-out QR
+
+↓
+
+Check-out Confirmation
 
 ↓
 

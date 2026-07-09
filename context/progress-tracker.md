@@ -8,7 +8,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Goal
 
-- Match admin dashboard, visitors, export, settings, and audit log UI to approved control-center design.
+- None active.
 
 ## Completed
 
@@ -38,6 +38,10 @@ Update this file whenever the current phase, active feature, or implementation s
 - Production hardening pass added security headers, stricter API parsing, safer login redirects, focused admin data loading, and a health check endpoint.
 - Visitor registration now captures and persists the number of people in the visiting group.
 - Admin visitor detail modal now uses responsive sizing with a wider desktop layout and mobile-safe viewport bounds.
+- Visitor check-in and check-out now have separate static QR entry routes: `/check-in` and `/check-out`.
+- Visitor checked-in status no longer shows an inline check-out button; visitors are instructed to scan the exit check-out QR.
+- Visitor check-out now uses a dedicated confirmation page that finds the active session from the same browser session cookie before allowing check-out.
+- Admin Settings QR generation now produces separate printable/downloadable check-in and check-out QR codes.
 
 ## In Progress
 
@@ -49,7 +53,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Open Questions
 
-- None currently.
+- Whether to add a fallback check-out flow for cases where the visitor scans the check-out QR with a different browser or after losing the visitor session cookie.
 
 ## Architecture Decisions
 
@@ -64,6 +68,9 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/api/visitor/check-in` as the visitor registration mutation endpoint.
 - Store only hashed visitor session tokens in PostgreSQL and issue the raw visitor session token only through an HttpOnly `visitor_session` cookie.
 - Use `/api/visitor/check-out` as the visitor check-out mutation endpoint.
+- Use `/check-in` as the explicit visitor check-in QR landing page while keeping `/` and `/register` compatible with the same registration experience.
+- Use `/check-out` as the static visitor check-out QR landing page; it must not embed visitor-specific session tokens in the QR code.
+- Check-out QR session lookup depends on the same browser sending the secure `visitor_session` cookie issued during check-in.
 - Use `/api/admin/export` as a protected server-side Excel export endpoint.
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
@@ -140,3 +147,9 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added `/api/health` for production uptime checks.
 - Added `Visitor.partySize` with a default of `1`, registration validation, visitor status display, admin table/detail visibility, party-size summed dashboard metrics/trends, search support, audit metadata, and Excel export coverage.
 - Expanded the admin visitor View modal so complete audit details remain readable across mobile, tablet, and desktop viewports.
+- Added explicit `/check-in` route for entrance QR scans.
+- Added `/check-out` confirmation page that validates the active visitor session via the existing HttpOnly visitor session cookie.
+- Removed the inline check-out button from the checked-in status card and replaced it with exit QR instructions.
+- Updated Admin Settings QR card to generate, download, and print separate check-in and check-out QR codes.
+- Verified `npm run lint` and `npm run build` pass after the split QR flow implementation.
+- Smoke-tested the split QR lifecycle locally: `/check-in` returns `200`, `/check-out` without a cookie returns `200`, check-in API returns `201`, checked-in status returns `200`, check-out confirmation returns `200`, and check-out API returns `200`.

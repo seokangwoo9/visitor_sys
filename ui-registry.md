@@ -82,28 +82,28 @@ Visitor-facing registration is the index experience at `/` and is also available
 
 ### Visitor Status And Check-Out
 
-Files: app/visitor/status/page.tsx, app/visitor/status/check-out-button.tsx
-Last updated: 2026-06-30
+Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/confirm-check-out-button.tsx
+Last updated: 2026-07-09
 
 | Property | Class |
 | ---------------- | --------------- |
-| Background | `bg-visitor-page`, `bg-card`, `bg-visitor-success`, `bg-visitor-success-soft`, `bg-visitor-surface` |
+| Background | `bg-visitor-page`, `bg-card`, `bg-visitor-success`, `bg-visitor-ink`, `bg-visitor-success-soft`, `bg-visitor-surface` |
 | Border | `border-visitor-success/10`, `border-visitor-success-deep` |
 | Border radius | `rounded-2xl`, `rounded-3xl`, `rounded-full` |
 | Text - primary | `text-visitor-ink`, `text-primary-foreground` |
 | Text - secondary | `text-text-secondary`, `text-text-muted`, `text-visitor-success-deep` |
 | Spacing | `px-4 py-8`, `px-6 py-6`, `p-4`, `space-y-4`, `space-y-5` |
-| Hover state | `hover:bg-visitor-ink/90` |
-| Shadow | `shadow-2xl shadow-visitor-success/10`, `shadow-xl shadow-visitor-ink/20` |
-| Accent usage | checked-in header `bg-visitor-success`, action `bg-visitor-ink`, success badge `bg-visitor-success-soft` |
+| Hover state | `hover:bg-visitor-success-deep` |
+| Shadow | `shadow-2xl shadow-visitor-success/10`, `shadow-xl shadow-visitor-success/20` |
+| Accent usage | checked-in header `bg-visitor-success`, check-out confirmation header `bg-visitor-ink`, action `bg-visitor-success`, success badge `bg-visitor-success-soft` |
 
 **Pattern notes:**
-Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a dark full-width check-out button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
+Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a centered instruction panel telling visitors to scan the exit check-out QR. The check-out action lives only on `/check-out`, which uses the same pass-card proportions with a dark header, active-session summary, and a full-width green confirmation button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
 
 ### Admin Control Center
 
 Files: app/admin/page.tsx, app/admin/admin-filter-form.tsx, app/admin/admin-settings-form.tsx, app/admin/admin-delete-visitor-button.tsx, app/admin/admin-pagination.tsx
-Last updated: 2026-06-30
+Last updated: 2026-07-09
 
 | Property | Class |
 | ---------------- | --------------- |
@@ -118,7 +118,7 @@ Last updated: 2026-06-30
 | Accent usage | active nav/action `bg-visitor-success`, shell mark `bg-visitor-ink`, info panels `bg-admin-panel`, status pills use visitor/state tokens |
 
 **Pattern notes:**
-Admin pages use a fixed left TVMS control-center sidebar on desktop and compact tab grid on mobile. The sidebar brand displays `TVMS Admin` above `TOE Visitor Management System`. Section hero panels are large white `rounded-[1.75rem]` cards with uppercase green eyebrow text, followed by operational metric cards, filter panels, tables, or settings/export cards. Inputs and selects use `h-12 rounded-2xl`; primary admin actions use green `rounded-2xl` buttons with subtle brand shadows. Settings utility cards, including printable QR generation, use `rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10` with white inner content blocks. QR canvases are rendered as rounded-corner PNGs inside `rounded-2xl` display surfaces so downloaded and printed QR assets match the Settings card design. Tables sit inside a `px-5 pb-5` or `p-5` gutter with an inner `rounded-2xl border border-border` table frame, pale header rows, uppercase headers, compact token-backed status pills, and no nested card structures. First/last table cells use explicit `pl-4`/`pr-4` padding so row content does not crowd rounded container edges.
+Admin pages use a fixed left TVMS control-center sidebar on desktop and compact tab grid on mobile. The sidebar brand displays `TVMS Admin` above `TOE Visitor Management System`. Section hero panels are large white `rounded-[1.75rem]` cards with uppercase green eyebrow text, followed by operational metric cards, filter panels, tables, or settings/export cards. Inputs and selects use `h-12 rounded-2xl`; primary admin actions use green `rounded-2xl` buttons with subtle brand shadows. Settings utility cards, including printable QR generation, use `rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10` with white inner content blocks. Visitor QR management displays separate check-in and check-out panels inside the Settings utility card; each panel uses icon chips, rounded QR canvases, break-all URL text, and paired download/print buttons. QR canvases are rendered as rounded-corner PNGs inside `rounded-2xl` display surfaces so downloaded and printed QR assets match the Settings card design. Tables sit inside a `px-5 pb-5` or `p-5` gutter with an inner `rounded-2xl border border-border` table frame, pale header rows, uppercase headers, compact token-backed status pills, and no nested card structures. First/last table cells use explicit `pl-4`/`pr-4` padding so row content does not crowd rounded container edges.
 
 ### Admin Visitor Detail Dialog
 
