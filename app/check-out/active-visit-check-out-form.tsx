@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-const fallbackLookupResponseSchema = z.object({
+const checkoutLookupResponseSchema = z.object({
   ok: z.boolean(),
   message: z.string().optional(),
   fieldErrors: z.record(z.string(), z.array(z.string())).optional(),
@@ -19,34 +19,30 @@ const fallbackLookupResponseSchema = z.object({
       fullName: z.string(),
       companyName: z.string(),
       partySize: z.number(),
-      visitorPassId: z.string(),
       checkInAt: z.string(),
     })
     .optional(),
 });
 
-interface FallbackCheckoutMatch {
+interface ActiveVisitMatch {
   fullName: string;
   companyName: string;
   partySize: number;
-  visitorPassId: string;
   checkInAt: string;
 }
 
-interface FallbackCheckoutValues {
-  visitorPassId: string;
+interface CheckoutSearchValues {
   contactNumber: string;
 }
 
-export function FallbackCheckOutForm() {
+export function ActiveVisitCheckOutForm() {
   const router = useRouter();
-  const [values, setValues] = useState<FallbackCheckoutValues>({
-    visitorPassId: "",
+  const [values, setValues] = useState<CheckoutSearchValues>({
     contactNumber: "",
   });
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FallbackCheckoutValues, string>>>({});
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CheckoutSearchValues, string>>>({});
   const [message, setMessage] = useState("");
-  const [match, setMatch] = useState<FallbackCheckoutMatch | null>(null);
+  const [match, setMatch] = useState<ActiveVisitMatch | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
@@ -57,14 +53,14 @@ export function FallbackCheckOutForm() {
     setMatch(null);
     setIsLookingUp(true);
 
-    const response = await fetch("/api/visitor/check-out/fallback/lookup", {
+    const response = await fetch("/api/visitor/check-out/lookup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
     });
-    const payload = await readFallbackResponse(response);
+    const payload = await readCheckoutResponse(response);
 
     setIsLookingUp(false);
 
@@ -81,14 +77,14 @@ export function FallbackCheckOutForm() {
     setMessage("");
     setIsCheckingOut(true);
 
-    const response = await fetch("/api/visitor/check-out/fallback/confirm", {
+    const response = await fetch("/api/visitor/check-out/confirm", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
     });
-    const payload = await readFallbackResponse(response);
+    const payload = await readCheckoutResponse(response);
 
     setIsCheckingOut(false);
 
@@ -107,20 +103,10 @@ export function FallbackCheckOutForm() {
       <form className="space-y-4" onSubmit={handleLookup}>
         <Field
           disabled={isLookingUp || isCheckingOut}
-          error={fieldErrors.visitorPassId}
-          label="Visitor Pass ID"
-          onChange={(value) => {
-            setValues((currentValues) => ({ ...currentValues, visitorPassId: value }));
-          }}
-          placeholder="Enter your pass number"
-          value={values.visitorPassId}
-        />
-        <Field
-          disabled={isLookingUp || isCheckingOut}
           error={fieldErrors.contactNumber}
-          label="Contact Number"
+          label="Phone Number"
           onChange={(value) => {
-            setValues((currentValues) => ({ ...currentValues, contactNumber: value }));
+            setValues({ contactNumber: value });
           }}
           placeholder="Enter the phone number used at check in"
           type="tel"
@@ -155,8 +141,7 @@ export function FallbackCheckOutForm() {
           <div className="grid grid-cols-2 gap-3 text-left">
             <MatchPanel label="Company" value={match.companyName} />
             <MatchPanel label="People" value={String(match.partySize)} />
-            <MatchPanel label="Visitor Pass" value={match.visitorPassId} />
-            <MatchPanel label="Check In" value={formatDateTime(match.checkInAt)} />
+            <MatchPanel className="col-span-2" label="Check In" value={formatDateTime(match.checkInAt)} />
           </div>
           <Button
             className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground shadow-xl shadow-visitor-success/20 hover:bg-visitor-success-deep"
@@ -239,32 +224,33 @@ function Field({
 }
 
 function MatchPanel({
+  className,
   label,
   value,
 }: {
+  className?: string;
   label: string;
   value: string;
 }) {
   return (
-    <div className="rounded-2xl bg-card p-4">
+    <div className={cn("rounded-2xl bg-card p-4", className)}>
       <p className="text-xs font-bold uppercase text-text-muted">{label}</p>
       <p className="mt-2 text-sm font-bold text-visitor-ink">{value}</p>
     </div>
   );
 }
 
-async function readFallbackResponse(response: Response) {
+async function readCheckoutResponse(response: Response) {
   const payload: unknown = await response.json().catch(() => null);
-  const parsedPayload = fallbackLookupResponseSchema.safeParse(payload);
+  const parsedPayload = checkoutLookupResponseSchema.safeParse(payload);
 
   return parsedPayload.success ? parsedPayload.data : null;
 }
 
 function extractFieldErrors(
-  payload: z.infer<typeof fallbackLookupResponseSchema> | null
-): Partial<Record<keyof FallbackCheckoutValues, string>> {
+  payload: z.infer<typeof checkoutLookupResponseSchema> | null
+): Partial<Record<keyof CheckoutSearchValues, string>> {
   return {
-    visitorPassId: payload?.fieldErrors?.visitorPassId?.[0],
     contactNumber: payload?.fieldErrors?.contactNumber?.[0],
   };
 }

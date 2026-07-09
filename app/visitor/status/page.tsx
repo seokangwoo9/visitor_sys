@@ -102,13 +102,6 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
             </p>
           </DetailPanel>
 
-          <DetailPanel>
-            <p className="text-sm font-semibold text-text-muted">Visitor Pass</p>
-            <p className="mt-2 text-xl font-extrabold text-visitor-ink">
-              {activeSession.visitorPassId}
-            </p>
-          </DetailPanel>
-
         </div>
       </section>
     </main>

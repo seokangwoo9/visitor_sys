@@ -126,14 +126,14 @@ visitor-management-system/
 Responsible for:
 
 - Registration
-- Collecting required visitor details: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID
+- Collecting required visitor details: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department
 - Check-in
 - Check-out
 - Session verification
 - Visitor status page
 - Static check-out QR entry point
 - Check-out confirmation page
-- Fallback check-out lookup when the visitor session cookie is unavailable
+- Phone-number check-out lookup for finding a unique active visit
 
 Must NOT:
 
@@ -233,9 +233,9 @@ The database stores:
 
 Sessions expire automatically after 24 hours.
 
-The check-out QR code is a static deployment URL. It does not contain visitor-specific tokens. Check-out session lookup depends on the same browser sending the existing secure visitor session cookie that was issued at check-in.
+The check-out QR code is a static deployment URL. It does not contain visitor-specific tokens. Check-out lookup does not depend on the browser session cookie; visitors enter the contact number used during check-in.
 
-If the secure visitor session cookie is unavailable, the check-out page may use a fallback lookup with Visitor Pass ID and contact number. The fallback must be rate-limited, must only operate on a unique `CHECKED_IN` visitor, and must never expose session tokens to the browser.
+Phone-number check-out search must be rate-limited, must only operate when the contact number resolves to exactly one active `CHECKED_IN` visitor, and must never expose session tokens to the browser. If the contact number matches multiple active visits, self-checkout is blocked and the visitor is asked to contact the front desk.
 
 After expiration:
 
@@ -320,11 +320,9 @@ Example:
 
 /api/visitor/check-in
 
-/api/visitor/check-out
+/api/visitor/check-out/lookup
 
-/api/visitor/check-out/fallback/lookup
-
-/api/visitor/check-out/fallback/confirm
+/api/visitor/check-out/confirm
 
 /api/admin/visitors
 

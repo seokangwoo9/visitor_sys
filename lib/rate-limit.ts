@@ -8,22 +8,22 @@ export interface RateLimitResult {
   retryAfterSeconds: number;
 }
 
-const fallbackCheckoutAttempts = new Map<string, RateLimitState>();
-const fallbackCheckoutWindowMs = 10 * 60 * 1000;
-const fallbackCheckoutMaxAttempts = 8;
+const checkoutSearchAttempts = new Map<string, RateLimitState>();
+const checkoutSearchWindowMs = 10 * 60 * 1000;
+const checkoutSearchMaxAttempts = 8;
 
-export function consumeFallbackCheckoutAttempt(
+export function consumeCheckoutSearchAttempt(
   key: string,
   now = Date.now()
 ): RateLimitResult {
   pruneExpiredAttempts(now);
 
-  const currentState = fallbackCheckoutAttempts.get(key);
+  const currentState = checkoutSearchAttempts.get(key);
 
   if (!currentState || currentState.resetAt <= now) {
-    fallbackCheckoutAttempts.set(key, {
+    checkoutSearchAttempts.set(key, {
       count: 1,
-      resetAt: now + fallbackCheckoutWindowMs,
+      resetAt: now + checkoutSearchWindowMs,
     });
 
     return {
@@ -32,7 +32,7 @@ export function consumeFallbackCheckoutAttempt(
     };
   }
 
-  if (currentState.count >= fallbackCheckoutMaxAttempts) {
+  if (currentState.count >= checkoutSearchMaxAttempts) {
     return {
       allowed: false,
       retryAfterSeconds: Math.ceil((currentState.resetAt - now) / 1000),
@@ -48,13 +48,13 @@ export function consumeFallbackCheckoutAttempt(
 }
 
 function pruneExpiredAttempts(now: number): void {
-  if (fallbackCheckoutAttempts.size < 1000) {
+  if (checkoutSearchAttempts.size < 1000) {
     return;
   }
 
-  for (const [key, state] of fallbackCheckoutAttempts.entries()) {
+  for (const [key, state] of checkoutSearchAttempts.entries()) {
     if (state.resetAt <= now) {
-      fallbackCheckoutAttempts.delete(key);
+      checkoutSearchAttempts.delete(key);
     }
   }
 }

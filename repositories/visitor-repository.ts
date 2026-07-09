@@ -65,17 +65,12 @@ export async function findVisitorSessionByHash(
   });
 }
 
-export async function findVisitorsForFallbackCheckout(
-  visitorPassId: string,
+export async function findVisitorsForCheckoutSearch(
   contactNumber: string,
   prismaClient: PrismaClient = prisma
 ) {
   return prismaClient.visitor.findMany({
     where: {
-      visitorPassId: {
-        equals: visitorPassId,
-        mode: "insensitive",
-      },
       contactNumber: {
         equals: contactNumber,
         mode: "insensitive",
@@ -95,7 +90,6 @@ export async function findVisitorsForFallbackCheckout(
     orderBy: {
       checkInAt: "desc",
     },
-    take: 5,
   });
 }
 
@@ -146,7 +140,7 @@ export async function completeVisitorCheckout(
   });
 }
 
-export async function createVisitorFallbackCheckoutAuditLog(
+export async function createVisitorCheckoutSearchAuditLog(
   eventType: string,
   metadata: Prisma.InputJsonObject,
   visitorId?: string,
@@ -261,7 +255,6 @@ function buildVisitorWhere(
       { fullName: { contains: input.query, mode: "insensitive" } },
       { identificationNumber: { contains: input.query, mode: "insensitive" } },
       { vehiclePlateNumber: { contains: input.query, mode: "insensitive" } },
-      { visitorPassId: { contains: input.query, mode: "insensitive" } },
       { companyName: { contains: input.query, mode: "insensitive" } },
       { department: { contains: input.query, mode: "insensitive" } },
       { contactNumber: { contains: input.query, mode: "insensitive" } },
@@ -411,7 +404,6 @@ export async function deleteVisitorRecord(
         metadata: {
           deletedVisitorId: visitor.id,
           visitorName: visitor.fullName,
-          visitorPassId: visitor.visitorPassId,
           partySize: visitor.partySize,
         },
       },

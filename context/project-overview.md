@@ -30,8 +30,8 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 8. Visitor is redirected to the Visitor Status page.
 9. Visitor remains checked in while inside the factory.
 10. Visitor scans the factory check-out QR code before leaving.
-11. System first finds the active visitor session from the same browser session cookie.
-12. If the browser session cookie is unavailable, visitor enters Visitor Pass ID and contact number to find the active visit.
+11. Visitor enters the contact number used during check-in.
+12. System searches for a unique active `CHECKED_IN` visit matching that contact number.
 13. Visitor confirms check-out on the check-out confirmation page.
 14. System records the check-out time.
 15. Visitor session is destroyed.
@@ -44,7 +44,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Check-in QR code entry point.
 - Mobile-first registration form.
 - Server-side form validation.
-- Visitor information collection: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor information collection: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
 - Secure session creation.
 - Automatic server-side check-in timestamp.
 
@@ -53,7 +53,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Separate check-out QR code entry point.
 - Visitor status page without an inline check-out action.
 - Check-out confirmation page.
-- Fallback check-out lookup using Visitor Pass ID and contact number when the original browser session cookie is unavailable.
+- Phone-number check-out lookup that requires a unique active visit before confirmation.
 - Automatic server-side check-out timestamp.
 - Session termination after successful check-out.
 
@@ -63,7 +63,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - 24-hour session expiration.
 - Prevention of duplicate submissions.
 - Protection against repeated QR code abuse.
-- Rate-limited fallback check-out attempts.
+- Rate-limited check-out search attempts.
 
 ### Admin Dashboard
 
@@ -123,5 +123,5 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 6. Administrators can export professional Excel reports.
 7. Visitor sessions expire automatically after 24 hours.
 8. The application is secure, mobile-first, and ready for production deployment.
-9. A visitor can check out by scanning the check-out QR code from the same phone browser used during check-in.
-10. A visitor can still check out without the original browser session cookie by entering a matching Visitor Pass ID and contact number for a unique active visit.
+9. A visitor can check out by scanning the check-out QR code and entering the contact number used during check-in.
+10. A visitor cannot self-checkout when the contact number matches multiple active visits; the system asks the visitor to contact the front desk.

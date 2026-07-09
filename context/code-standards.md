@@ -85,7 +85,7 @@ API Routes
 
 ```
 /api/visitor/check-in
-/api/visitor/check-out
+/api/visitor/check-out/confirm
 /api/admin/dashboard
 /api/admin/export
 ```

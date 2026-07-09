@@ -22,7 +22,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor status and check-out implemented with server-clock check-out timestamp, session destruction, audit logging, and cookie clearing.
 - Admin dashboard implemented with statistics, visitor history, search/filtering, pagination, and protected Excel export.
 - Basic settings visibility added to the admin dashboard for session duration and export format.
-- Visitor registration fields aligned to collect name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor registration fields aligned to collect name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
 - Index route `/` now renders the visitor registration page directly, with `/register` kept as the same registration experience.
 - Navigation/header bars removed from visitor registration, visitor status, and admin screens.
 - Visitor checked-in screen restyled as the approved green pass card.
@@ -40,11 +40,12 @@ Update this file whenever the current phase, active feature, or implementation s
 - Admin visitor detail modal now uses responsive sizing with a wider desktop layout and mobile-safe viewport bounds.
 - Visitor check-in and check-out now have separate static QR entry routes: `/check-in` and `/check-out`.
 - Visitor checked-in status no longer shows an inline check-out button; visitors are instructed to scan the exit check-out QR.
-- Visitor check-out now uses a dedicated confirmation page that finds the active session from the same browser session cookie before allowing check-out.
+- Visitor check-out now uses a dedicated confirmation page that searches for a unique active visit by contact number before allowing check-out.
 - Admin Settings QR generation now produces separate printable/downloadable check-in and check-out QR codes.
-- Phase 4 fallback visitor check-out implemented using Visitor Pass ID and contact number when the browser session cookie is unavailable.
-- Fallback check-out attempts are rate-limited and require a unique active `CHECKED_IN` visitor before checkout can be confirmed.
-- Fallback check-out database indexes added for visitor pass ID, contact number, and status lookups.
+- Visitor check-out search is rate-limited and requires a unique active `CHECKED_IN` visitor for the submitted contact number before checkout can be confirmed.
+- Visitor Pass ID has been removed from registration, storage, visitor screens, admin views, exports, and checkout search.
+- Check-out database indexes now support contact number and status lookup.
+- Phone-number checkout flow verified with check-in, lookup, confirm, repeated-confirm conflict, removed cookie-route check, and ambiguous same-phone blocking.
 
 ## In Progress
 
@@ -70,16 +71,16 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use Next.js 16 `proxy.ts` to redirect unauthenticated `/admin` requests to `/login`.
 - Use `/api/visitor/check-in` as the visitor registration mutation endpoint.
 - Store only hashed visitor session tokens in PostgreSQL and issue the raw visitor session token only through an HttpOnly `visitor_session` cookie.
-- Use `/api/visitor/check-out` as the visitor check-out mutation endpoint.
+- Use `/api/visitor/check-out/lookup` and `/api/visitor/check-out/confirm` as the visitor check-out search and confirmation endpoints.
 - Use `/check-in` as the explicit visitor check-in QR landing page while keeping `/` and `/register` compatible with the same registration experience.
 - Use `/check-out` as the static visitor check-out QR landing page; it must not embed visitor-specific session tokens in the QR code.
-- Check-out QR session lookup depends on the same browser sending the secure `visitor_session` cookie issued during check-in.
-- If the `visitor_session` cookie is unavailable, fallback check-out uses Visitor Pass ID and contact number through rate-limited lookup and confirm endpoints.
+- Check-out QR lookup does not depend on the `visitor_session` cookie; visitors enter the contact number used during check-in.
+- Phone-number checkout search is rate-limited and blocks self-checkout when the contact number matches multiple active visits.
 - Use `/api/admin/export` as a protected server-side Excel export endpoint.
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
 - Use `/api/health` as a no-store application health endpoint for deployment/process checks.
-- Visitor registration collects name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+- Visitor registration collects name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
 
 ## Session Notes
 
@@ -114,7 +115,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Verified Docker PostgreSQL is healthy, `npm run db:validate`, `npm run lint`, and `npm run build` pass.
 - Smoke-tested `POST /api/visitor/check-in`; the endpoint returned `201`, created a `CHECKED_IN` visitor, and set the visitor session cookie.
 - Added active visitor session validation and duplicate active registration prevention.
-- Added `/api/visitor/check-out` route handler with session verification, check-out timestamp update, session revocation/destruction, audit logging, and cookie clearing.
+- Added the original `/api/visitor/check-out` cookie-based route handler, later replaced by phone-number lookup and confirmation endpoints.
 - Replaced the temporary visitor status page with a session-aware page showing visitor details and check-out action.
 - Added admin dashboard statistics, visitor history search/filtering, pagination, status badges, and basic settings visibility.
 - Installed ExcelJS and added protected server-side `.xlsx` export at `/api/admin/export`.
@@ -122,7 +123,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Smoke-tested full visitor lifecycle: check-in returned `201`, duplicate active registration returned `409`, status page returned `200`, check-out returned `200`, and the status page returned `200` after cookie clearing.
 - Verified unauthenticated admin access redirects with `307` and unauthenticated export access returns `401`.
 - Confirmed Docker PostgreSQL remains healthy on host port `5433`.
-- Added Prisma migration `20260630124108_add_visitor_required_fields` for `vehiclePlateNumber` and `visitorPassId`.
+- Added Prisma migration `20260630124108_add_visitor_required_fields` for `vehiclePlateNumber` and the then-required visitor fields.
 - Updated visitor registration validation, form fields, status display, admin visitor history, search, and Excel export for the finalized required visitor information set.
 - Verified `npm run db:validate`, `npm run db:generate`, `npm run lint`, and `npm run build` pass.
 - Verified Prisma can persist and read all finalized visitor fields against Docker PostgreSQL.
@@ -142,7 +143,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added `VPS_DEPLOYMENT_GUIDE_IP_ADDRESS.md` with IP-only deployment steps using Nginx and a self-signed HTTPS certificate.
 - Fixed admin authentication behind HTTPS reverse proxies by recognizing `__Secure-` Better Auth cookie names and validating signed session-cookie values against the database.
 - Removed unresolved Git conflict markers from `lib/admin-auth-session.ts` and `context/progress-tracker.md`, restoring production build parsing.
-- Wired the admin Visitors table View button to a token-matched detail dialog showing visitor identity, contact, company, PIC, pass, vehicle, timing, duration, status, and purpose information.
+- Wired the admin Visitors table View button to a token-matched detail dialog showing visitor identity, contact, company, PIC, vehicle, timing, duration, status, and purpose information.
 - Updated Excel visitor exports to write formatted check-in and check-out timestamp text instead of raw spreadsheet date values, preventing timezone/display shifts between Excel and the dashboard.
 - Added app-wide production security headers and disabled the `X-Powered-By` framework header.
 - Added shared API response/request parsing helpers and hardened protected route handlers with explicit Node runtime, stricter JSON body handling, no-store export headers, and less internal error leakage.
@@ -157,8 +158,9 @@ Update this file whenever the current phase, active feature, or implementation s
 - Updated Admin Settings QR card to generate, download, and print separate check-in and check-out QR codes.
 - Verified `npm run lint` and `npm run build` pass after the split QR flow implementation.
 - Smoke-tested the split QR lifecycle locally: `/check-in` returns `200`, `/check-out` without a cookie returns `200`, check-in API returns `201`, checked-in status returns `200`, check-out confirmation returns `200`, and check-out API returns `200`.
-- Added `/api/visitor/check-out/fallback/lookup` and `/api/visitor/check-out/fallback/confirm` for cookie-less fallback checkout.
-- Added `lib/rate-limit.ts` for rate-limiting fallback checkout attempts and `lib/visitor-fallback-checkout-api.ts` for shared fallback response handling.
-- Added Prisma migration `20260709045728_add_checkout_fallback_indexes` for visitor pass/contact/status lookup indexes.
-- Updated `/check-out` no-cookie state to show a fallback lookup form, active visit confirmation summary, and fallback checkout confirmation action.
-- Smoke-tested Phase 4 fallback checkout locally: check-in API returned `201`, fallback lookup returned `200`, fallback confirm returned `200`, and repeated fallback confirm returned `409`.
+- Replaced cookie/fallback checkout with phone-number active visit search at `/api/visitor/check-out/lookup` and `/api/visitor/check-out/confirm`.
+- Added `lib/rate-limit.ts` for rate-limiting checkout search attempts and `lib/visitor-checkout-api.ts` for shared checkout search response handling.
+- Added Prisma migration `20260709070000_remove_visitor_pass_id` to remove Visitor Pass ID and add contact-number/status lookup indexing.
+- Updated `/check-out` to always show the phone-number active visit search form, active visit confirmation summary, and checkout confirmation action.
+- Verified `npm run db:validate`, `npx prisma migrate dev`, `npm run db:generate`, `npm run lint`, and `npm run build` pass after phone-only checkout changes.
+- Smoke-tested phone-only checkout locally: check-in returned `201`, lookup returned `200`, confirm returned `200`, repeated confirm returned `409`, removed cookie checkout route returned `404`, and ambiguous same-phone lookup returned `409`.

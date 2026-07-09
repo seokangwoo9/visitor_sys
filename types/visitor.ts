@@ -10,7 +10,6 @@ export interface VisitorRegistrationInput {
   hasVehicle: boolean;
   vehiclePlateNumber: string;
   department?: string;
-  visitorPassId: string;
   hostName: string;
   purposeOfVisit: string;
 }
@@ -39,7 +38,6 @@ export interface ActiveVisitorSession {
   hasVehicle: boolean;
   vehiclePlateNumber: string;
   department: string | null;
-  visitorPassId: string;
   hostName: string;
   purposeOfVisit: string;
   checkInAt: Date;
@@ -55,32 +53,30 @@ export interface VisitorCheckoutResult {
   checkOutAt: Date;
 }
 
-export interface VisitorFallbackCheckoutInput {
-  visitorPassId: string;
+export interface VisitorCheckoutSearchInput {
   contactNumber: string;
 }
 
-export interface VisitorFallbackCheckoutMatch {
+export interface VisitorCheckoutSearchMatch {
   visitorId: string;
   fullName: string;
   companyName: string;
   contactNumber: string;
   partySize: number;
-  visitorPassId: string;
   checkInAt: Date;
   expiresAt: Date;
 }
 
-export type VisitorFallbackCheckoutStatus =
+export type VisitorCheckoutSearchStatus =
   | "FOUND"
   | "NOT_FOUND"
   | "AMBIGUOUS"
   | "ALREADY_CHECKED_OUT"
   | "EXPIRED";
 
-export interface VisitorFallbackCheckoutLookupResult {
-  status: VisitorFallbackCheckoutStatus;
-  match?: VisitorFallbackCheckoutMatch;
+export interface VisitorCheckoutSearchLookupResult {
+  status: VisitorCheckoutSearchStatus;
+  match?: VisitorCheckoutSearchMatch;
 }
 
 export interface AdminVisitorListItem {
@@ -94,7 +90,6 @@ export interface AdminVisitorListItem {
   hasVehicle: boolean;
   vehiclePlateNumber: string;
   department: string | null;
-  visitorPassId: string;
   hostName: string;
   purposeOfVisit: string;
   checkInAt: Date;

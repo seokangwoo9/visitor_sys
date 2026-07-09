@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
 
 import { apiError, parseJsonRequest } from "@/lib/api-response";
-import { consumeFallbackCheckoutAttempt } from "@/lib/rate-limit";
-import { visitorFallbackCheckoutSchema } from "@/lib/validations/visitor";
+import { consumeCheckoutSearchAttempt } from "@/lib/rate-limit";
+import { visitorCheckoutSearchSchema } from "@/lib/validations/visitor";
 import {
-  getFallbackCheckoutMessage,
-  getFallbackCheckoutStatus,
-  getFallbackRateLimitKey,
-} from "@/lib/visitor-fallback-checkout-api";
-import { lookupFallbackCheckoutVisitor } from "@/services/visitor-session-service";
+  getCheckoutSearchMessage,
+  getCheckoutSearchRateLimitKey,
+  getCheckoutSearchStatusCode,
+} from "@/lib/visitor-checkout-api";
+import { lookupCheckoutSearchVisitor } from "@/services/visitor-session-service";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const rateLimit = consumeFallbackCheckoutAttempt(getFallbackRateLimitKey(request));
+  const rateLimit = consumeCheckoutSearchAttempt(getCheckoutSearchRateLimitKey(request));
 
   if (!rateLimit.allowed) {
     return apiError(
@@ -23,7 +23,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const payload = await parseJsonRequest(request);
-  const parsedPayload = visitorFallbackCheckoutSchema.safeParse(payload);
+  const parsedPayload = visitorCheckoutSearchSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
     return NextResponse.json(
@@ -37,7 +37,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    const result = await lookupFallbackCheckoutVisitor(parsedPayload.data);
+    const result = await lookupCheckoutSearchVisitor(parsedPayload.data);
 
     if (result.status === "FOUND" && result.match) {
       return NextResponse.json({
@@ -46,13 +46,12 @@ export async function POST(request: Request): Promise<NextResponse> {
           fullName: result.match.fullName,
           companyName: result.match.companyName,
           partySize: result.match.partySize,
-          visitorPassId: result.match.visitorPassId,
           checkInAt: result.match.checkInAt.toISOString(),
         },
       });
     }
 
-    return apiError(getFallbackCheckoutMessage(result.status), getFallbackCheckoutStatus(result.status));
+    return apiError(getCheckoutSearchMessage(result.status), getCheckoutSearchStatusCode(result.status));
   } catch {
     return apiError("Unable to verify visitor check-out. Please try again.", 500);
   }

@@ -7,7 +7,6 @@ import type { ComponentType, ReactNode } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import {
   Car,
-  CircleAlert,
   LoaderCircle,
   UserRound,
   UsersRound,
@@ -46,7 +45,6 @@ const fieldLabels: Record<FieldName, string> = {
   purposeOfVisit: "Purpose of Visit",
   hostName: "Person to Meet",
   department: "Department",
-  visitorPassId: "Visitor Pass ID",
 };
 
 export function VisitorRegistrationForm() {
@@ -71,7 +69,6 @@ export function VisitorRegistrationForm() {
       hasVehicle: true,
       vehiclePlateNumber: "",
       department: "",
-      visitorPassId: "",
       hostName: "",
       purposeOfVisit: "",
     },
@@ -224,16 +221,6 @@ export function VisitorRegistrationForm() {
           label={fieldLabels.department}
           placeholder="Department or team"
           registration={register("department")}
-        />
-      </FormSection>
-
-      <FormSection icon={CircleAlert} title="Visitor Pass">
-        <Field
-          disabled={isSubmitting}
-          error={errors.visitorPassId?.message}
-          label={fieldLabels.visitorPassId}
-          placeholder="Pass number"
-          registration={register("visitorPassId")}
         />
       </FormSection>
 

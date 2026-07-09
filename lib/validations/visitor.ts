@@ -32,7 +32,6 @@ export const visitorRegistrationSchema = z.object({
     .trim()
     .max(200, "Department must be 200 characters or fewer.")
     .optional(),
-  visitorPassId: requiredText("Visitor ID no", 100),
   hostName: requiredText("Person to meet / PIC", 200),
   purposeOfVisit: requiredText("Purpose of visit", 1000),
 }).superRefine((value, context) => {
@@ -45,11 +44,10 @@ export const visitorRegistrationSchema = z.object({
   }
 });
 
-export const visitorFallbackCheckoutSchema = z.object({
-  visitorPassId: requiredText("Visitor pass ID", 100),
+export const visitorCheckoutSearchSchema = z.object({
   contactNumber: requiredText("Contact number", 50),
 });
 
 export type VisitorRegistrationFormInput = z.input<typeof visitorRegistrationSchema>;
 export type VisitorRegistrationSchema = z.infer<typeof visitorRegistrationSchema>;
-export type VisitorFallbackCheckoutSchema = z.infer<typeof visitorFallbackCheckoutSchema>;
+export type VisitorCheckoutSearchSchema = z.infer<typeof visitorCheckoutSearchSchema>;

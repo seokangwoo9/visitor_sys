@@ -1,6 +1,6 @@
-import type { VisitorFallbackCheckoutStatus } from "@/types/visitor";
+import type { VisitorCheckoutSearchStatus } from "@/types/visitor";
 
-export function getFallbackRateLimitKey(request: Request): string {
+export function getCheckoutSearchRateLimitKey(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
   const clientIp = forwardedFor?.split(",")[0]?.trim()
     || request.headers.get("x-real-ip")
@@ -10,8 +10,8 @@ export function getFallbackRateLimitKey(request: Request): string {
   return `${clientIp}:${userAgent}`;
 }
 
-export function getFallbackCheckoutMessage(
-  status: VisitorFallbackCheckoutStatus
+export function getCheckoutSearchMessage(
+  status: VisitorCheckoutSearchStatus
 ): string {
   if (status === "AMBIGUOUS") {
     return "Unable to confirm a unique active visit. Please contact the front desk.";
@@ -25,11 +25,11 @@ export function getFallbackCheckoutMessage(
     return "This visitor session has expired. Please contact the front desk.";
   }
 
-  return "No active visit was found. Please check your details or contact the front desk.";
+  return "No active visit was found. Please check your phone number or contact the front desk.";
 }
 
-export function getFallbackCheckoutStatus(
-  status: VisitorFallbackCheckoutStatus
+export function getCheckoutSearchStatusCode(
+  status: VisitorCheckoutSearchStatus
 ): number {
   if (status === "ALREADY_CHECKED_OUT") {
     return 409;

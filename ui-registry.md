@@ -78,11 +78,11 @@ Last updated: 2026-06-30
 | Accent usage | dark intro `bg-visitor-ink`, action `bg-visitor-success`, icon chips `bg-visitor-success-soft text-visitor-success-deep` |
 
 **Pattern notes:**
-Visitor-facing registration is the index experience at `/` and is also available at `/register`. It uses a centered mobile-first stack on green-tinted `bg-register-page`, with a dark rounded intro panel followed by separate white section cards for personal information, vehicle, company, and visitor pass. Inputs use `h-14 rounded-2xl` controls, the purpose field uses a tall rounded textarea, and the submit action is a full-width green `h-14 rounded-2xl` button. Vehicle capture includes a bordered `No Vehicle` checkbox block; when selected, vehicle plate is not required. The final field set is name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, department, and visitor pass ID.
+Visitor-facing registration is the index experience at `/` and is also available at `/register`. It uses a centered mobile-first stack on green-tinted `bg-register-page`, with a dark rounded intro panel followed by separate white section cards for personal information, vehicle, and company. Inputs use `h-14 rounded-2xl` controls, the purpose field uses a tall rounded textarea, and the submit action is a full-width green `h-14 rounded-2xl` button. Vehicle capture includes a bordered `No Vehicle` checkbox block; when selected, vehicle plate is not required. The final field set is name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
 
 ### Visitor Status And Check-Out
 
-Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/confirm-check-out-button.tsx, app/check-out/fallback-check-out-form.tsx
+Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/active-visit-check-out-form.tsx
 Last updated: 2026-07-09
 
 | Property | Class |
@@ -98,7 +98,7 @@ Last updated: 2026-07-09
 | Accent usage | checked-in header `bg-visitor-success`, check-out confirmation header `bg-visitor-ink`, action `bg-visitor-success`, success badge `bg-visitor-success-soft` |
 
 **Pattern notes:**
-Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a centered instruction panel telling visitors to scan the exit check-out QR. The check-out action lives only on `/check-out`, which uses the same pass-card proportions with a dark header, active-session summary, and a full-width green confirmation button. When the visitor session cookie is missing, `/check-out` uses a centered white fallback card with a muted icon, two `h-14 rounded-2xl` fields, a dark find button, a soft green active-visit summary, and a green confirmation button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
+Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-in state has a green header, white status pill, soft success status panel, light detail tiles, and a centered instruction panel telling visitors to scan the exit check-out QR. The check-out action lives only on `/check-out`, which always uses a centered white search card with a muted icon, one `h-14 rounded-2xl` phone-number field, a dark find button, a soft green active-visit summary, and a green confirmation button. Checked-out state redirects to a separate thank-you card with a circular check icon and no registration return action. These visitor confirmation screens intentionally use the visitor-specific tokens added in `app/globals.css`.
 
 ### Admin Control Center
 

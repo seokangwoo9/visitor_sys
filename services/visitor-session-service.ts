@@ -2,17 +2,17 @@ import "server-only";
 
 import type {
   ActiveVisitorSession,
-  VisitorFallbackCheckoutInput,
-  VisitorFallbackCheckoutLookupResult,
+  VisitorCheckoutSearchInput,
+  VisitorCheckoutSearchLookupResult,
   VisitorCheckoutResult,
   VisitorSessionCookieValue,
 } from "@/types/visitor";
 import { hashVisitorSessionToken } from "@/lib/visitor-session";
 import {
   completeVisitorCheckout,
-  createVisitorFallbackCheckoutAuditLog,
+  createVisitorCheckoutSearchAuditLog,
   expireVisitorSession,
-  findVisitorsForFallbackCheckout,
+  findVisitorsForCheckoutSearch,
   findVisitorSessionByHash,
 } from "@/repositories/visitor-repository";
 
@@ -55,7 +55,6 @@ export async function getActiveVisitorSession(
     hasVehicle: sessionRecord.visitor.hasVehicle,
     vehiclePlateNumber: sessionRecord.visitor.vehiclePlateNumber,
     department: sessionRecord.visitor.department,
-    visitorPassId: sessionRecord.visitor.visitorPassId,
     hostName: sessionRecord.visitor.hostName,
     purposeOfVisit: sessionRecord.visitor.purposeOfVisit,
     checkInAt: sessionRecord.visitor.checkInAt,
@@ -65,76 +64,39 @@ export async function getActiveVisitorSession(
   };
 }
 
-export async function checkOutVisitor(
-  cookieValue: VisitorSessionCookieValue | null
-): Promise<VisitorCheckoutResult | null> {
-  if (!cookieValue) {
-    return null;
-  }
-
-  const sessionTokenHash = hashVisitorSessionToken(cookieValue.sessionToken);
-  const sessionRecord = await findVisitorSessionByHash(
-    cookieValue.visitorId,
-    sessionTokenHash
-  );
-
-  if (!sessionRecord) {
-    return null;
-  }
-
+export async function lookupCheckoutSearchVisitor(
+  input: VisitorCheckoutSearchInput
+): Promise<VisitorCheckoutSearchLookupResult> {
   const now = new Date();
-
-  if (sessionRecord.expiresAt <= now) {
-    await expireVisitorSession(sessionRecord.visitorId, sessionRecord.id, now);
-    return null;
-  }
-
-  if (sessionRecord.visitor.status !== "CHECKED_IN") {
-    return null;
-  }
-
-  const visitor = await completeVisitorCheckout(
-    sessionRecord.visitorId,
-    sessionRecord.id,
-    now
-  );
-
-  return {
-    visitorId: visitor.id,
-    status: visitor.status,
-    checkInAt: visitor.checkInAt,
-    checkOutAt: visitor.checkOutAt ?? now,
-  };
-}
-
-export async function lookupFallbackCheckoutVisitor(
-  input: VisitorFallbackCheckoutInput
-): Promise<VisitorFallbackCheckoutLookupResult> {
-  const now = new Date();
-  const candidates = await findVisitorsForFallbackCheckout(
-    input.visitorPassId,
-    input.contactNumber
-  );
+  const candidates = await findVisitorsForCheckoutSearch(input.contactNumber);
 
   const activeCandidates = candidates.filter(
     (candidate) => candidate.status === "CHECKED_IN" && candidate.sessions.length > 0
   );
+  const validActiveCandidates: typeof activeCandidates = [];
+  let expiredActiveCount = 0;
 
-  if (activeCandidates.length > 1) {
-    await createVisitorFallbackCheckoutAuditLog("VISITOR_FALLBACK_CHECKOUT_AMBIGUOUS", {
+  for (const visitor of activeCandidates) {
+    const session = visitor.sessions[0];
+
+    if (session.expiresAt <= now) {
+      expiredActiveCount += 1;
+      await expireVisitorSession(visitor.id, session.id, now);
+    } else {
+      validActiveCandidates.push(visitor);
+    }
+  }
+
+  if (validActiveCandidates.length > 1) {
+    await createVisitorCheckoutSearchAuditLog("VISITOR_CHECKOUT_SEARCH_AMBIGUOUS", {
       reason: "multiple_active_matches",
     });
     return { status: "AMBIGUOUS" };
   }
 
-  if (activeCandidates.length === 1) {
-    const visitor = activeCandidates[0];
+  if (validActiveCandidates.length === 1) {
+    const visitor = validActiveCandidates[0];
     const session = visitor.sessions[0];
-
-    if (session.expiresAt <= now) {
-      await expireVisitorSession(visitor.id, session.id, now);
-      return { status: "EXPIRED" };
-    }
 
     return {
       status: "FOUND",
@@ -144,7 +106,6 @@ export async function lookupFallbackCheckoutVisitor(
         companyName: visitor.companyName,
         contactNumber: visitor.contactNumber,
         partySize: visitor.partySize,
-        visitorPassId: visitor.visitorPassId,
         checkInAt: visitor.checkInAt,
         expiresAt: session.expiresAt,
       },
@@ -152,36 +113,37 @@ export async function lookupFallbackCheckoutVisitor(
   }
 
   if (candidates.some((candidate) => candidate.status === "CHECKED_OUT")) {
-    await createVisitorFallbackCheckoutAuditLog("VISITOR_FALLBACK_CHECKOUT_ALREADY_COMPLETED", {
+    await createVisitorCheckoutSearchAuditLog("VISITOR_CHECKOUT_SEARCH_ALREADY_COMPLETED", {
       reason: "already_checked_out",
     });
     return { status: "ALREADY_CHECKED_OUT" };
+  }
+
+  if (expiredActiveCount > 0) {
+    return { status: "EXPIRED" };
   }
 
   if (candidates.some((candidate) => candidate.status === "EXPIRED")) {
     return { status: "EXPIRED" };
   }
 
-  await createVisitorFallbackCheckoutAuditLog("VISITOR_FALLBACK_CHECKOUT_NOT_FOUND", {
+  await createVisitorCheckoutSearchAuditLog("VISITOR_CHECKOUT_SEARCH_NOT_FOUND", {
     reason: "no_active_match",
   });
   return { status: "NOT_FOUND" };
 }
 
-export async function checkOutFallbackVisitor(
-  input: VisitorFallbackCheckoutInput
-): Promise<VisitorCheckoutResult | VisitorFallbackCheckoutLookupResult> {
-  const lookupResult = await lookupFallbackCheckoutVisitor(input);
+export async function checkOutSearchVisitor(
+  input: VisitorCheckoutSearchInput
+): Promise<VisitorCheckoutResult | VisitorCheckoutSearchLookupResult> {
+  const lookupResult = await lookupCheckoutSearchVisitor(input);
 
   if (lookupResult.status !== "FOUND" || !lookupResult.match) {
     return lookupResult;
   }
 
   const now = new Date();
-  const candidates = await findVisitorsForFallbackCheckout(
-    input.visitorPassId,
-    input.contactNumber
-  );
+  const candidates = await findVisitorsForCheckoutSearch(input.contactNumber);
   const visitor = candidates.find(
     (candidate) => candidate.id === lookupResult.match?.visitorId
   );
@@ -201,9 +163,9 @@ export async function checkOutFallbackVisitor(
     session.id,
     now,
     undefined,
-    "VISITOR_FALLBACK_CHECKED_OUT",
+    "VISITOR_SEARCH_CHECKED_OUT",
     {
-      method: "visitor_pass_id_contact_number",
+      method: "contact_number_search",
     }
   );
 

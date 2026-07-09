@@ -27,7 +27,6 @@ export async function registerVisitor(
       hasVehicle: input.hasVehicle,
       vehiclePlateNumber: input.hasVehicle ? input.vehiclePlateNumber : "",
       department: input.department,
-      visitorPassId: input.visitorPassId,
       hostName: input.hostName,
       purposeOfVisit: input.purposeOfVisit,
       checkInAt: now,

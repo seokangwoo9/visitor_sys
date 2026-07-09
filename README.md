@@ -2,7 +2,7 @@
 
 TOE Visitor Management System is a full-stack visitor check-in/check-out web app for factory reception workflows.
 
-Visitors scan a QR code, fill in the registration form, check in, and later check out from the visitor status page. Admin users can monitor live visitors, review history, export Excel reports, manage timeout settings, view audit logs, and generate the printable visitor registration QR code.
+Visitors scan a QR code, fill in the registration form, check in, and later scan a separate check-out QR code to find their active visit by phone number. Admin users can monitor live visitors, review history, export Excel reports, manage timeout settings, view audit logs, and generate printable visitor check-in/check-out QR codes.
 
 ## Features
 
@@ -10,7 +10,7 @@ Visitors scan a QR code, fill in the registration form, check in, and later chec
 - QR-code based visitor entry
 - Visitor check-in with server-side timestamps
 - Visitor status page at `/visitor/status`
-- Visitor check-out with session destruction
+- Visitor check-out by phone-number active visit search
 - Secure HttpOnly visitor session cookies
 - Admin login at `/login`
 - Protected admin control center at `/admin`
@@ -167,10 +167,9 @@ Current Prisma models include:
    - Purpose of visit
    - Person to meet/PIC
    - Department
-   - Visitor pass ID
 4. System creates the visitor record and secure visitor session.
 5. Visitor is redirected to `/visitor/status`.
-6. Visitor checks out before leaving.
+6. Visitor scans the check-out QR code before leaving, enters the phone number used at check-in, confirms the unique active visit, and checks out.
 
 ## Admin Flow
 

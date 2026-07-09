@@ -30,7 +30,6 @@ model Visitor {
   hasVehicle           Boolean          @default(true)
   vehiclePlateNumber   String           @default("") @db.VarChar(50)
   department           String?          @db.VarChar(200)
-  visitorPassId        String           @default("") @db.VarChar(100)
   hostName             String           @db.VarChar(200)
   purposeOfVisit       String           @db.Text
   checkInAt            DateTime
@@ -45,9 +44,8 @@ model Visitor {
   @@index([checkInAt])
   @@index([checkOutAt])
   @@index([partySize])
-  @@index([visitorPassId])
   @@index([contactNumber])
-  @@index([visitorPassId, contactNumber, status])
+  @@index([contactNumber, status])
   @@map("visitors")
 }
 
