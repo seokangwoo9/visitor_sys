@@ -35,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getAdminAuthSession } from "@/lib/admin-auth-session";
+import { resolveVisitorQrCodeOrigin } from "@/lib/network-origin";
 import { cn } from "@/lib/utils";
 import type {
   AdminAuditLogItem,
@@ -75,7 +76,8 @@ const adminSections: Array<{
 ];
 
 export default async function AdminPage(props: PageProps<"/admin">) {
-  const session = await getAdminAuthSession(await headers());
+  const headersList = await headers();
+  const session = await getAdminAuthSession(headersList);
 
   if (!session) {
     redirect("/login?callbackUrl=/admin");
@@ -160,7 +162,10 @@ export default async function AdminPage(props: PageProps<"/admin">) {
                 sortMode={sortMode}
               />
             ) : section === "settings" ? (
-              <SettingsView settingsValues={await getSettingsValues()} />
+              <SettingsView
+                qrCodeOrigin={resolveVisitorQrCodeOrigin(headersList)}
+                settingsValues={await getSettingsValues()}
+              />
             ) : (
               <AuditView auditLogs={await getAdminAuditLogs()} />
             )}
@@ -350,7 +355,13 @@ function ExportView({
   );
 }
 
-function SettingsView({ settingsValues }: { settingsValues: Awaited<ReturnType<typeof getSettingsValues>> }) {
+function SettingsView({
+  qrCodeOrigin,
+  settingsValues,
+}: {
+  qrCodeOrigin?: string;
+  settingsValues: Awaited<ReturnType<typeof getSettingsValues>>;
+}) {
   return (
     <>
       <AdminHero
@@ -376,7 +387,7 @@ function SettingsView({ settingsValues }: { settingsValues: Awaited<ReturnType<t
           </div>
         </section>
         <div className="space-y-6">
-          <AdminQrCodeCard />
+          <AdminQrCodeCard preferredOrigin={qrCodeOrigin} />
           <InfoPanel
             eyebrow="Current Values"
             items={[

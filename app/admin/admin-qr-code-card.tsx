@@ -84,7 +84,11 @@ function createRoundedRectanglePath(
   context.closePath();
 }
 
-export function AdminQrCodeCard() {
+export function AdminQrCodeCard({
+  preferredOrigin,
+}: {
+  preferredOrigin?: string;
+}) {
   const canvasRefs = useRef<Record<VisitorQrCodeDefinition["id"], HTMLCanvasElement | null>>({
     "check-in": null,
     "check-out": null,
@@ -115,9 +119,10 @@ export function AdminQrCodeCard() {
       };
 
       const nextQrCodes = createInitialQrCodeState();
+      const qrCodeOrigin = preferredOrigin ?? window.location.origin;
 
       for (const definition of visitorQrCodeDefinitions) {
-        const url = new URL(definition.path, window.location.origin).toString();
+        const url = new URL(definition.path, qrCodeOrigin).toString();
         const qrCanvas = document.createElement("canvas");
         const roundedQrCanvas = canvasRefs.current[definition.id];
         const roundedQrContext = roundedQrCanvas?.getContext("2d");
@@ -152,7 +157,9 @@ export function AdminQrCodeCard() {
           ...definition,
           url,
           dataUrl: roundedQrCanvas.toDataURL("image/png"),
-          statusMessage: "QR code maps to this deployment automatically.",
+          statusMessage: preferredOrigin
+            ? "QR code maps to this network address automatically."
+            : "QR code maps to this deployment automatically.",
         };
       }
 
@@ -161,7 +168,7 @@ export function AdminQrCodeCard() {
     }
 
     void generateQrCode();
-  }, []);
+  }, [preferredOrigin]);
 
   function downloadQrCode(qrCode: GeneratedVisitorQrCode): void {
     if (!qrCode.dataUrl) {
@@ -255,7 +262,7 @@ export function AdminQrCodeCard() {
             Check-in and Check-out QR
           </h2>
           <p className="mt-3 text-sm leading-6 text-text-secondary">
-            Print separate codes for the entrance and exit. Both URLs are generated from the current deployment.
+            Print separate codes for the entrance and exit. Localhost URLs are converted to the internal network address.
           </p>
         </div>
       </div>
