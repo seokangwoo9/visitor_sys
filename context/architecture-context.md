@@ -215,6 +215,20 @@ Cookie Requirements:
 
 ---
 
+## Browser Session Storage
+
+Stores:
+
+- Temporary in-progress visitor registration draft
+
+Session Storage Requirements:
+
+- Used only to survive accidental page refreshes in the same browser tab
+- Cleared after successful check-in or active-session redirect
+- Must never store visitor session tokens
+
+---
+
 # Visitor Session Architecture
 
 Each visitor receives:

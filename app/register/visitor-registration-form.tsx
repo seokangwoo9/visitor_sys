@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentType, ReactNode } from "react";
-import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { useForm, useWatch, type UseFormRegisterReturn } from "react-hook-form";
 import {
   Car,
   LoaderCircle,
@@ -23,6 +23,13 @@ import {
   visitorRegistrationSchema,
   type VisitorRegistrationSchema,
 } from "@/lib/validations/visitor";
+
+import {
+  clearVisitorRegistrationDraft,
+  defaultVisitorRegistrationValues,
+  readVisitorRegistrationDraft,
+  writeVisitorRegistrationDraft,
+} from "./visitor-registration-draft";
 
 const checkInResponseSchema = z.object({
   ok: z.boolean(),
@@ -49,30 +56,42 @@ const fieldLabels: Record<FieldName, string> = {
 
 export function VisitorRegistrationForm() {
   const router = useRouter();
+  const hasRestoredDraft = useRef(false);
   const [serverMessage, setServerMessage] = useState("");
-  const [hasVehicle, setHasVehicle] = useState(true);
   const {
+    control,
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
+    reset,
     setError,
     setValue,
   } = useForm<VisitorRegistrationFormInput, unknown, VisitorRegistrationSchema>({
     resolver: zodResolver(visitorRegistrationSchema),
-    defaultValues: {
-      fullName: "",
-      companyName: "",
-      contactNumber: "",
-      partySize: 1,
-      email: "",
-      identificationNumber: "",
-      hasVehicle: true,
-      vehiclePlateNumber: "",
-      department: "",
-      hostName: "",
-      purposeOfVisit: "",
-    },
+    defaultValues: defaultVisitorRegistrationValues,
   });
+  const watchedValues = useWatch({ control });
+  const hasVehicle = watchedValues.hasVehicle !== false;
+
+  useEffect(() => {
+    const restoredDraft = readVisitorRegistrationDraft(window.sessionStorage);
+
+    if (restoredDraft) {
+      reset(restoredDraft);
+    }
+
+    queueMicrotask(() => {
+      hasRestoredDraft.current = true;
+    });
+  }, [reset]);
+
+  useEffect(() => {
+    if (!hasRestoredDraft.current) {
+      return;
+    }
+
+    writeVisitorRegistrationDraft(window.sessionStorage, watchedValues);
+  }, [watchedValues]);
 
   async function submitRegistration(values: VisitorRegistrationSchema) {
     setServerMessage("");
@@ -92,6 +111,7 @@ export function VisitorRegistrationForm() {
 
     if (!response.ok) {
       if (response.status === 409 && parsedPayload.success && parsedPayload.data.redirectPath) {
+        clearVisitorRegistrationDraft(window.sessionStorage);
         router.replace(parsedPayload.data.redirectPath);
         router.refresh();
         return;
@@ -111,6 +131,7 @@ export function VisitorRegistrationForm() {
       return;
     }
 
+    clearVisitorRegistrationDraft(window.sessionStorage);
     router.replace("/visitor/status");
     router.refresh();
   }
@@ -173,7 +194,6 @@ export function VisitorRegistrationForm() {
             onChange={(event) => {
               const nextHasVehicle = !event.target.checked;
 
-              setHasVehicle(nextHasVehicle);
               setValue("hasVehicle", nextHasVehicle, {
                 shouldDirty: true,
                 shouldValidate: true,

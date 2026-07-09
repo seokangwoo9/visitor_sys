@@ -47,6 +47,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Check-out database indexes now support contact number and status lookup.
 - Phone-number checkout flow verified with check-in, lookup, confirm, repeated-confirm conflict, removed cookie-route check, and ambiguous same-phone blocking.
 - Admin Settings QR generation now converts localhost check-in/check-out URLs to the server machine's internal IPv4 address when available.
+- Visitor registration now saves an in-progress draft to browser session storage so accidental mobile page refreshes do not wipe the form.
 
 ## In Progress
 
@@ -166,3 +167,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Verified `npm run db:validate`, `npx prisma migrate dev`, `npm run db:generate`, `npm run lint`, and `npm run build` pass after phone-only checkout changes.
 - Smoke-tested phone-only checkout locally: check-in returned `201`, lookup returned `200`, confirm returned `200`, repeated confirm returned `409`, removed cookie checkout route returned `404`, and ambiguous same-phone lookup returned `409`.
 - Updated Settings QR URL generation so check-in/check-out QR codes use an internal IPv4 origin instead of localhost during local network use.
+- Added session-storage draft restore for visitor registration and cleared the draft after successful check-in or active-session redirect.
