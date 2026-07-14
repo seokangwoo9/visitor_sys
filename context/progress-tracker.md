@@ -50,6 +50,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor registration now saves an in-progress draft to browser session storage so accidental mobile page refreshes do not wipe the form.
 - Next.js local development now allows the server machine's private IPv4 origins so QR pages opened from phones can load dev assets and hydrate client-side forms.
 - Visitor Safety Acknowledgment and Indemnity capture added to check-in with required visitor acceptance, server-side version validation, and admin-visible audit fields.
+- Visitor-facing Safety Acknowledgment UI hides the visible version label while preserving backend version validation and audit capture.
 
 ## In Progress
 
@@ -175,3 +176,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added automatic `allowedDevOrigins` configuration for local private IPv4 addresses after iPhone QR testing showed checkout form submissions refreshing because React handlers were not hydrated.
 - Added versioned Visitor Safety Acknowledgment and Indemnity Form support with placeholder initial text, Settings editor, visitor checkbox/modal, database acceptance fields, admin detail visibility, and Excel export columns.
 - Removed the extra group-size and team fields from active visitor registration, storage, admin views, checkout lookup, and Excel export; Safety Acknowledgment Read button no longer uses a shadow.
+- Removed visible Safety Acknowledgment version text from the visitor registration card and read dialog while retaining the hidden submitted version id.

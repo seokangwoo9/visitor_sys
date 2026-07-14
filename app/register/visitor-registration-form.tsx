@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -261,9 +260,6 @@ export function VisitorRegistrationForm({
               <p className="text-sm font-bold text-visitor-ink">
                 {safetyAcknowledgment.title}
               </p>
-              <p className="mt-1 text-xs font-semibold text-text-muted">
-                Version {safetyAcknowledgment.version}
-              </p>
             </div>
             <Dialog>
               <DialogTrigger
@@ -282,9 +278,6 @@ export function VisitorRegistrationForm({
                   <DialogTitle className="text-xl font-bold text-visitor-ink">
                     {safetyAcknowledgment.title}
                   </DialogTitle>
-                  <DialogDescription className="text-sm text-text-secondary">
-                    Version {safetyAcknowledgment.version}
-                  </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
                   {safetyAcknowledgment.content}
