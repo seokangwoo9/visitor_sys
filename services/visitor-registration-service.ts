@@ -27,10 +27,8 @@ export async function registerVisitor(
       contactNumber: input.contactNumber,
       email: input.email,
       identificationNumber: input.identificationNumber,
-      partySize: input.partySize,
       hasVehicle: input.hasVehicle,
       vehiclePlateNumber: input.hasVehicle ? input.vehiclePlateNumber : "",
-      department: input.department,
       hostName: input.hostName,
       purposeOfVisit: input.purposeOfVisit,
       safetyAcknowledged: true,
@@ -48,7 +46,6 @@ export async function registerVisitor(
     expiresAt,
     auditEventType: "VISITOR_CHECKED_IN",
     auditMetadata: {
-      partySize: input.partySize,
       safetyAcknowledgment: {
         accepted: true,
         acceptedAt: now.toISOString(),

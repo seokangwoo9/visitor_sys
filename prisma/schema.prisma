@@ -26,10 +26,8 @@ model Visitor {
   contactNumber                 String                       @db.VarChar(50)
   email                         String?                      @db.VarChar(320)
   identificationNumber          String?                      @db.VarChar(100)
-  partySize                     Int                          @default(1)
   hasVehicle                    Boolean                      @default(true)
   vehiclePlateNumber            String                       @default("") @db.VarChar(50)
-  department                    String?                      @db.VarChar(200)
   hostName                      String                       @db.VarChar(200)
   purposeOfVisit                String                       @db.Text
   safetyAcknowledged            Boolean                      @default(false)
@@ -48,7 +46,6 @@ model Visitor {
   @@index([status])
   @@index([checkInAt])
   @@index([checkOutAt])
-  @@index([partySize])
   @@index([contactNumber])
   @@index([contactNumber, status])
   @@index([safetyAcknowledged])

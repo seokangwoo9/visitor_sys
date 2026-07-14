@@ -18,7 +18,6 @@ const checkoutLookupResponseSchema = z.object({
     .object({
       fullName: z.string(),
       companyName: z.string(),
-      partySize: z.number(),
       checkInAt: z.string(),
     })
     .optional(),
@@ -27,7 +26,6 @@ const checkoutLookupResponseSchema = z.object({
 interface ActiveVisitMatch {
   fullName: string;
   companyName: string;
-  partySize: number;
   checkInAt: string;
 }
 
@@ -138,10 +136,9 @@ export function ActiveVisitCheckOutForm() {
             Active Visit Found
           </p>
           <h2 className="text-xl font-bold text-visitor-ink">{match.fullName}</h2>
-          <div className="grid grid-cols-2 gap-3 text-left">
+          <div className="grid gap-3 text-left">
             <MatchPanel label="Company" value={match.companyName} />
-            <MatchPanel label="People" value={String(match.partySize)} />
-            <MatchPanel className="col-span-2" label="Check In" value={formatDateTime(match.checkInAt)} />
+            <MatchPanel label="Check In" value={formatDateTime(match.checkInAt)} />
           </div>
           <Button
             className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground shadow-xl shadow-visitor-success/20 hover:bg-visitor-success-deep"

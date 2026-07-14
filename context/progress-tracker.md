@@ -22,7 +22,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor status and check-out implemented with server-clock check-out timestamp, session destruction, audit logging, and cookie clearing.
 - Admin dashboard implemented with statistics, visitor history, search/filtering, pagination, and protected Excel export.
 - Basic settings visibility added to the admin dashboard for session duration and export format.
-- Visitor registration fields aligned to collect name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
+- Visitor registration fields aligned to collect name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, and person to meet/PIC.
 - Index route `/` now renders the visitor registration page directly, with `/register` kept as the same registration experience.
 - Navigation/header bars removed from visitor registration, visitor status, and admin screens.
 - Visitor checked-in screen restyled as the approved green pass card.
@@ -36,7 +36,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Admin visitor history View action opens a full visitor detail dialog.
 - Excel export check-in and check-out times match the admin dashboard display format.
 - Production hardening pass added security headers, stricter API parsing, safer login redirects, focused admin data loading, and a health check endpoint.
-- Visitor registration now captures and persists the number of people in the visiting group.
+- Visitor registration number-of-people capture was previously added and has since been removed from the active app flow.
 - Admin visitor detail modal now uses responsive sizing with a wider desktop layout and mobile-safe viewport bounds.
 - Visitor check-in and check-out now have separate static QR entry routes: `/check-in` and `/check-out`.
 - Visitor checked-in status no longer shows an inline check-out button; visitors are instructed to scan the exit check-out QR.
@@ -84,7 +84,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/api/admin/settings` as the protected settings update endpoint.
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
 - Use `/api/health` as a no-store application health endpoint for deployment/process checks.
-- Visitor registration collects name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
+- Visitor registration collects name, IC/passport number, contact number, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, and person to meet/PIC.
 - Visitor check-in requires the active Visitor Safety Acknowledgment and Indemnity Form to be accepted and records the accepted version and server timestamp.
 - Use `safety_acknowledgment_versions` to publish editable English safety acknowledgment text; every admin edit creates a new active version and preserves older versions for audit traceability.
 
@@ -137,7 +137,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Removed header/navigation bars from app pages while retaining workflow actions such as check-out, sign out, filtering, pagination, and export.
 - Updated visitor status UI to match the provided checked-in and checked-out designs, including pass-style header, status panel, detail tiles, dark checkout button, and checked-out thank-you card.
 - Removed the Back to Registration action from visitor checked-out and no-active-visit status screens.
-- Restyled visitor registration to the approved stacked card design and added no-vehicle plus department capture through validation, database persistence, admin search, and Excel export.
+- Restyled visitor registration to the approved stacked card design and added no-vehicle capture through validation, database persistence, admin search, and Excel export.
 - Rebuilt the admin experience to match the approved control-center design with Dashboard, Visitors, Export, Settings, and Audit Logs sections.
 - Added date-window filtering, sort modes, current visitor table, visitor deletion with audit logging, persisted visitor timeout settings, and audit-log display.
 - Added inset table gutters and first/last cell padding to admin tables so rows, status pills, and action pills do not crowd rounded container edges.
@@ -156,7 +156,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Optimized `/admin` section loading so each section fetches only the data it renders.
 - Restricted admin login callback redirects to `/admin` paths only.
 - Added `/api/health` for production uptime checks.
-- Added `Visitor.partySize` with a default of `1`, registration validation, visitor status display, admin table/detail visibility, party-size summed dashboard metrics/trends, search support, audit metadata, and Excel export coverage.
+- Earlier number-of-people support has since been removed and dashboard metrics now count visitor records.
 - Expanded the admin visitor View modal so complete audit details remain readable across mobile, tablet, and desktop viewports.
 - Added explicit `/check-in` route for entrance QR scans.
 - Added `/check-out` confirmation page that validates the active visitor session via the existing HttpOnly visitor session cookie.
@@ -174,3 +174,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Added session-storage draft restore for visitor registration and cleared the draft after successful check-in or active-session redirect.
 - Added automatic `allowedDevOrigins` configuration for local private IPv4 addresses after iPhone QR testing showed checkout form submissions refreshing because React handlers were not hydrated.
 - Added versioned Visitor Safety Acknowledgment and Indemnity Form support with placeholder initial text, Settings editor, visitor checkbox/modal, database acceptance fields, admin detail visibility, and Excel export columns.
+- Removed the extra group-size and team fields from active visitor registration, storage, admin views, checkout lookup, and Excel export; Safety Acknowledgment Read button no longer uses a shadow.

@@ -55,14 +55,12 @@ const fieldLabels: Record<FieldName, string> = {
   fullName: "Full Name",
   identificationNumber: "IC / Passport",
   contactNumber: "Phone Number",
-  partySize: "Number of People",
   email: "Email",
   hasVehicle: "No Vehicle",
   vehiclePlateNumber: "Vehicle Plate Number",
   companyName: "Company Name",
   purposeOfVisit: "Purpose of Visit",
   hostName: "Person to Meet",
-  department: "Department",
   safetyAcknowledged: "Safety Acknowledgment",
   safetyAcknowledgmentVersionId: "Safety Acknowledgment Version",
 };
@@ -192,16 +190,6 @@ export function VisitorRegistrationForm({
           type="tel"
         />
         <Field
-          disabled={isSubmitting}
-          error={errors.partySize?.message}
-          label={fieldLabels.partySize}
-          max={100}
-          min={1}
-          placeholder="Total people in this visit"
-          registration={register("partySize", { valueAsNumber: true })}
-          type="number"
-        />
-        <Field
           autoComplete="email"
           disabled={isSubmitting}
           error={errors.email?.message}
@@ -263,13 +251,6 @@ export function VisitorRegistrationForm({
           placeholder="Host or PIC name"
           registration={register("hostName")}
         />
-        <Field
-          disabled={isSubmitting}
-          error={errors.department?.message}
-          label={fieldLabels.department}
-          placeholder="Department or team"
-          registration={register("department")}
-        />
       </FormSection>
 
       <FormSection icon={ShieldCheck} title="Safety Acknowledgment">
@@ -288,7 +269,7 @@ export function VisitorRegistrationForm({
               <DialogTrigger
                 render={
                   <button
-                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 text-xs font-bold text-visitor-success-deep shadow-sm transition hover:bg-visitor-success-soft"
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 text-xs font-bold text-visitor-success-deep transition hover:bg-visitor-success-soft"
                     type="button"
                   />
                 }

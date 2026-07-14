@@ -159,14 +159,12 @@ Current Prisma models include:
    - Full name
    - IC/passport number
    - Phone number
-   - Number of people in the visiting group
    - Email
    - Vehicle/no-vehicle selection
    - Vehicle plate number when applicable
    - Company name
    - Purpose of visit
    - Person to meet/PIC
-   - Department
 4. System creates the visitor record and secure visitor session.
 5. Visitor is redirected to `/visitor/status`.
 6. Visitor scans the check-out QR code before leaving, enters the phone number used at check-in, confirms the unique active visit, and checks out.

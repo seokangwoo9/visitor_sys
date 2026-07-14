@@ -39,11 +39,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     { header: "IC / Passport no", key: "identificationNumber", width: 22 },
     { header: "Contact number", key: "contactNumber", width: 18 },
     { header: "Email", key: "email", width: 28 },
-    { header: "Number of people", key: "partySize", width: 18 },
     { header: "Has vehicle", key: "hasVehicle", width: 14 },
     { header: "Vehicle plate no", key: "vehiclePlateNumber", width: 18 },
     { header: "Company name", key: "companyName", width: 24 },
-    { header: "Department", key: "department", width: 24 },
     { header: "Purpose of visit", key: "purposeOfVisit", width: 36 },
     { header: "Person to meet / PIC", key: "hostName", width: 24 },
     { header: "Status", key: "status", width: 16 },
@@ -61,11 +59,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       identificationNumber: visitor.identificationNumber ?? "",
       contactNumber: visitor.contactNumber,
       email: visitor.email ?? "",
-      partySize: visitor.partySize,
       hasVehicle: visitor.hasVehicle ? "Yes" : "No",
       vehiclePlateNumber: visitor.vehiclePlateNumber,
       companyName: visitor.companyName,
-      department: visitor.department ?? "",
       purposeOfVisit: visitor.purposeOfVisit,
       hostName: visitor.hostName,
       status: visitor.status,
@@ -93,7 +89,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   worksheet.views = [{ state: "frozen", ySplit: 1 }];
   worksheet.autoFilter = {
     from: "A1",
-    to: "R1",
+    to: "P1",
   };
 
   const buffer = await workbook.xlsx.writeBuffer();

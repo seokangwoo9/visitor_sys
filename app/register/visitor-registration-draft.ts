@@ -9,12 +9,10 @@ export const defaultVisitorRegistrationValues: VisitorRegistrationFormInput = {
   fullName: "",
   companyName: "",
   contactNumber: "",
-  partySize: 1,
   email: "",
   identificationNumber: "",
   hasVehicle: true,
   vehiclePlateNumber: "",
-  department: "",
   hostName: "",
   purposeOfVisit: "",
   safetyAcknowledged: false,
@@ -31,12 +29,10 @@ const visitorRegistrationDraftSchema = z.object({
   fullName: z.string().max(200).optional(),
   companyName: z.string().max(200).optional(),
   contactNumber: z.string().max(50).optional(),
-  partySize: z.coerce.number().int().min(1).max(100).optional(),
   email: z.string().max(320).optional(),
   identificationNumber: z.string().max(100).optional(),
   hasVehicle: z.boolean().optional(),
   vehiclePlateNumber: z.string().max(50).optional(),
-  department: z.string().max(200).optional(),
   hostName: z.string().max(200).optional(),
   purposeOfVisit: z.string().max(1000).optional(),
   safetyAcknowledged: z.boolean().optional(),
@@ -74,7 +70,6 @@ export function writeVisitorRegistrationDraft(
       JSON.stringify({
         ...defaultVisitorRegistrationValues,
         ...values,
-        partySize: normalizePartySize(values.partySize),
       })
     );
   } catch {
@@ -100,12 +95,4 @@ function safelyReadDraft(storage: Pick<DraftStorage, "getItem">): unknown {
   } catch {
     return null;
   }
-}
-
-function normalizePartySize(value: unknown): number {
-  const parsedValue = Number(value);
-
-  return Number.isInteger(parsedValue) && parsedValue >= 1 && parsedValue <= 100
-    ? parsedValue
-    : 1;
 }

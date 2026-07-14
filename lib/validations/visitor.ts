@@ -12,11 +12,6 @@ export const visitorRegistrationSchema = z.object({
   identificationNumber: requiredText("IC / ID number", 100),
   companyName: requiredText("Company name", 200),
   contactNumber: requiredText("Contact number", 50),
-  partySize: z.coerce
-    .number()
-    .int("Number of people must be a whole number.")
-    .min(1, "Number of people must be at least 1.")
-    .max(100, "Number of people must be 100 or fewer."),
   email: z
     .string()
     .trim()
@@ -27,11 +22,6 @@ export const visitorRegistrationSchema = z.object({
     .string()
     .trim()
     .max(50, "Vehicle plate number must be 50 characters or fewer."),
-  department: z
-    .string()
-    .trim()
-    .max(200, "Department must be 200 characters or fewer.")
-    .optional(),
   hostName: requiredText("Person to meet / PIC", 200),
   purposeOfVisit: requiredText("Purpose of visit", 1000),
   safetyAcknowledged: z.boolean().refine((value) => value, {

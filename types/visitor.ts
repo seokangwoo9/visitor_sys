@@ -4,12 +4,10 @@ export interface VisitorRegistrationInput {
   fullName: string;
   companyName: string;
   contactNumber: string;
-  partySize: number;
   email?: string;
   identificationNumber: string;
   hasVehicle: boolean;
   vehiclePlateNumber: string;
-  department?: string;
   hostName: string;
   purposeOfVisit: string;
   safetyAcknowledged: boolean;
@@ -36,10 +34,8 @@ export interface ActiveVisitorSession {
   contactNumber: string;
   email: string | null;
   identificationNumber: string | null;
-  partySize: number;
   hasVehicle: boolean;
   vehiclePlateNumber: string;
-  department: string | null;
   hostName: string;
   purposeOfVisit: string;
   safetyAcknowledged: boolean;
@@ -68,7 +64,6 @@ export interface VisitorCheckoutSearchMatch {
   fullName: string;
   companyName: string;
   contactNumber: string;
-  partySize: number;
   checkInAt: Date;
   expiresAt: Date;
 }
@@ -92,10 +87,8 @@ export interface AdminVisitorListItem {
   contactNumber: string;
   email: string | null;
   identificationNumber: string | null;
-  partySize: number;
   hasVehicle: boolean;
   vehiclePlateNumber: string;
-  department: string | null;
   hostName: string;
   purposeOfVisit: string;
   safetyAcknowledged: boolean;

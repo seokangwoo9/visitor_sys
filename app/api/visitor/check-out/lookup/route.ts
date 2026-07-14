@@ -45,7 +45,6 @@ export async function POST(request: Request): Promise<NextResponse> {
         data: {
           fullName: result.match.fullName,
           companyName: result.match.companyName,
-          partySize: result.match.partySize,
           checkInAt: result.match.checkInAt.toISOString(),
         },
       });
