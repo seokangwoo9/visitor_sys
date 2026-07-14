@@ -49,6 +49,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Admin Settings QR generation now converts localhost check-in/check-out URLs to the server machine's internal IPv4 address when available.
 - Visitor registration now saves an in-progress draft to browser session storage so accidental mobile page refreshes do not wipe the form.
 - Next.js local development now allows the server machine's private IPv4 origins so QR pages opened from phones can load dev assets and hydrate client-side forms.
+- Visitor Safety Acknowledgment and Indemnity capture added to check-in with required visitor acceptance, server-side version validation, and admin-visible audit fields.
 
 ## In Progress
 
@@ -84,6 +85,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Use `/api/admin/visitors/[visitorId]` as the protected visitor deletion endpoint.
 - Use `/api/health` as a no-store application health endpoint for deployment/process checks.
 - Visitor registration collects name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
+- Visitor check-in requires the active Visitor Safety Acknowledgment and Indemnity Form to be accepted and records the accepted version and server timestamp.
+- Use `safety_acknowledgment_versions` to publish editable English safety acknowledgment text; every admin edit creates a new active version and preserves older versions for audit traceability.
 
 ## Session Notes
 
@@ -170,3 +173,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Updated Settings QR URL generation so check-in/check-out QR codes use an internal IPv4 origin instead of localhost during local network use.
 - Added session-storage draft restore for visitor registration and cleared the draft after successful check-in or active-session redirect.
 - Added automatic `allowedDevOrigins` configuration for local private IPv4 addresses after iPhone QR testing showed checkout form submissions refreshing because React handlers were not hydrated.
+- Added versioned Visitor Safety Acknowledgment and Indemnity Form support with placeholder initial text, Settings editor, visitor checkbox/modal, database acceptance fields, admin detail visibility, and Excel export columns.

@@ -8,6 +8,7 @@ The system allows visitors to:
 
 - Scan a check-in QR Code
 - Complete a visitor registration form
+- Read and acknowledge the Visitor Safety Acknowledgment and Indemnity Form
 - Check in
 - View their visitor status
 - Scan a separate check-out QR Code and confirm check-out when leaving
@@ -134,6 +135,7 @@ Responsible for:
 - Static check-out QR entry point
 - Check-out confirmation page
 - Phone-number check-out lookup for finding a unique active visit
+- Required Visitor Safety Acknowledgment and Indemnity acceptance during check-in
 
 Must NOT:
 
@@ -193,6 +195,7 @@ Business logic must never exist inside database queries.
 Stores:
 
 - Visitor records
+- Versioned Visitor Safety Acknowledgment and Indemnity Form text
 - Admin accounts
 - System settings
 - Audit logs
@@ -244,12 +247,15 @@ The database stores:
 - Session Token Hash
 - Check-in status
 - Expiration time
+- Accepted safety acknowledgment version and server-side acceptance timestamp
 
 Sessions expire automatically after 24 hours.
 
 The check-out QR code is a static deployment URL. It does not contain visitor-specific tokens. Check-out lookup does not depend on the browser session cookie; visitors enter the contact number used during check-in.
 
 Phone-number check-out search must be rate-limited, must only operate when the contact number resolves to exactly one active `CHECKED_IN` visitor, and must never expose session tokens to the browser. If the contact number matches multiple active visits, self-checkout is blocked and the visitor is asked to contact the front desk.
+
+Visitor check-in requires acceptance of the active Visitor Safety Acknowledgment and Indemnity Form. The active form text is stored as a versioned database record. The visitor submits the displayed version id with the acknowledgment checkbox, and the backend validates that the version is still active before creating the visitor record. Visitor records store `safetyAcknowledged`, `safetyAcknowledgedAt`, and the accepted safety acknowledgment version for audit traceability.
 
 After expiration:
 
@@ -287,6 +293,10 @@ Scan Check-in QR
 ↓
 
 Registration Form
+
+↓
+
+Safety Acknowledgment
 
 ↓
 
@@ -344,6 +354,8 @@ Example:
 
 /api/admin/settings
 
+/api/admin/safety-acknowledgment
+
 /api/admin/visitors/[visitorId]
 
 /api/admin/dashboard
@@ -395,3 +407,4 @@ The following rules must never be violated:
 8. Excel exports must be generated server-side.
 9. All sensitive operations must be logged.
 10. Mobile-first design is mandatory for all visitor-facing pages.
+11. Visitor safety acknowledgment acceptance must be recorded with server time and the active version accepted.

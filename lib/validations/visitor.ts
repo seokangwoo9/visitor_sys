@@ -34,6 +34,10 @@ export const visitorRegistrationSchema = z.object({
     .optional(),
   hostName: requiredText("Person to meet / PIC", 200),
   purposeOfVisit: requiredText("Purpose of visit", 1000),
+  safetyAcknowledged: z.boolean().refine((value) => value, {
+    message: "Safety acknowledgment is required before check in.",
+  }),
+  safetyAcknowledgmentVersionId: z.uuid("Safety acknowledgment version is required."),
 }).superRefine((value, context) => {
   if (value.hasVehicle && value.vehiclePlateNumber.length === 0) {
     context.addIssue({

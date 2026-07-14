@@ -24,18 +24,21 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 2. Visitor scans the factory check-in QR code.
 3. Visitor opens the registration page.
 4. Visitor completes the registration form.
-5. System validates all submitted information.
-6. System records the visitor check-in time using the server clock.
-7. System creates a secure visitor session.
-8. Visitor is redirected to the Visitor Status page.
-9. Visitor remains checked in while inside the factory.
-10. Visitor scans the factory check-out QR code before leaving.
-11. Visitor enters the contact number used during check-in.
-12. System searches for a unique active `CHECKED_IN` visit matching that contact number.
-13. Visitor confirms check-out on the check-out confirmation page.
-14. System records the check-out time.
-15. Visitor session is destroyed.
-16. Administrator can review the completed visitor record from the dashboard.
+5. Visitor reads the Visitor Safety Acknowledgment and Indemnity Form when needed.
+6. Visitor ticks the required safety acknowledgment checkbox.
+7. System validates all submitted information and the active safety acknowledgment version.
+8. System records the visitor check-in time using the server clock.
+9. System records the safety acknowledgment acceptance time and version.
+10. System creates a secure visitor session.
+11. Visitor is redirected to the Visitor Status page.
+12. Visitor remains checked in while inside the factory.
+13. Visitor scans the factory check-out QR code before leaving.
+14. Visitor enters the contact number used during check-in.
+15. System searches for a unique active `CHECKED_IN` visit matching that contact number.
+16. Visitor confirms check-out on the check-out confirmation page.
+17. System records the check-out time.
+18. Visitor session is destroyed.
+19. Administrator can review the completed visitor record from the dashboard.
 
 ## Features
 
@@ -45,6 +48,8 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Mobile-first registration form.
 - Server-side form validation.
 - Visitor information collection: name, IC/passport number, contact number, number of people in the visiting group, email, vehicle/no-vehicle selection, vehicle plate number when applicable, company name, purpose of visit, person to meet/PIC, and department.
+- Visitor Safety Acknowledgment and Indemnity Form display with required acknowledgment checkbox.
+- Safety acknowledgment acceptance recorded with server-side timestamp and active version.
 - Secure session creation.
 - Automatic server-side check-in timestamp.
 
@@ -74,6 +79,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Visitor detail view.
 - Excel export.
 - Basic system settings.
+- Editable English Visitor Safety Acknowledgment and Indemnity Form text with version history.
 - Deployment-aware visitor check-in and check-out QR code generation for printing.
 
 ### Reporting
@@ -99,6 +105,7 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 - Visitor history
 - Search and filtering
 - Excel report generation
+- Versioned visitor safety acknowledgment capture
 - PostgreSQL data storage
 - Secure audit logging
 
@@ -125,3 +132,5 @@ The system replaces traditional paper logbooks with a secure, efficient, and ent
 8. The application is secure, mobile-first, and ready for production deployment.
 9. A visitor can check out by scanning the check-out QR code and entering the contact number used during check-in.
 10. A visitor cannot self-checkout when the contact number matches multiple active visits; the system asks the visitor to contact the front desk.
+11. A visitor cannot check in without accepting the active Visitor Safety Acknowledgment and Indemnity Form.
+12. Admin users can update the safety acknowledgment text and audit visitor acceptance by timestamp and version.

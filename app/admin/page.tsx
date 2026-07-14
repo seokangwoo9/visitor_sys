@@ -58,8 +58,10 @@ import { AdminDeleteVisitorButton } from "./admin-delete-visitor-button";
 import { AdminFilterForm } from "./admin-filter-form";
 import { AdminPagination } from "./admin-pagination";
 import { AdminQrCodeCard } from "./admin-qr-code-card";
+import { AdminSafetyAcknowledgmentForm } from "./admin-safety-acknowledgment-form";
 import { AdminSettingsForm } from "./admin-settings-form";
 import { SignOutButton } from "./sign-out-button";
+import { getActiveSafetyAcknowledgmentPolicy } from "@/services/safety-acknowledgment-service";
 
 type AdminSection = "dashboard" | "visitors" | "export" | "settings" | "audit";
 
@@ -164,6 +166,7 @@ export default async function AdminPage(props: PageProps<"/admin">) {
             ) : section === "settings" ? (
               <SettingsView
                 qrCodeOrigin={resolveVisitorQrCodeOrigin(headersList)}
+                safetyAcknowledgment={await getActiveSafetyAcknowledgmentPolicy()}
                 settingsValues={await getSettingsValues()}
               />
             ) : (
@@ -357,9 +360,11 @@ function ExportView({
 
 function SettingsView({
   qrCodeOrigin,
+  safetyAcknowledgment,
   settingsValues,
 }: {
   qrCodeOrigin?: string;
+  safetyAcknowledgment: Awaited<ReturnType<typeof getActiveSafetyAcknowledgmentPolicy>>;
   settingsValues: Awaited<ReturnType<typeof getSettingsValues>>;
 }) {
   return (
@@ -369,23 +374,39 @@ function SettingsView({
         title="Settings"
       />
       <section className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
-          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
-            Operational Settings
-          </p>
-          <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
-            Visitor Timeout Rules
-          </h2>
-          <p className="mt-3 text-sm text-text-secondary">
-            Changes are persisted in system settings and recorded as SETTINGS_UPDATE audit events.
-          </p>
-          <div className="mt-6 border-t border-border pt-6">
-            <AdminSettingsForm
-              autoExpireHours={settingsValues.autoExpireHours}
-              overdueThresholdHours={settingsValues.overdueThresholdHours}
-            />
-          </div>
-        </section>
+        <div className="space-y-6">
+          <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+            <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+              Operational Settings
+            </p>
+            <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
+              Visitor Timeout Rules
+            </h2>
+            <p className="mt-3 text-sm text-text-secondary">
+              Changes are persisted in system settings and recorded as SETTINGS_UPDATE audit events.
+            </p>
+            <div className="mt-6 border-t border-border pt-6">
+              <AdminSettingsForm
+                autoExpireHours={settingsValues.autoExpireHours}
+                overdueThresholdHours={settingsValues.overdueThresholdHours}
+              />
+            </div>
+          </section>
+          <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+            <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+              Safety Form
+            </p>
+            <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
+              Visitor Safety Acknowledgment
+            </h2>
+            <p className="mt-3 text-sm text-text-secondary">
+              Publish English safety and indemnity text. Each save creates a new version for audit traceability.
+            </p>
+            <div className="mt-6 border-t border-border pt-6">
+              <AdminSafetyAcknowledgmentForm safetyAcknowledgment={safetyAcknowledgment} />
+            </div>
+          </section>
+        </div>
         <div className="space-y-6">
           <AdminQrCodeCard preferredOrigin={qrCodeOrigin} />
           <InfoPanel
@@ -393,6 +414,7 @@ function SettingsView({
             items={[
               `Visitors show as overdue after ${settingsValues.overdueThresholdHours} hours inside.`,
               `Open sessions auto-expire after ${settingsValues.autoExpireHours} hours.`,
+              `Safety acknowledgment version ${safetyAcknowledgment.version} is active.`,
               "Audit Logs will show the before and after settings payload for every save.",
             ]}
           />
@@ -801,6 +823,21 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
             value={formatDuration(visitor.checkInAt, visitor.checkOutAt)}
           />
           <VisitorDetailItem
+            label="Safety Accepted"
+            value={visitor.safetyAcknowledged ? "Yes" : "No"}
+          />
+          <VisitorDetailItem
+            label="Safety Accepted At"
+            value={visitor.safetyAcknowledgedAt ? formatDateTime(visitor.safetyAcknowledgedAt) : "-"}
+          />
+          <VisitorDetailItem
+            label="Safety Version"
+            value={visitor.safetyAcknowledgmentVersion
+              ? `Version ${visitor.safetyAcknowledgmentVersion}`
+              : "-"
+            }
+          />
+          <VisitorDetailItem
             className="md:col-span-2 lg:col-span-3"
             label="Purpose of Visit"
             value={visitor.purposeOfVisit}
@@ -868,6 +905,10 @@ function StatusBadge({ status }: { status: VisitorStatus }) {
 function describeAuditLog(auditLog: AdminAuditLogItem): string {
   if (auditLog.eventType === "SETTINGS_UPDATE") {
     return "Admin updated visitor timeout settings";
+  }
+
+  if (auditLog.eventType === "SAFETY_ACKNOWLEDGMENT_UPDATE") {
+    return "Admin published visitor safety acknowledgment text";
   }
 
   if (auditLog.eventType === "VISITOR_DELETED") {

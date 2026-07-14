@@ -1,6 +1,14 @@
+import { connection } from "next/server";
+
+import { getActiveSafetyAcknowledgmentPolicy } from "@/services/safety-acknowledgment-service";
+
 import { VisitorRegistrationForm } from "./visitor-registration-form";
 
-export function RegistrationPageContent() {
+export async function RegistrationPageContent() {
+  await connection();
+
+  const safetyAcknowledgment = await getActiveSafetyAcknowledgmentPolicy();
+
   return (
     <main className="min-h-screen bg-register-page px-4 py-8 text-text-primary sm:px-6">
       <div className="mx-auto flex w-full max-w-[25.5rem] flex-col gap-6">
@@ -16,7 +24,7 @@ export function RegistrationPageContent() {
           </p>
         </section>
 
-        <VisitorRegistrationForm />
+        <VisitorRegistrationForm safetyAcknowledgment={safetyAcknowledgment} />
       </div>
     </main>
   );

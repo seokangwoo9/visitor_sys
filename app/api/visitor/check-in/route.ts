@@ -8,6 +8,7 @@ import {
   VISITOR_SESSION_COOKIE_NAME,
 } from "@/lib/visitor-session";
 import { visitorRegistrationSchema } from "@/lib/validations/visitor";
+import { SafetyAcknowledgmentVersionChangedError } from "@/services/safety-acknowledgment-service";
 import { registerVisitor } from "@/services/visitor-registration-service";
 import { getActiveVisitorSession } from "@/services/visitor-session-service";
 
@@ -70,7 +71,22 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
 
     return response;
-  } catch {
+  } catch (error) {
+    if (error instanceof SafetyAcknowledgmentVersionChangedError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "The safety acknowledgment was updated. Please refresh and review it again.",
+          fieldErrors: {
+            safetyAcknowledged: [
+              "The safety acknowledgment was updated. Please refresh and review it again.",
+            ],
+          },
+        },
+        { status: 409 }
+      );
+    }
+
     return apiError("Unable to register visitor. Please try again.", 500);
   }
 }

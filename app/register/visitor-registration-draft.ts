@@ -17,6 +17,8 @@ export const defaultVisitorRegistrationValues: VisitorRegistrationFormInput = {
   department: "",
   hostName: "",
   purposeOfVisit: "",
+  safetyAcknowledged: false,
+  safetyAcknowledgmentVersionId: "",
 };
 
 interface DraftStorage {
@@ -37,6 +39,8 @@ const visitorRegistrationDraftSchema = z.object({
   department: z.string().max(200).optional(),
   hostName: z.string().max(200).optional(),
   purposeOfVisit: z.string().max(1000).optional(),
+  safetyAcknowledged: z.boolean().optional(),
+  safetyAcknowledgmentVersionId: z.uuid().optional(),
 });
 
 export function readVisitorRegistrationDraft(

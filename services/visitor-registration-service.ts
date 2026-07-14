@@ -7,6 +7,7 @@ import {
   hashVisitorSessionToken,
 } from "@/lib/visitor-session";
 import { createCheckedInVisitorRecord } from "@/repositories/visitor-repository";
+import { verifySafetyAcknowledgmentVersion } from "@/services/safety-acknowledgment-service";
 
 export async function registerVisitor(
   input: VisitorRegistrationInput
@@ -15,6 +16,9 @@ export async function registerVisitor(
   const sessionToken = createVisitorSessionToken();
   const sessionTokenHash = hashVisitorSessionToken(sessionToken);
   const expiresAt = createVisitorSessionExpiresAt(now);
+  const safetyAcknowledgment = await verifySafetyAcknowledgmentVersion(
+    input.safetyAcknowledgmentVersionId
+  );
 
   const visitor = await createCheckedInVisitorRecord({
     visitor: {
@@ -29,6 +33,14 @@ export async function registerVisitor(
       department: input.department,
       hostName: input.hostName,
       purposeOfVisit: input.purposeOfVisit,
+      safetyAcknowledged: true,
+      safetyAcknowledgedAt: now,
+      safetyAcknowledgmentVersion: safetyAcknowledgment.version,
+      safetyAcknowledgmentPolicy: {
+        connect: {
+          id: safetyAcknowledgment.id,
+        },
+      },
       checkInAt: now,
       status: "CHECKED_IN",
     },
@@ -37,6 +49,12 @@ export async function registerVisitor(
     auditEventType: "VISITOR_CHECKED_IN",
     auditMetadata: {
       partySize: input.partySize,
+      safetyAcknowledgment: {
+        accepted: true,
+        acceptedAt: now.toISOString(),
+        version: safetyAcknowledgment.version,
+        versionId: safetyAcknowledgment.id,
+      },
     },
   });
 

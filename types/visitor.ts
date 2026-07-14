@@ -12,6 +12,8 @@ export interface VisitorRegistrationInput {
   department?: string;
   hostName: string;
   purposeOfVisit: string;
+  safetyAcknowledged: boolean;
+  safetyAcknowledgmentVersionId: string;
 }
 
 export interface VisitorSessionCookieValue {
@@ -40,6 +42,10 @@ export interface ActiveVisitorSession {
   department: string | null;
   hostName: string;
   purposeOfVisit: string;
+  safetyAcknowledged: boolean;
+  safetyAcknowledgedAt: Date | null;
+  safetyAcknowledgmentVersion: number | null;
+  safetyAcknowledgmentVersionId: string | null;
   checkInAt: Date;
   checkOutAt: Date | null;
   status: VisitorStatus;
@@ -92,6 +98,10 @@ export interface AdminVisitorListItem {
   department: string | null;
   hostName: string;
   purposeOfVisit: string;
+  safetyAcknowledged: boolean;
+  safetyAcknowledgedAt: Date | null;
+  safetyAcknowledgmentVersion: number | null;
+  safetyAcknowledgmentVersionId: string | null;
   checkInAt: Date;
   checkOutAt: Date | null;
   status: VisitorStatus;
@@ -144,6 +154,21 @@ export interface AdminDashboardData {
 export interface AdminSettingsValues {
   overdueThresholdHours: number;
   autoExpireHours: number;
+}
+
+export interface SafetyAcknowledgmentPolicy {
+  id: string;
+  version: number;
+  title: string;
+  content: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SafetyAcknowledgmentDraft {
+  title: string;
+  content: string;
 }
 
 export interface AdminAuditLogItem {

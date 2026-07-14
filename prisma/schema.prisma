@@ -20,25 +20,30 @@ enum AuditActorType {
 }
 
 model Visitor {
-  id                   String           @id @default(uuid()) @db.Uuid
-  fullName             String           @db.VarChar(200)
-  companyName          String           @db.VarChar(200)
-  contactNumber        String           @db.VarChar(50)
-  email                String?          @db.VarChar(320)
-  identificationNumber String?          @db.VarChar(100)
-  partySize            Int              @default(1)
-  hasVehicle           Boolean          @default(true)
-  vehiclePlateNumber   String           @default("") @db.VarChar(50)
-  department           String?          @db.VarChar(200)
-  hostName             String           @db.VarChar(200)
-  purposeOfVisit       String           @db.Text
-  checkInAt            DateTime
-  checkOutAt           DateTime?
-  status               VisitorStatus    @default(CHECKED_IN)
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  sessions             VisitorSession[]
-  auditLogs            AuditLog[]
+  id                            String                       @id @default(uuid()) @db.Uuid
+  fullName                      String                       @db.VarChar(200)
+  companyName                   String                       @db.VarChar(200)
+  contactNumber                 String                       @db.VarChar(50)
+  email                         String?                      @db.VarChar(320)
+  identificationNumber          String?                      @db.VarChar(100)
+  partySize                     Int                          @default(1)
+  hasVehicle                    Boolean                      @default(true)
+  vehiclePlateNumber            String                       @default("") @db.VarChar(50)
+  department                    String?                      @db.VarChar(200)
+  hostName                      String                       @db.VarChar(200)
+  purposeOfVisit                String                       @db.Text
+  safetyAcknowledged            Boolean                      @default(false)
+  safetyAcknowledgedAt          DateTime?
+  safetyAcknowledgmentVersion   Int?
+  safetyAcknowledgmentVersionId String?                      @db.Uuid
+  checkInAt                     DateTime
+  checkOutAt                    DateTime?
+  status                        VisitorStatus                @default(CHECKED_IN)
+  createdAt                     DateTime                     @default(now())
+  updatedAt                     DateTime                     @updatedAt
+  sessions                      VisitorSession[]
+  auditLogs                     AuditLog[]
+  safetyAcknowledgmentPolicy    SafetyAcknowledgmentVersion? @relation(fields: [safetyAcknowledgmentVersionId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([checkInAt])
@@ -46,6 +51,8 @@ model Visitor {
   @@index([partySize])
   @@index([contactNumber])
   @@index([contactNumber, status])
+  @@index([safetyAcknowledged])
+  @@index([safetyAcknowledgmentVersionId])
   @@map("visitors")
 }
 
@@ -149,6 +156,23 @@ model SystemSetting {
   updatedAt DateTime @updatedAt
 
   @@map("system_settings")
+}
+
+model SafetyAcknowledgmentVersion {
+  id                 String    @id @default(uuid()) @db.Uuid
+  version            Int       @unique
+  title              String    @db.VarChar(200)
+  content            String    @db.Text
+  isActive           Boolean   @default(true)
+  publishedByAdminId String?   @db.Uuid
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  acceptedVisitors   Visitor[]
+
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([publishedByAdminId])
+  @@map("safety_acknowledgment_versions")
 }
 
 model AuditLog {

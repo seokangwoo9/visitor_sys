@@ -6,18 +6,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentType, ReactNode } from "react";
 import { useForm, useWatch, type UseFormRegisterReturn } from "react-hook-form";
 import {
+  BookOpen,
   Car,
   LoaderCircle,
+  ShieldCheck,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import type { SafetyAcknowledgmentPolicy } from "@/types/visitor";
 import {
   type VisitorRegistrationFormInput,
   visitorRegistrationSchema,
@@ -52,12 +63,22 @@ const fieldLabels: Record<FieldName, string> = {
   purposeOfVisit: "Purpose of Visit",
   hostName: "Person to Meet",
   department: "Department",
+  safetyAcknowledged: "Safety Acknowledgment",
+  safetyAcknowledgmentVersionId: "Safety Acknowledgment Version",
 };
 
-export function VisitorRegistrationForm() {
+export function VisitorRegistrationForm({
+  safetyAcknowledgment,
+}: {
+  safetyAcknowledgment: SafetyAcknowledgmentPolicy;
+}) {
   const router = useRouter();
   const hasRestoredDraft = useRef(false);
   const [serverMessage, setServerMessage] = useState("");
+  const initialValues: VisitorRegistrationFormInput = {
+    ...defaultVisitorRegistrationValues,
+    safetyAcknowledgmentVersionId: safetyAcknowledgment.id,
+  };
   const {
     control,
     formState: { errors, isSubmitting },
@@ -68,7 +89,7 @@ export function VisitorRegistrationForm() {
     setValue,
   } = useForm<VisitorRegistrationFormInput, unknown, VisitorRegistrationSchema>({
     resolver: zodResolver(visitorRegistrationSchema),
-    defaultValues: defaultVisitorRegistrationValues,
+    defaultValues: initialValues,
   });
   const watchedValues = useWatch({ control });
   const hasVehicle = watchedValues.hasVehicle !== false;
@@ -77,13 +98,20 @@ export function VisitorRegistrationForm() {
     const restoredDraft = readVisitorRegistrationDraft(window.sessionStorage);
 
     if (restoredDraft) {
-      reset(restoredDraft);
+      reset({
+        ...restoredDraft,
+        safetyAcknowledged:
+          restoredDraft.safetyAcknowledgmentVersionId === safetyAcknowledgment.id
+            ? restoredDraft.safetyAcknowledged
+            : false,
+        safetyAcknowledgmentVersionId: safetyAcknowledgment.id,
+      });
     }
 
     queueMicrotask(() => {
       hasRestoredDraft.current = true;
     });
-  }, [reset]);
+  }, [reset, safetyAcknowledgment.id]);
 
   useEffect(() => {
     if (!hasRestoredDraft.current) {
@@ -242,6 +270,65 @@ export function VisitorRegistrationForm() {
           placeholder="Department or team"
           registration={register("department")}
         />
+      </FormSection>
+
+      <FormSection icon={ShieldCheck} title="Safety Acknowledgment">
+        <input type="hidden" {...register("safetyAcknowledgmentVersionId")} />
+        <div className="rounded-2xl border border-border bg-bg-base p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-bold text-visitor-ink">
+                {safetyAcknowledgment.title}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-text-muted">
+                Version {safetyAcknowledgment.version}
+              </p>
+            </div>
+            <Dialog>
+              <DialogTrigger
+                render={
+                  <button
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 text-xs font-bold text-visitor-success-deep shadow-sm transition hover:bg-visitor-success-soft"
+                    type="button"
+                  />
+                }
+              >
+                <BookOpen className="size-4" aria-hidden="true" />
+                Read
+              </DialogTrigger>
+              <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-register-shadow/10 sm:max-w-xl">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold text-visitor-ink">
+                    {safetyAcknowledgment.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-sm text-text-secondary">
+                    Version {safetyAcknowledgment.version}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
+                  {safetyAcknowledgment.content}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+        <label className="flex items-start gap-3 rounded-2xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
+          <input
+            aria-invalid={Boolean(errors.safetyAcknowledged)}
+            className="mt-0.5 size-5 rounded border-border-subtle bg-card text-visitor-success-deep"
+            disabled={isSubmitting}
+            type="checkbox"
+            {...register("safetyAcknowledged")}
+          />
+          <span>
+            I acknowledge that I have read and agree to the Visitor Safety Acknowledgment and Indemnity Form.
+          </span>
+        </label>
+        {errors.safetyAcknowledged?.message ? (
+          <p className="text-sm font-medium text-destructive" role="alert">
+            {errors.safetyAcknowledged.message}
+          </p>
+        ) : null}
       </FormSection>
 
       {serverMessage ? (

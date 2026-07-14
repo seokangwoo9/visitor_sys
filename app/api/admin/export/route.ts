@@ -50,6 +50,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     { header: "Check In", key: "checkInAt", width: 24 },
     { header: "Check Out", key: "checkOutAt", width: 24 },
     { header: "Duration Minutes", key: "durationMinutes", width: 18 },
+    { header: "Safety acknowledged", key: "safetyAcknowledged", width: 22 },
+    { header: "Safety acknowledged at", key: "safetyAcknowledgedAt", width: 26 },
+    { header: "Safety version", key: "safetyAcknowledgmentVersion", width: 18 },
   ];
 
   for (const visitor of visitors) {
@@ -76,6 +79,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             0
           )
         : "",
+      safetyAcknowledged: visitor.safetyAcknowledged ? "Yes" : "No",
+      safetyAcknowledgedAt: visitor.safetyAcknowledgedAt
+        ? formatExportDateTime(visitor.safetyAcknowledgedAt)
+        : "",
+      safetyAcknowledgmentVersion: visitor.safetyAcknowledgmentVersion
+        ? `Version ${visitor.safetyAcknowledgmentVersion}`
+        : "",
     });
   }
 
@@ -83,7 +93,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   worksheet.views = [{ state: "frozen", ySplit: 1 }];
   worksheet.autoFilter = {
     from: "A1",
-    to: "O1",
+    to: "R1",
   };
 
   const buffer = await workbook.xlsx.writeBuffer();
