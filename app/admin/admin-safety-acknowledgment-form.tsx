@@ -74,7 +74,7 @@ export function AdminSafetyAcknowledgmentForm({
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-text-secondary">
-          Current active version: {safetyAcknowledgment.version}. Saving publishes the next version.
+          Saving publishes this text for new visitor check-ins.
         </p>
         <Button
           className="h-12 rounded-2xl bg-visitor-success px-7 shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"

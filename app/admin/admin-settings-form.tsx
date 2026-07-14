@@ -74,7 +74,7 @@ export function AdminSettingsForm({
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-text-secondary">
-          Default baseline: overdue 12h, auto-expire 24h.
+          Recommended defaults: overdue after 12h, expire after 24h.
         </p>
         <Button
           className="h-12 rounded-2xl bg-visitor-success px-7 shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"

@@ -52,6 +52,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor Safety Acknowledgment and Indemnity capture added to check-in with required visitor acceptance, server-side version validation, and admin-visible audit fields.
 - Visitor-facing Safety Acknowledgment UI hides the visible version label while preserving backend version validation and audit capture.
 - Visitor-facing Safety Acknowledgment title now opens the full acknowledgment modal directly, replacing the separate Read button.
+- Admin dashboard copy has been cleaned for production by replacing technical helper text, raw audit event names, JSON metadata indicators, deployment wording, and session terminology with operational language.
 
 ## In Progress
 
@@ -179,3 +180,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Removed the extra group-size and team fields from active visitor registration, storage, admin views, checkout lookup, and Excel export; Safety Acknowledgment Read button no longer uses a shadow.
 - Removed visible Safety Acknowledgment version text from the visitor registration card and read dialog while retaining the hidden submitted version id.
 - Replaced the Safety Acknowledgment Read button with a clickable acknowledgment title that opens the same modal.
+- Cleaned production admin dashboard wording across Dashboard, Visitors, Export, Settings, QR cards, and Activity Log while keeping the underlying audit/version data intact.

@@ -96,7 +96,7 @@ export function AdminQrCodeCard({
   const [generatedQrCodes, setGeneratedQrCodes] = useState<
     Record<VisitorQrCodeDefinition["id"], GeneratedVisitorQrCode>
   >(() => createInitialQrCodeState());
-  const [statusMessage, setStatusMessage] = useState("Preparing deployment URL...");
+  const [statusMessage, setStatusMessage] = useState("Preparing QR codes...");
 
   useEffect(() => {
     async function generateQrCode(): Promise<void> {
@@ -157,9 +157,7 @@ export function AdminQrCodeCard({
           ...definition,
           url,
           dataUrl: roundedQrCanvas.toDataURL("image/png"),
-          statusMessage: preferredOrigin
-            ? "QR code maps to this network address automatically."
-            : "QR code maps to this deployment automatically.",
+          statusMessage: "Ready for printing.",
         };
       }
 
@@ -262,7 +260,7 @@ export function AdminQrCodeCard({
             Check-in and Check-out QR
           </h2>
           <p className="mt-3 text-sm leading-6 text-text-secondary">
-            Print separate codes for the entrance and exit. Localhost URLs are converted to the internal network address.
+            Print separate codes for the entrance and exit visitor stations.
           </p>
         </div>
       </div>
@@ -300,7 +298,7 @@ function createInitialQrCodeState(): Record<VisitorQrCodeDefinition["id"], Gener
         ...definition,
         url: "",
         dataUrl: "",
-        statusMessage: "Resolving deployment URL...",
+        statusMessage: "Preparing QR code...",
       },
     }),
     {} as Record<VisitorQrCodeDefinition["id"], GeneratedVisitorQrCode>,
@@ -344,7 +342,7 @@ function QrCodePanel({
         width={qrCodeCanvasSize}
       />
       <p className="mt-4 break-all text-sm font-semibold leading-6 text-text-primary">
-        {qrCode.url || "Resolving deployment URL..."}
+        {qrCode.url || "Preparing QR code..."}
       </p>
       <p className="mt-2 text-xs font-semibold text-text-muted">
         {qrCode.statusMessage}
