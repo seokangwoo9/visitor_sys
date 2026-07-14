@@ -61,7 +61,7 @@ export function AdminFilterForm({
       action={handleSubmit}
       className={
         variant === "standalone"
-          ? "grid gap-5 rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-admin-shadow/10 lg:grid-cols-3"
+          ? "grid gap-5 rounded-[1.75rem] border border-border bg-card p-5 lg:grid-cols-3"
           : "grid gap-5 lg:grid-cols-3"
       }
     >
@@ -128,7 +128,7 @@ export function AdminFilterForm({
             type="date"
           />
           <Button
-            className="h-12 rounded-2xl bg-visitor-success px-7 shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"
+            className="h-12 rounded-2xl bg-visitor-success px-7 hover:bg-visitor-success-deep"
             disabled={isPending}
             type="submit"
           >

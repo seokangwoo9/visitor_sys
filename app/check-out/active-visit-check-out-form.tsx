@@ -112,7 +112,7 @@ export function ActiveVisitCheckOutForm() {
         />
 
         <Button
-          className="h-14 w-full rounded-2xl bg-visitor-ink text-base font-bold text-primary-foreground shadow-xl shadow-visitor-ink/20 hover:bg-visitor-ink/90"
+          className="h-14 w-full rounded-2xl bg-visitor-ink text-base font-bold text-primary-foreground hover:bg-visitor-ink/90"
           disabled={isLookingUp || isCheckingOut}
           type="submit"
         >
@@ -141,7 +141,7 @@ export function ActiveVisitCheckOutForm() {
             <MatchPanel label="Check In" value={formatDateTime(match.checkInAt)} />
           </div>
           <Button
-            className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground shadow-xl shadow-visitor-success/20 hover:bg-visitor-success-deep"
+            className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground hover:bg-visitor-success-deep"
             disabled={isCheckingOut || isLookingUp}
             onClick={handleConfirmCheckOut}
             type="button"

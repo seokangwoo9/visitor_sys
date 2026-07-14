@@ -77,7 +77,7 @@ export function AdminSafetyAcknowledgmentForm({
           Saving publishes this text for new visitor check-ins.
         </p>
         <Button
-          className="h-12 rounded-2xl bg-visitor-success px-7 shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"
+          className="h-12 rounded-2xl bg-visitor-success px-7 hover:bg-visitor-success-deep"
           disabled={isPending}
           type="submit"
         >

@@ -247,7 +247,7 @@ export function AdminQrCodeCard({
   }
 
   return (
-    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10">
+    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6">
       <div className="flex items-start gap-4">
         <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
           <QrCode className="size-5" aria-hidden="true" />
@@ -350,7 +350,7 @@ function QrCodePanel({
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Button
-          className="h-12 rounded-2xl bg-visitor-success px-5 font-bold text-primary-foreground shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"
+          className="h-12 rounded-2xl bg-visitor-success px-5 font-bold text-primary-foreground hover:bg-visitor-success-deep"
           disabled={!qrCode.dataUrl}
           onClick={onDownload}
           type="button"

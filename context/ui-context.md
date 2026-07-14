@@ -241,6 +241,12 @@ Desktop optimization is secondary for visitor pages.
 
 Admin pages should support desktop, tablet, and mobile devices.
 
+## Elevation
+
+Do not use box shadows in the application UI.
+
+Use borders, background contrast, spacing, and typography to separate surfaces.
+
 ---
 
 ## User Experience Principles

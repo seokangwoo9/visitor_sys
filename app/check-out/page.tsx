@@ -5,7 +5,7 @@ import { ActiveVisitCheckOutForm } from "./active-visit-check-out-form";
 export default async function CheckOutPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-[25.5rem] rounded-3xl bg-card px-6 py-7 shadow-2xl shadow-visitor-success/10">
+      <section className="w-full max-w-[25.5rem] rounded-3xl bg-card px-6 py-7">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <LogOut className="size-8" aria-hidden="true" />
         </div>

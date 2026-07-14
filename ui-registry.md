@@ -63,7 +63,7 @@ The public entry and protected admin shell use compact operational layouts rathe
 ### Visitor Registration
 
 Files: app/page.tsx, app/register/page.tsx, app/register/registration-page-content.tsx, app/register/visitor-registration-form.tsx
-Last updated: 2026-06-30
+Last updated: 2026-07-14
 
 | Property | Class |
 | ---------------- | --------------- |
@@ -74,7 +74,7 @@ Last updated: 2026-06-30
 | Text - secondary | `text-text-secondary`, `text-text-muted`, `text-primary-foreground/85` |
 | Spacing | `px-4 py-8`, `px-6 py-7`, `px-5 py-6`, `space-y-5`, `gap-6` |
 | Hover state | `hover:bg-visitor-success-deep` |
-| Shadow | `shadow-xl shadow-register-shadow/10`, `shadow-2xl shadow-register-shadow/20`, `shadow-xl shadow-visitor-success/20` |
+| Shadow | none |
 | Accent usage | dark intro `bg-visitor-ink`, action `bg-visitor-success`, icon chips `bg-visitor-success-soft text-visitor-success-deep` |
 
 **Pattern notes:**
@@ -83,7 +83,7 @@ Visitor-facing registration is the index experience at `/` and is also available
 ### Visitor Status And Check-Out
 
 Files: app/visitor/status/page.tsx, app/check-out/page.tsx, app/check-out/active-visit-check-out-form.tsx
-Last updated: 2026-07-09
+Last updated: 2026-07-14
 
 | Property | Class |
 | ---------------- | --------------- |
@@ -94,7 +94,7 @@ Last updated: 2026-07-09
 | Text - secondary | `text-text-secondary`, `text-text-muted`, `text-visitor-success-deep` |
 | Spacing | `px-4 py-8`, `px-6 py-6`, `px-6 py-7`, `p-4`, `p-5`, `space-y-4`, `space-y-5` |
 | Hover state | `hover:bg-visitor-success-deep` |
-| Shadow | `shadow-2xl shadow-visitor-success/10`, `shadow-xl shadow-visitor-success/20` |
+| Shadow | none |
 | Accent usage | checked-in header `bg-visitor-success`, check-out confirmation header `bg-visitor-ink`, action `bg-visitor-success`, success badge `bg-visitor-success-soft` |
 
 **Pattern notes:**
@@ -103,7 +103,7 @@ Visitor status uses a dedicated pass-card design on `bg-visitor-page`. Checked-i
 ### Admin Control Center
 
 Files: app/admin/page.tsx, app/admin/admin-filter-form.tsx, app/admin/admin-settings-form.tsx, app/admin/admin-delete-visitor-button.tsx, app/admin/admin-pagination.tsx
-Last updated: 2026-07-09
+Last updated: 2026-07-14
 
 | Property | Class |
 | ---------------- | --------------- |
@@ -114,16 +114,16 @@ Last updated: 2026-07-09
 | Text - secondary | `text-text-secondary`, `text-text-muted`, `text-muted-foreground` |
 | Spacing | `px-5 py-6`, `p-5`, `p-6`, `space-y-6`, `gap-4`, `gap-6` |
 | Hover state | `hover:bg-bg-base`, `hover:bg-visitor-success-deep`, token-backed ghost hover states |
-| Shadow | `shadow-xl shadow-admin-shadow/10`, `shadow-lg shadow-visitor-success/20` |
+| Shadow | none |
 | Accent usage | active nav/action `bg-visitor-success`, shell mark `bg-visitor-ink`, info panels `bg-admin-panel`, status pills use visitor/state tokens |
 
 **Pattern notes:**
-Admin pages use a fixed left TVMS control-center sidebar on desktop and compact tab grid on mobile. The sidebar brand displays `TVMS Admin` above `TOE Visitor Management System`. Section hero panels are large white `rounded-[1.75rem]` cards with uppercase green eyebrow text, followed by operational metric cards, filter panels, tables, or settings/export cards. Inputs and selects use `h-12 rounded-2xl`; primary admin actions use green `rounded-2xl` buttons with subtle brand shadows. Settings utility cards, including printable QR generation, use `rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10` with white inner content blocks. Visitor QR management displays separate check-in and check-out panels inside the Settings utility card; each panel uses icon chips, rounded QR canvases, break-all URL text, and paired download/print buttons. QR URLs convert localhost admin sessions to the server machine's internal IPv4 origin when available, while deployed origins remain unchanged. QR canvases are rendered as rounded-corner PNGs inside `rounded-2xl` display surfaces so downloaded and printed QR assets match the Settings card design. Tables sit inside a `px-5 pb-5` or `p-5` gutter with an inner `rounded-2xl border border-border` table frame, pale header rows, uppercase headers, compact token-backed status pills, and no nested card structures. First/last table cells use explicit `pl-4`/`pr-4` padding so row content does not crowd rounded container edges.
+Admin pages use a fixed left TVMS control-center sidebar on desktop and compact tab grid on mobile. The sidebar brand displays `TVMS Admin` above `TOE Visitor Management System`. Section hero panels are large white `rounded-[1.75rem]` cards with uppercase green eyebrow text, followed by operational metric cards, filter panels, tables, or settings/export cards. Inputs and selects use `h-12 rounded-2xl`; primary admin actions use green `rounded-2xl` buttons without shadows. Settings utility cards, including printable QR generation, use `rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6` with white inner content blocks. Visitor QR management displays separate check-in and check-out panels inside the Settings utility card; each panel uses icon chips, rounded QR canvases, break-all URL text, and paired download/print buttons. QR URLs convert localhost admin sessions to the server machine's internal IPv4 origin when available, while deployed origins remain unchanged. QR canvases are rendered as rounded-corner PNGs inside `rounded-2xl` display surfaces so downloaded and printed QR assets match the Settings card design. Tables sit inside a `px-5 pb-5` or `p-5` gutter with an inner `rounded-2xl border border-border` table frame, pale header rows, uppercase headers, compact token-backed status pills, and no nested card structures. First/last table cells use explicit `pl-4`/`pr-4` padding so row content does not crowd rounded container edges.
 
 ### Admin Visitor Detail Dialog
 
 File: app/admin/page.tsx
-Last updated: 2026-07-01
+Last updated: 2026-07-14
 
 | Property | Class |
 | ---------------- | --------------- |
@@ -134,8 +134,8 @@ Last updated: 2026-07-01
 | Text - secondary | `text-text-secondary`, `text-text-muted` |
 | Spacing | `p-5`, `p-6`, `px-4 py-3`, `gap-3`, `mt-6` |
 | Hover state | `hover:bg-visitor-success/15` |
-| Shadow | `shadow-xl shadow-admin-shadow/10` |
+| Shadow | none |
 | Accent usage | `text-visitor-success-deep`, `bg-visitor-success-soft` |
 
 **Pattern notes:**
-Admin detail dialogs use the same card treatment as control-center panels: white `bg-card`, `rounded-[1.75rem]`, token border, and soft admin shadow. Trigger buttons stay compact at `h-9 rounded-2xl` with green soft background and icon+text labeling. Detail fields are displayed as `rounded-2xl bg-bg-base` tiles with uppercase muted labels and bold visitor-ink values. The dialog content must override the generated dialog's narrow default max width with viewport-safe sizing, keep internal scrolling under `100dvh`, and allow the detail tile grid to expand from one column to two and then three columns on wide admin screens.
+Admin detail dialogs use the same card treatment as control-center panels: white `bg-card`, `rounded-[1.75rem]`, and token border without shadows. Trigger buttons stay compact at `h-9 rounded-2xl` with green soft background and icon+text labeling. Detail fields are displayed as `rounded-2xl bg-bg-base` tiles with uppercase muted labels and bold visitor-ink values. The dialog content must override the generated dialog's narrow default max width with viewport-safe sizing, keep internal scrolling under `100dvh`, and allow the detail tile grid to expand from one column to two and then three columns on wide admin screens.

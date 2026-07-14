@@ -29,7 +29,7 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-[25.5rem] overflow-hidden rounded-3xl bg-card shadow-2xl shadow-visitor-success/10">
+      <section className="w-full max-w-[25.5rem] overflow-hidden rounded-3xl bg-card">
         <div className="bg-visitor-success px-6 pb-8 pt-8 text-primary-foreground">
           <div className="flex items-start justify-between gap-4">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-foreground/20">
@@ -103,7 +103,7 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
 function CheckedOutCard() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center shadow-2xl shadow-visitor-success/10 sm:px-10">
+      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center sm:px-10">
         <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-visitor-success-soft">
           <div className="flex size-11 items-center justify-center rounded-full border-4 border-visitor-success-deep text-visitor-success-deep">
             <Check className="size-6 stroke-[4]" aria-hidden="true" />
@@ -127,7 +127,7 @@ function CheckedOutCard() {
 function NoActiveVisitCard() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-visitor-page px-4 py-8 text-text-primary">
-      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center shadow-2xl shadow-visitor-success/10 sm:px-10">
+      <section className="w-full max-w-md rounded-3xl bg-card px-7 py-8 text-center sm:px-10">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <Clock className="size-8" aria-hidden="true" />
         </div>

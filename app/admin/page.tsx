@@ -315,7 +315,7 @@ function ExportView({
         title="Export"
       />
       <section className="grid gap-6 xl:grid-cols-[1.35fr_1fr]">
-        <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+        <section className="rounded-[1.75rem] border border-border bg-card p-6">
           <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
             Excel Export
           </p>
@@ -337,7 +337,7 @@ function ExportView({
             <Link
               className={cn(
                 buttonVariants({ variant: "default" }),
-                "mt-5 h-12 rounded-2xl bg-visitor-success px-7 shadow-lg shadow-visitor-success/20 hover:bg-visitor-success-deep"
+                "mt-5 h-12 rounded-2xl bg-visitor-success px-7 hover:bg-visitor-success-deep"
               )}
               href={`/api/admin/export?${exportParams.toString()}`}
             >
@@ -375,7 +375,7 @@ function SettingsView({
       />
       <section className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <div className="space-y-6">
-          <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+          <section className="rounded-[1.75rem] border border-border bg-card p-6">
             <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
               Operational Settings
             </p>
@@ -392,7 +392,7 @@ function SettingsView({
               />
             </div>
           </section>
-          <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+          <section className="rounded-[1.75rem] border border-border bg-card p-6">
             <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
               Safety Form
             </p>
@@ -409,15 +409,6 @@ function SettingsView({
         </div>
         <div className="space-y-6">
           <AdminQrCodeCard preferredOrigin={qrCodeOrigin} />
-          <InfoPanel
-            eyebrow="Current Settings"
-            items={[
-              `Visitors show as overdue after ${settingsValues.overdueThresholdHours} hours inside.`,
-              `Open visits expire after ${settingsValues.autoExpireHours} hours.`,
-              "The latest published safety acknowledgment is active for new check-ins.",
-              "Important admin changes are recorded in the activity log.",
-            ]}
-          />
         </div>
       </section>
     </>
@@ -431,7 +422,7 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
         description="Review important admin actions and visitor activity."
         title="Activity Log"
       />
-      <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-xl shadow-admin-shadow/10">
+      <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
         <div className="p-5">
           <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
             Recent Activity
@@ -456,7 +447,7 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
                     <TableRow key={auditLog.id}>
                       <TableCell className="pl-4">{formatDateTime(auditLog.createdAt)}</TableCell>
                       <TableCell>
-                        <span className="rounded-2xl border border-visitor-success/20 bg-visitor-success-soft px-3 py-1 text-xs font-bold text-visitor-success-deep">
+                        <span className="text-xs font-bold text-visitor-success-deep">
                           {formatAuditActionLabel(auditLog)}
                         </span>
                       </TableCell>
@@ -486,7 +477,7 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
 function AdminBrand() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-visitor-ink text-primary-foreground shadow-xl shadow-admin-shadow/20">
+      <div className="flex size-12 items-center justify-center rounded-2xl bg-visitor-ink text-primary-foreground">
         <ShieldCheck className="size-6" aria-hidden="true" />
       </div>
       <div>
@@ -517,7 +508,7 @@ function AdminNavItem({
       className={cn(
         "flex h-11 items-center gap-3 rounded-2xl px-4 text-sm font-bold text-text-secondary",
         active
-          ? "bg-visitor-success text-primary-foreground shadow-lg shadow-visitor-success/20"
+          ? "bg-visitor-success text-primary-foreground"
           : "hover:bg-bg-base"
       )}
       href={`/admin?section=${section}`}
@@ -544,7 +535,7 @@ function SignedInCard({ displayName }: { displayName: string }) {
 
 function AdminHero({ description, title }: { description: string; title: string }) {
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-6 shadow-xl shadow-admin-shadow/10">
+    <section className="rounded-[1.75rem] border border-border bg-card p-6">
       <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
         Admin
       </p>
@@ -575,7 +566,7 @@ function MetricCard({
         : "bg-visitor-success-soft text-visitor-success-deep";
 
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-admin-shadow/10">
+    <section className="rounded-[1.75rem] border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
         <div className={cn("flex size-11 items-center justify-center rounded-2xl", iconClassName)}>
           <Icon className="size-5" aria-hidden="true" />
@@ -600,7 +591,7 @@ function TrendCard({
   const maxValue = Math.max(...points.map((point) => point.value), 1);
 
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-admin-shadow/10">
+    <section className="rounded-[1.75rem] border border-border bg-card p-5">
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-lg font-bold text-visitor-ink">{title}</h2>
@@ -621,7 +612,7 @@ function TrendCard({
                   className={cn(
                     "w-full rounded-3xl",
                     point.value === maxValue && point.value > 0
-                      ? "bg-visitor-success shadow-lg shadow-visitor-success/20"
+                      ? "bg-visitor-success"
                       : "bg-bg-base"
                   )}
                   style={{ height: `${height * 12.5}%` }}
@@ -639,7 +630,7 @@ function TrendCard({
 
 function CurrentVisitorsTable({ visitors }: { visitors: AdminVisitorListItem[] }) {
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-xl shadow-admin-shadow/10">
+    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
       <div className="flex items-start justify-between gap-3 p-5">
         <div>
           <h2 className="text-xl font-bold text-visitor-ink">Current Visitors</h2>
@@ -699,7 +690,7 @@ function CurrentVisitorsTable({ visitors }: { visitors: AdminVisitorListItem[] }
 
 function VisitorHistoryTable({ visitors }: { visitors: AdminVisitorListItem[] }) {
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-xl shadow-admin-shadow/10">
+    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
       <div className="p-5">
         <div className="overflow-hidden rounded-2xl border border-border">
           <Table>
@@ -774,7 +765,7 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
         <Eye className="size-4" aria-hidden="true" />
         View
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-admin-shadow/10 sm:!max-w-[calc(100vw-3rem)] sm:p-6 lg:!max-w-5xl xl:!max-w-6xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 sm:!max-w-[calc(100vw-3rem)] sm:p-6 lg:!max-w-5xl xl:!max-w-6xl">
         <DialogHeader>
           <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
             Visitor Details
@@ -858,7 +849,7 @@ function VisitorDetailItem({
 
 function InfoPanel({ eyebrow, items }: { eyebrow: string; items: string[] }) {
   return (
-    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6 shadow-xl shadow-admin-shadow/10">
+    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6">
       <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
         {eyebrow}
       </p>

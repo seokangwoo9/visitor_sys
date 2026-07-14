@@ -53,6 +53,7 @@ Update this file whenever the current phase, active feature, or implementation s
 - Visitor-facing Safety Acknowledgment UI hides the visible version label while preserving backend version validation and audit capture.
 - Visitor-facing Safety Acknowledgment title now opens the full acknowledgment modal directly, replacing the separate Read button.
 - Admin dashboard copy has been cleaned for production by replacing technical helper text, raw audit event names, JSON metadata indicators, deployment wording, and session terminology with operational language.
+- Settings Current Settings summary panel has been removed, Activity Log action labels now render as plain green text, and visible UI shadows have been removed across the app.
 
 ## In Progress
 
@@ -181,3 +182,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - Removed visible Safety Acknowledgment version text from the visitor registration card and read dialog while retaining the hidden submitted version id.
 - Replaced the Safety Acknowledgment Read button with a clickable acknowledgment title that opens the same modal.
 - Cleaned production admin dashboard wording across Dashboard, Visitors, Export, Settings, QR cards, and Activity Log while keeping the underlying audit/version data intact.
+- Removed the redundant Settings Current Settings panel, simplified Activity Log action labels, removed app-owned shadow classes, and added a global no-shadow rule for generated UI primitives.

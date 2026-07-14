@@ -265,7 +265,7 @@ export function VisitorRegistrationForm({
             >
               {safetyAcknowledgment.title}
             </DialogTrigger>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-register-shadow/10 sm:max-w-xl">
+            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 sm:max-w-xl">
               <DialogHeader>
                 <DialogTitle className="text-xl font-bold text-visitor-ink">
                   {safetyAcknowledgment.title}
@@ -303,7 +303,7 @@ export function VisitorRegistrationForm({
       ) : null}
 
       <Button
-        className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold shadow-xl shadow-visitor-success/20 hover:bg-visitor-success-deep"
+        className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold hover:bg-visitor-success-deep"
         disabled={isSubmitting}
         type="submit"
       >
@@ -328,7 +328,7 @@ interface FormSectionProps {
 
 function FormSection({ children, icon: Icon, title }: FormSectionProps) {
   return (
-    <section className="rounded-[1.75rem] bg-card px-5 py-6 shadow-xl shadow-register-shadow/10">
+    <section className="rounded-[1.75rem] bg-card px-5 py-6">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex size-10 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
           <Icon className="size-5" aria-hidden={true} />

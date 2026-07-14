@@ -31,10 +31,8 @@
   --color-visitor-page: var(--visitor-page);
   --color-register-page: var(--register-page);
   --color-register-icon: var(--register-icon);
-  --color-register-shadow: var(--register-shadow);
   --color-admin-page: var(--admin-page);
   --color-admin-panel: var(--admin-panel);
-  --color-admin-shadow: var(--admin-shadow);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -100,10 +98,8 @@
   --visitor-page: #EEFDF7;
   --register-page: #ECFDF5;
   --register-icon: #DFFBF0;
-  --register-shadow: #94A3B8;
   --admin-page: #F7FCF9;
   --admin-panel: #ECFDF5;
-  --admin-shadow: #94A3B8;
 
   --background: var(--bg-base);
   --foreground: var(--text-primary);
@@ -142,6 +138,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-shadow: none !important;
   }
 
   body {
