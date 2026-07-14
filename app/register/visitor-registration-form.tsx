@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentType, ReactNode } from "react";
 import { useForm, useWatch, type UseFormRegisterReturn } from "react-hook-form";
 import {
-  BookOpen,
   Car,
   LoaderCircle,
   ShieldCheck,
@@ -255,36 +254,28 @@ export function VisitorRegistrationForm({
       <FormSection icon={ShieldCheck} title="Safety Acknowledgment">
         <input type="hidden" {...register("safetyAcknowledgmentVersionId")} />
         <div className="rounded-2xl border border-border bg-bg-base p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-bold text-visitor-ink">
-                {safetyAcknowledgment.title}
-              </p>
-            </div>
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <button
-                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 text-xs font-bold text-visitor-success-deep transition hover:bg-visitor-success-soft"
-                    type="button"
-                  />
-                }
-              >
-                <BookOpen className="size-4" aria-hidden="true" />
-                Read
-              </DialogTrigger>
-              <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-register-shadow/10 sm:max-w-xl">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-bold text-visitor-ink">
-                    {safetyAcknowledgment.title}
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
-                  {safetyAcknowledgment.content}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+          <Dialog>
+            <DialogTrigger
+              render={
+                <button
+                  className="block min-h-10 w-full rounded-xl py-1 text-left text-sm font-bold text-visitor-success-deep underline underline-offset-4 transition hover:text-visitor-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-visitor-success"
+                  type="button"
+                />
+              }
+            >
+              {safetyAcknowledgment.title}
+            </DialogTrigger>
+            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 shadow-xl shadow-register-shadow/10 sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-visitor-ink">
+                  {safetyAcknowledgment.title}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
+                {safetyAcknowledgment.content}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
         <label className="flex items-start gap-3 rounded-2xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
           <input
