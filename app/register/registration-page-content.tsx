@@ -20,7 +20,7 @@ export async function RegistrationPageContent() {
             </div>
             <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-text-muted">
-                TOE Visitor Management System
+                TOMY Visitor Management System
               </p>
               <p className="text-xs font-semibold text-visitor-ink">
                 Visitor Registration
