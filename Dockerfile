@@ -17,6 +17,13 @@ RUN npm ci
 
 # Copy the rest of the source and build.
 COPY . .
+
+# prisma.config.ts resolves DATABASE_URL eagerly via env(). `prisma generate`
+# and `next build` never connect to the database, so a throwaway placeholder is
+# enough to satisfy the config loader at build time. The real DATABASE_URL is
+# injected at runtime from deploy/prod.env by docker compose.
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
+
 RUN npx prisma generate
 RUN npm run build
 
