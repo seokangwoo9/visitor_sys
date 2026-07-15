@@ -385,37 +385,57 @@ The system follows:
 
 # Deployment Architecture
 
-The system is deployed Docker-first. All runtime components run as containers
-orchestrated by Docker Compose.
+The system is deployed Docker-first. The application and database run as
+containers orchestrated by Docker Compose. HTTPS termination is handled by an
+upstream reverse proxy.
 
-Container topology:
+## Primary topology (Option A: host + VM, host terminates HTTPS)
+
+The production environment is a host machine with one shared public IP that
+runs a reverse proxy in front of multiple VMs. The host routes each hostname to
+the correct VM. TVMS runs in its own VM and serves plain HTTP; the host
+terminates HTTPS and forwards HTTP to the VM over the private network.
 
 ```
-Browser → Caddy (container, auto-HTTPS) → App (Next.js container) → PostgreSQL (container)
+Browser → Host reverse proxy (HTTPS, routes by hostname)
+        → TVMS VM: App (Next.js container, HTTP :3000) → PostgreSQL (container)
 ```
 
 - **App container**: built from the repository `Dockerfile` (multi-stage Node
   build). On start, `docker-entrypoint.sh` runs `prisma migrate deploy` before
   launching `next start`. The Next.js container serves both pages and `/api`
-  routes.
+  routes over HTTP. `APP_BIND` binds the published port to the VM's private
+  interface so only the host reverse proxy can reach it.
 - **PostgreSQL container**: data persisted in a named Docker volume.
-- **Caddy container**: the public HTTPS entry point. It automatically obtains
-  and renews a Let's Encrypt certificate for the configured domain and reverse
-  proxies all traffic to the app container.
+- **Host reverse proxy** (nginx/Caddy/etc., not part of this repo): holds the
+  certificate, terminates TLS, and must forward `X-Forwarded-Proto: https` and
+  `Host`/`X-Forwarded-Host` so the app resolves its correct public identity.
+  `BETTER_AUTH_URL` must be the public HTTPS URL.
+
+In this topology the VM runs the **base compose file only**
+(`docker-compose.prod.yml`); the Caddy overlay is not used.
+
+## Alternative topology (Option B: standalone VM with its own HTTPS)
+
+For a standalone VM that owns HTTPS directly, the optional Caddy overlay
+(`docker-compose.prod.https.yml` + `deploy/Caddyfile`) adds a Caddy container
+that obtains and renews a Let's Encrypt certificate and proxies to the app.
 
 Compose files:
 
-- `docker-compose.prod.yml` — base stack (app + postgres).
-- `docker-compose.prod.https.yml` — overlay that adds Caddy and moves the app
-  behind it (published only on localhost).
-- `deploy/Caddyfile` — reverse-proxy and TLS configuration.
-- `deploy/prod.env` — production secrets and domain configuration (git-ignored;
+- `docker-compose.prod.yml` — base stack (app + postgres). Primary file for
+  Option A.
+- `docker-compose.prod.https.yml` — optional overlay adding in-VM Caddy
+  (Option B only).
+- `deploy/Caddyfile` — reverse-proxy and TLS config for the Option B overlay.
+- `deploy/prod.env` — production secrets and configuration (git-ignored;
   templated by `deploy/prod.env.example`).
 
 Local development continues to use the root `compose.yaml`, which runs only the
 PostgreSQL service on host port `5433`.
 
-Deployment steps are documented in `DEPLOY_VPS_UBUNTU_DOMAIN_HTTPS.md`.
+Deployment steps are documented in `DEPLOYMENT_GUIDE.md` (Option A, host + VM).
+`DEPLOY_VPS_UBUNTU_DOMAIN_HTTPS.md` documents the Option B standalone flow.
 
 ---
 

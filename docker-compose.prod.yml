@@ -1,11 +1,17 @@
 # Production stack: application + PostgreSQL.
 #
-# Usage (HTTP, app exposed directly for testing):
-#   docker compose -f docker-compose.prod.yml --env-file deploy/prod.env up -d --build
+# The app serves plain HTTP on port 3000. It is designed to sit BEHIND a
+# reverse proxy that terminates HTTPS. Two supported topologies:
 #
-# For domain + HTTPS, add the overlay file:
-#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.https.yml \
-#     --env-file deploy/prod.env up -d --build
+#   Option A (recommended for host + VM): an external reverse proxy on the
+#   host terminates HTTPS and forwards HTTP to this VM. Run the base file only:
+#     docker compose -f docker-compose.prod.yml --env-file deploy/prod.env up -d --build
+#   Bind the app to the VM's private interface with APP_BIND (see prod.env).
+#
+#   Option B (standalone VM with its own HTTPS): add the Caddy overlay so the
+#   VM obtains its own Let's Encrypt certificate:
+#     docker compose -f docker-compose.prod.yml -f docker-compose.prod.https.yml \
+#       --env-file deploy/prod.env up -d --build
 
 services:
   postgres:
@@ -48,10 +54,15 @@ services:
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-System Administrator}
       ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@example.com}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-}
-    # Exposed directly only in the base (HTTP) stack. The HTTPS overlay
-    # replaces this with a localhost-only binding behind Caddy.
+    # Published for the reverse proxy to reach. APP_BIND controls which VM
+    # interface the port is exposed on:
+    #   - Option A: set APP_BIND to the VM's private IP (e.g. 192.168.10.20)
+    #     so only the host reverse proxy can reach it.
+    #   - Default 0.0.0.0 exposes it on all interfaces (fine for local testing
+    #     or when the Caddy overlay fronts it).
+    # The HTTPS overlay overrides this to bind localhost-only behind Caddy.
     ports:
-      - "3000:3000"
+      - "${APP_BIND:-0.0.0.0}:${APP_PORT:-3000}:3000"
     networks:
       - tvms
 

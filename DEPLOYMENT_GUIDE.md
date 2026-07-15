@@ -1,425 +1,432 @@
-# TVMS VPS Deployment — Complete Step-by-Step Guide
+# TVMS Deployment — Host + VM (Option A: Host Terminates HTTPS)
 
-This is a **beginner-friendly, start-to-finish** guide for deploying the
-**TOE Visitor Management System (TVMS)** to a Virtual Private Server (VPS).
+This is a **step-by-step** guide for deploying the **TOE Visitor Management
+System (TVMS)** in a **host + virtual machine** setup with **one shared public
+IP address**.
 
-It assumes **no prior server experience**. Every command is explained. Follow
-the sections in order and you will end with a live site at
-`https://your-domain/` with automatic HTTPS.
+In this topology the **host** owns the single public IP and runs a reverse
+proxy. It terminates HTTPS and forwards plain HTTP to the TVMS **VM** over the
+private network. The VM runs the app on HTTP only — it does **not** manage
+certificates.
 
-**Final result — three containers running on one VPS:**
+**Traffic flow:**
 
 ```
-Browser → Caddy (HTTPS, auto-certificate) → App (Next.js) → PostgreSQL (database)
+                 one public static IP
+                        │
+Browser ──HTTPS──▶  HOST reverse proxy   (holds the certificate, routes by hostname)
+                        │ private network, HTTP
+                        ▼
+                  TVMS VM: App (Next.js) + PostgreSQL   (containers, HTTP on :3000)
 ```
+
+> **Why this design?** Certificates are managed in one place (the host), only
+> the host is exposed to the internet, and the VM stays simple and private.
+> Other hostnames on the same IP are routed by the host to their own VMs the
+> same way.
 
 ---
 
 ## Table of Contents
 
+**Part A — On the TVMS VM (the app):**
 1. [What you need before starting](#1-what-you-need-before-starting)
-2. [Point your domain at the server](#2-point-your-domain-at-the-server)
-3. [Connect to the VPS for the first time](#3-connect-to-the-vps-for-the-first-time)
-4. [Create a non-root user](#4-create-a-non-root-user)
-5. [Basic server security](#5-basic-server-security)
-6. [Install Docker](#6-install-docker)
-7. [Get the application code](#7-get-the-application-code)
-8. [Configure environment secrets](#8-configure-environment-secrets)
-9. [Build and start the application](#9-build-and-start-the-application)
-10. [Create the first admin account](#10-create-the-first-admin-account)
-11. [Verify the deployment](#11-verify-the-deployment)
-12. [Print the visitor QR codes](#12-print-the-visitor-qr-codes)
-13. [Day-to-day operations](#13-day-to-day-operations)
-14. [Updating to a new version](#14-updating-to-a-new-version)
-15. [Backups and restore](#15-backups-and-restore)
-16. [Troubleshooting](#16-troubleshooting)
+2. [Log in to the VM and note its private IP](#2-log-in-to-the-vm-and-note-its-private-ip)
+3. [Install Docker](#3-install-docker)
+4. [Get the application code](#4-get-the-application-code)
+5. [Configure environment secrets](#5-configure-environment-secrets)
+6. [Start the application (HTTP-only)](#6-start-the-application-http-only)
+7. [Create the first admin account](#7-create-the-first-admin-account)
+8. [Verify the app locally](#8-verify-the-app-locally)
+9. [Lock down the VM firewall](#9-lock-down-the-vm-firewall)
+
+**Part B — On the host (the reverse proxy):**
+10. [Point the hostname's DNS at the host](#10-point-the-hostnames-dns-at-the-host)
+11. [Configure the host reverse proxy](#11-configure-the-host-reverse-proxy)
+12. [Verify end-to-end HTTPS](#12-verify-end-to-end-https)
+
+**Part C — Operations:**
+13. [Print the visitor QR codes](#13-print-the-visitor-qr-codes)
+14. [Day-to-day operations](#14-day-to-day-operations)
+15. [Updating to a new version](#15-updating-to-a-new-version)
+16. [Backups and restore](#16-backups-and-restore)
+17. [Troubleshooting](#17-troubleshooting)
 
 ---
+
+# Part A — On the TVMS VM
 
 ## 1. What you need before starting
 
-Gather these before you begin:
-
 | Item | Example | Notes |
 |---|---|---|
-| A VPS running Ubuntu 22.04 or 24.04 | — | 2 GB RAM minimum |
-| The VPS public IP address | `203.0.113.10` | From your VPS provider dashboard |
-| The root password or SSH key | — | Provided when you created the VPS |
-| A domain name | `tms.example.com` | You must be able to edit its DNS |
-| A terminal on your computer | — | macOS/Linux: Terminal. Windows: PowerShell |
+| The TVMS VM (Ubuntu 22.04/24.04) | — | 2 GB RAM minimum |
+| The VM's **private IP** | `192.168.10.20` | On the host↔VM private network |
+| SSH access to the VM | — | From the host, or your workstation |
+| Access to the **host** reverse proxy config | — | You will add a rule in Part B |
+| A hostname for TVMS | `tms.company.com` | Resolves to the host's public IP |
 
-> **What is a VPS?** A rented computer in a data center that runs 24/7. You
-> control it remotely over SSH.
-
-Firewall/security-group note: in your VPS provider's control panel, make sure
-**inbound ports 22, 80, and 443** are allowed. Many providers open them by
-default; some (AWS, Oracle, Google Cloud) require you to add them manually.
+You do **not** need a separate public IP for the VM. The host's single public
+IP is shared across all VMs by hostname.
 
 ---
 
-## 2. Point your domain at the server
+## 2. Log in to the VM and note its private IP
 
-Your domain must point to the VPS **before** you start, because the HTTPS
-certificate can only be issued once the domain resolves to this server.
-
-In your domain provider's DNS settings, create one record:
-
-| Field | Value |
-|---|---|
-| Type | `A` |
-| Name / Host | `tms` (for `tms.example.com`), or `@` for the root domain |
-| Value / Points to | Your VPS public IP, e.g. `203.0.113.10` |
-| TTL | Default (or 3600) |
-
-DNS changes can take a few minutes to a few hours to take effect.
-
-**Check it from your own computer** (not the VPS):
+SSH into the VM (from the host or your workstation):
 
 ```bash
-nslookup tms.example.com
+ssh youruser@192.168.10.20
 ```
 
-Do not continue until the answer shows your VPS IP.
+Confirm the VM's private IP — you will need it for the host proxy rule:
+
+```bash
+ip -4 addr show | grep inet
+```
+
+Note the address on the private network (e.g. `192.168.10.20`). This guide
+calls it **`<VM_PRIVATE_IP>`**.
+
+Update the system:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
 
 ---
 
-## 3. Connect to the VPS for the first time
-
-On **your computer's** terminal, connect as `root` (replace with your IP):
-
-```bash
-ssh root@203.0.113.10
-```
-
-- The first time, it asks to trust the server — type `yes`.
-- Enter the root password (or it uses your SSH key automatically).
-
-You are now "inside" the server. Your prompt changes to something like
-`root@vps:~#`.
-
-Update the system's software list and packages:
-
-```bash
-apt update && apt upgrade -y
-```
-
-If it asks about restarting services or keeping config files, accept the
-defaults (press Enter).
-
----
-
-## 4. Create a non-root user
-
-Running everything as `root` is risky. Create a normal user named `deploy`:
-
-```bash
-adduser deploy
-```
-
-- Set a password when prompted (save it somewhere safe).
-- For the "Full Name" etc. questions, just press Enter to skip.
-
-Give `deploy` administrator (sudo) rights:
-
-```bash
-usermod -aG sudo deploy
-```
-
-Switch to the new user:
-
-```bash
-su - deploy
-```
-
-Your prompt now shows `deploy@vps:~$`. From here, commands that need admin
-rights use `sudo` in front.
-
-> From now on, do everything as `deploy`, **not** root.
-
----
-
-## 5. Basic server security
-
-### 5a. Enable the firewall
-
-Allow SSH, HTTP, and HTTPS, then turn the firewall on:
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
-
-Type `y` when asked to proceed. Check it:
-
-```bash
-sudo ufw status
-```
-
-You should see `22`, `80`, and `443` allowed.
-
-> **Important:** always keep port 22 (SSH) allowed, or you will lock yourself
-> out of the server.
-
-### 5b. (Optional) automatic security updates
-
-```bash
-sudo apt install unattended-upgrades -y
-sudo dpkg-reconfigure --priority=low unattended-upgrades
-```
-
-Choose **Yes** when prompted. This installs security patches automatically.
-
----
-
-## 6. Install Docker
-
-Docker runs the application's containers. Install it with the official script:
+## 3. Install Docker
 
 ```bash
 curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
 ```
 
-Allow the `deploy` user to run Docker without `sudo`:
-
-```bash
-sudo usermod -aG docker deploy
-```
-
-**Log out and back in** so this takes effect:
+Log out and back in so the group applies, then verify:
 
 ```bash
 exit
-```
-
-You will drop back to the `root` shell — log out of that too:
-
-```bash
-exit
-```
-
-Now reconnect from your computer **directly as `deploy`**:
-
-```bash
-ssh deploy@203.0.113.10
-```
-
-Verify Docker works without sudo:
-
-```bash
+# reconnect
+ssh youruser@192.168.10.20
 docker --version
 docker compose version
-docker run --rm hello-world
 ```
-
-The last command should print "Hello from Docker!". If it does, Docker is
-ready.
 
 ---
 
-## 7. Get the application code
-
-Install Git and download the project into `/opt/tvms`:
+## 4. Get the application code
 
 ```bash
 sudo apt install git -y
 sudo mkdir -p /opt/tvms
-sudo chown deploy:deploy /opt/tvms
+sudo chown $USER:$USER /opt/tvms
 git clone <YOUR_REPOSITORY_URL> /opt/tvms
 cd /opt/tvms
 ```
 
-Replace `<YOUR_REPOSITORY_URL>` with your actual repository address
-(for example `https://github.com/your-org/visitor_system.git`).
-
-> If your repository is private, Git will ask for a username and token. Use a
-> GitHub Personal Access Token as the password.
-
-Confirm the deployment files are present:
+Confirm the deployment files exist:
 
 ```bash
-ls docker-compose.prod.yml docker-compose.prod.https.yml deploy/
+ls docker-compose.prod.yml deploy/prod.env.example
 ```
-
-You should see the two compose files and a `deploy/` folder containing
-`Caddyfile` and `prod.env.example`.
 
 ---
 
-## 8. Configure environment secrets
+## 5. Configure environment secrets
 
-The app reads its configuration from `deploy/prod.env`. Create it from the
-template:
+Create the env file from the template:
 
 ```bash
 cp deploy/prod.env.example deploy/prod.env
 ```
 
-First, generate two strong random secrets and copy the outputs:
+Generate two strong secrets and copy the outputs:
 
 ```bash
-echo "DB password:   $(openssl rand -base64 24)"
-echo "Auth secret:   $(openssl rand -base64 32)"
+echo "DB password: $(openssl rand -base64 24)"
+echo "Auth secret: $(openssl rand -base64 32)"
 ```
 
-Now open the file for editing:
+Edit the file:
 
 ```bash
 nano deploy/prod.env
 ```
 
-Fill in every value:
+Set these values:
 
 | Variable | What to put |
 |---|---|
-| `POSTGRES_PASSWORD` | The **DB password** you just generated |
-| `BETTER_AUTH_SECRET` | The **Auth secret** you just generated |
-| `BETTER_AUTH_URL` | `https://tms.example.com` (your real domain) |
-| `DOMAIN` | `tms.example.com` (same domain, no `https://`) |
-| `ACME_EMAIL` | A real email (for certificate expiry notices) |
-| `ADMIN_SEED_NAME` | The admin's display name |
-| `ADMIN_SEED_EMAIL` | The admin login email |
-| `ADMIN_SEED_PASSWORD` | A strong admin login password |
+| `POSTGRES_PASSWORD` | The generated DB password |
+| `BETTER_AUTH_SECRET` | The generated auth secret |
+| `BETTER_AUTH_URL` | **`https://tms.company.com`** — the public URL the browser uses (HTTPS, even though the VM itself serves HTTP) |
+| `APP_BIND` | **`<VM_PRIVATE_IP>`**, e.g. `192.168.10.20` — so the app is reachable only from the host, not other networks |
+| `APP_PORT` | `3000` (default; change only if 3000 is taken on the VM) |
+| `ADMIN_SEED_NAME` | Admin display name |
+| `ADMIN_SEED_EMAIL` | Admin login email |
+| `ADMIN_SEED_PASSWORD` | Strong admin password |
 
-Save and exit nano: press **Ctrl+O**, then **Enter**, then **Ctrl+X**.
+Leave `DOMAIN` / `ACME_EMAIL` as-is — those are only used by the optional
+in-VM Caddy overlay (Option B), which you are **not** using here.
 
-> `deploy/prod.env` contains passwords. It is already excluded from Git and
-> must never be committed or shared.
+Save and exit: **Ctrl+O**, **Enter**, **Ctrl+X**.
 
-**Double-check there are no leftover placeholder values:**
+> **`BETTER_AUTH_URL` is critical.** It must be the public `https://` address.
+> If it says `http://` or the VM's IP, admin login cookies will be rejected by
+> the browser.
+
+Sanity check for leftover placeholders:
 
 ```bash
 grep -i "replace-with" deploy/prod.env
 ```
 
-If this prints anything, you missed a value — edit the file again.
+If anything prints, edit the file again.
 
 ---
 
-## 9. Build and start the application
+## 6. Start the application (HTTP-only)
 
-This single command builds the app image and starts all three containers
-(app, database, and the Caddy HTTPS proxy):
+Run the **base stack only** — no Caddy overlay. The host handles HTTPS.
 
 ```bash
 cd /opt/tvms
-docker compose \
-  -f docker-compose.prod.yml \
-  -f docker-compose.prod.https.yml \
-  --env-file deploy/prod.env \
-  up -d --build
+docker compose -f docker-compose.prod.yml --env-file deploy/prod.env up -d --build
 ```
 
-- The first build takes several minutes (it downloads Node, installs
-  dependencies, and builds the app). This is normal.
-- `-d` means "run in the background".
+- First build takes a few minutes.
 - On start, the app automatically applies all database migrations.
 
-Check that all three containers are running:
+Check both containers are up:
 
 ```bash
-docker compose \
-  -f docker-compose.prod.yml \
-  -f docker-compose.prod.https.yml \
-  --env-file deploy/prod.env \
-  ps
+docker compose -f docker-compose.prod.yml --env-file deploy/prod.env ps
 ```
 
-You want to see `tvms_app`, `tvms_postgres`, and `tvms_caddy` all `Up`.
-
-**Watch Caddy get the HTTPS certificate** (first start only):
-
-```bash
-docker compose \
-  -f docker-compose.prod.yml \
-  -f docker-compose.prod.https.yml \
-  --env-file deploy/prod.env \
-  logs -f caddy --tail=100
-```
-
-Look for a line mentioning "certificate obtained". Press **Ctrl+C** to stop
-watching (this does not stop the server).
-
-> **Tip:** these commands are long. See [section 13](#13-day-to-day-operations)
-> for a shortcut that saves a lot of typing.
+You want `tvms_app` and `tvms_postgres` both `Up`.
 
 ---
 
-## 10. Create the first admin account
-
-Migrations run automatically, but the admin account is created manually and
-only once. Run:
+## 7. Create the first admin account
 
 ```bash
-docker compose \
-  -f docker-compose.prod.yml \
-  -f docker-compose.prod.https.yml \
-  --env-file deploy/prod.env \
+docker compose -f docker-compose.prod.yml --env-file deploy/prod.env \
   exec app npm run auth:seed-admin
 ```
 
-This creates the admin using the `ADMIN_SEED_*` values from your env file. If
-the admin already exists, it safely does nothing.
+Creates the admin from the `ADMIN_SEED_*` values. Safe to run once; it does
+nothing if the admin already exists.
 
 ---
 
-## 11. Verify the deployment
+## 8. Verify the app locally
 
-Open these in your browser:
-
-- `https://tms.example.com/` — the visitor registration page
-- `https://tms.example.com/admin` — redirects to the admin login
-- `https://tms.example.com/api/health` — should show `{"ok":true,...}`
-
-Log in at `/admin` with the `ADMIN_SEED_EMAIL` and `ADMIN_SEED_PASSWORD` you
-set.
-
-If the pages load with a padlock icon (secure), the full chain
-`Browser → Caddy → App → Database` is working. 🎉
-
----
-
-## 12. Print the visitor QR codes
-
-1. Log in to `/admin`.
-2. Go to **Settings**.
-3. In the **Visitor QR Code** card, download or print the **Check-in QR** and
-   **Check-out QR**.
-4. Place the check-in QR at the entrance and the check-out QR at the exit.
-
-The QR codes point at `https://tms.example.com/check-in` and `/check-out`.
-
----
-
-## 13. Day-to-day operations
-
-Typing the long compose command every time is tedious. Create a short alias:
+From the VM itself, confirm the app answers on its private address:
 
 ```bash
-echo "alias tvms='docker compose -f /opt/tvms/docker-compose.prod.yml -f /opt/tvms/docker-compose.prod.https.yml --env-file /opt/tvms/deploy/prod.env'" >> ~/.bashrc
+curl http://<VM_PRIVATE_IP>:3000/api/health
+```
+
+You should see `{"ok":true,"service":"tvms",...}`.
+
+From the **host**, confirm the host can reach the VM:
+
+```bash
+curl http://<VM_PRIVATE_IP>:3000/api/health
+```
+
+If both work, the app is ready and the host can proxy to it. If the host
+cannot reach it, check `APP_BIND` (section 5) and the VM firewall (section 9).
+
+---
+
+## 9. Lock down the VM firewall
+
+The app port should be reachable **only from the host**, never the public
+internet. Allow SSH, and allow port 3000 only from the host's private IP.
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow from <HOST_PRIVATE_IP> to any port 3000 proto tcp
+sudo ufw enable
+sudo ufw status
+```
+
+Replace `<HOST_PRIVATE_IP>` with the host's address on the private network.
+
+> Do **not** open 80/443 on the VM — those live on the host. Keep SSH (22)
+> allowed so you don't lock yourself out.
+
+---
+
+# Part B — On the host
+
+Do these steps on the **host** machine that owns the public IP.
+
+## 10. Point the hostname's DNS at the host
+
+In your DNS provider, ensure the TVMS hostname resolves to the **host's public
+IP** (not the VM):
+
+| Field | Value |
+|---|---|
+| Type | `A` |
+| Name | `tms` (for `tms.company.com`) |
+| Value | The host's public IP |
+
+Verify from any machine:
+
+```bash
+nslookup tms.company.com
+```
+
+It must return the host's public IP. (This is usually already set if other
+services on the host work.)
+
+---
+
+## 11. Configure the host reverse proxy
+
+Add a rule that routes the TVMS hostname to the VM and terminates HTTPS. Use
+whichever proxy the host already runs.
+
+### Requirements for the rule
+
+- Match server name **`tms.company.com`**.
+- Terminate TLS (hold the certificate on the host).
+- Proxy to **`http://<VM_PRIVATE_IP>:3000`**.
+- **Forward these headers** so the app knows its real public identity:
+  - `Host` → the original hostname
+  - `X-Forwarded-Proto: https`
+  - `X-Forwarded-Host` → the original hostname
+  - `X-Forwarded-For` → the client IP
+
+> The `X-Forwarded-Proto: https` header is essential. Without it the app
+> believes it is on plain HTTP and can produce redirect loops or broken login.
+
+### Example: host runs **nginx**
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name tms.company.com;
+
+    # Certificate for tms.company.com (e.g. from certbot on the host)
+    ssl_certificate     /etc/letsencrypt/live/tms.company.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tms.company.com/privkey.pem;
+
+    location / {
+        proxy_pass http://192.168.10.20:3000;   # <VM_PRIVATE_IP>:3000
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Host  $host;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+
+        # WebSocket / streaming support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name tms.company.com;
+    return 301 https://$host$request_uri;
+}
+```
+
+Get the certificate on the host with certbot (once):
+
+```bash
+sudo certbot --nginx -d tms.company.com
+```
+
+Reload nginx after editing:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### Example: host runs **Caddy**
+
+Caddy issues and renews the certificate automatically. Add to the host's
+`Caddyfile`:
+
+```caddy
+tms.company.com {
+    reverse_proxy 192.168.10.20:3000    # <VM_PRIVATE_IP>:3000
+}
+```
+
+Caddy sets the `X-Forwarded-*` headers automatically. Reload:
+
+```bash
+sudo systemctl reload caddy
+```
+
+### Other proxies
+
+The same three ideas apply to HAProxy, Traefik, or a hardware load balancer:
+match the hostname, terminate TLS, forward to `<VM_PRIVATE_IP>:3000` with the
+`X-Forwarded-*` headers.
+
+---
+
+## 12. Verify end-to-end HTTPS
+
+From a browser (or your workstation):
+
+- `https://tms.company.com/` — visitor registration
+- `https://tms.company.com/admin` — admin login
+- `https://tms.company.com/api/health` — `{"ok":true,...}`
+
+Log in at `/admin` with your seeded admin credentials.
+
+If it loads with a valid padlock, the full chain works:
+`Browser → Host (HTTPS) → VM app (HTTP) → PostgreSQL`.
+
+---
+
+# Part C — Operations
+
+## 13. Print the visitor QR codes
+
+1. Log in to `https://tms.company.com/admin`.
+2. Go to **Settings** → **Visitor QR Code**.
+3. Download or print the **Check-in QR** (entrance) and **Check-out QR** (exit).
+
+They point at `https://tms.company.com/check-in` and `/check-out`.
+
+---
+
+## 14. Day-to-day operations
+
+On the **VM**, set a shortcut alias (note: base file only, no HTTPS overlay):
+
+```bash
+echo "alias tvms='docker compose -f /opt/tvms/docker-compose.prod.yml --env-file /opt/tvms/deploy/prod.env'" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Now you can use `tvms` as a shortcut:
+Then:
 
 ```bash
-tvms ps                 # show container status
+tvms ps                 # container status
 tvms logs -f app        # watch app logs (Ctrl+C to exit)
-tvms logs -f caddy      # watch Caddy/HTTPS logs
-tvms restart app        # restart just the app
-tvms down               # stop everything (data is preserved)
-tvms up -d              # start everything again
+tvms restart app        # restart the app
+tvms down               # stop (data preserved)
+tvms up -d              # start again
 ```
-
-> The examples below use the `tvms` shortcut. If you skipped the alias, replace
-> `tvms` with the full `docker compose -f ... -f ... --env-file ...` command.
 
 ---
 
-## 14. Updating to a new version
+## 15. Updating to a new version
 
-When there is new code to deploy:
+On the **VM**:
 
 ```bash
 cd /opt/tvms
@@ -427,122 +434,85 @@ git pull
 tvms up -d --build
 ```
 
-This rebuilds the image and restarts the containers. The app automatically
-applies any new database migrations on start. Your data and HTTPS certificate
-are preserved.
+Migrations apply automatically on start. Data and env are preserved. The host
+proxy needs no changes for app updates.
 
 ---
 
-## 15. Backups and restore
+## 16. Backups and restore
 
-### Create a backup
-
-Back up the entire database to a file:
+On the **VM**:
 
 ```bash
+# Backup
 mkdir -p ~/backups
 tvms exec postgres pg_dump -U visitor_system -d visitor_system > ~/backups/tvms_$(date +%Y%m%d_%H%M%S).sql
-```
 
-Download the backup to your own computer (run this on **your computer**, not
-the VPS):
-
-```bash
-scp deploy@203.0.113.10:/home/deploy/backups/tvms_*.sql .
-```
-
-> Schedule this regularly. Store copies off the server.
-
-### Restore a backup
-
-```bash
-# Stop the app so nothing writes during restore
+# Restore (replace filename)
 tvms stop app
-
-# Load the backup (replace with your filename)
 cat ~/backups/tvms_20260715_120000.sql | tvms exec -T postgres psql -U visitor_system -d visitor_system
-
-# Start the app again
 tvms start app
 ```
 
+Copy backups off the VM regularly (run on your workstation):
+
+```bash
+scp youruser@192.168.10.20:/home/youruser/backups/tvms_*.sql .
+```
+
 ---
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
-### The site won't load / no HTTPS
+### Site won't load at all
+- DNS: `nslookup tms.company.com` must return the **host's** public IP.
+- Host proxy running? Check the host's nginx/Caddy status and error log.
+- Ports 80/443 open on the **host** (not the VM).
 
-- Confirm DNS points to the VPS: `nslookup tms.example.com` (from your
-  computer) must return the VPS IP.
-- Confirm ports are open: `sudo ufw status` should list 80 and 443.
-- Check Caddy logs for certificate errors: `tvms logs caddy --tail=100`.
-
-### Caddy certificate request fails
-
-The most common causes:
-
-- DNS not yet pointing at this server (wait, then retry).
-- Port 80 blocked by the firewall or the cloud security group.
-- Port 80 already used by another web server on the VPS. Check with:
-  ```bash
-  sudo ss -lntp | grep -E ':80|:443'
-  ```
-  If something other than Docker/Caddy is listening, stop it.
+### 502 / 504 from the host proxy
+The host can't reach the app on the VM. On the **host**:
+```bash
+curl http://<VM_PRIVATE_IP>:3000/api/health
+```
+- If this fails: check `APP_BIND` in `deploy/prod.env` is the VM's private IP,
+  and the VM firewall allows port 3000 from the host (section 9).
+- Confirm the app is up on the VM: `tvms ps`.
 
 ### Admin login fails or immediately logs out
+- `BETTER_AUTH_URL` must be `https://tms.company.com` (the public URL).
+- The host proxy must send `X-Forwarded-Proto: https` (section 11).
+- After changing the VM env, apply it: `tvms up -d`.
 
-- `BETTER_AUTH_URL` in `deploy/prod.env` must exactly match your public URL
-  (`https://tms.example.com`).
-- After editing the env file, apply it: `tvms up -d`.
+### Redirect loop
+Almost always a missing `X-Forwarded-Proto: https` header on the host proxy.
+Add it and reload the proxy.
 
 ### App container keeps restarting
-
-Check its logs for the real error:
-
 ```bash
 tvms logs app --tail=100
 ```
-
-- A database connection error usually means `POSTGRES_PASSWORD` in the env file
-  doesn't match, or the database container isn't healthy yet — check
-  `tvms ps`.
-
-### Check what's using memory
-
-```bash
-docker stats --no-stream
-```
+A database error usually means `POSTGRES_PASSWORD` mismatch or the DB isn't
+healthy yet — check `tvms ps`.
 
 ### Start completely fresh (⚠️ deletes all data)
-
-Only if you want to wipe everything, including the database:
-
 ```bash
-tvms down -v
+tvms down -v      # the -v flag deletes the database volume — no undo
 ```
-
-The `-v` flag deletes the data volumes. **There is no undo.** Skip this unless
-you are certain.
 
 ---
 
-## Quick Reference Card
+## Quick Reference
 
+**On the VM:**
 ```bash
-# Location of everything
 cd /opt/tvms
-
-# First-time deploy
-cp deploy/prod.env.example deploy/prod.env   # then edit it
+cp deploy/prod.env.example deploy/prod.env   # set secrets, BETTER_AUTH_URL, APP_BIND
 tvms up -d --build                           # (after setting the alias)
 tvms exec app npm run auth:seed-admin
-
-# Everyday
-tvms ps                 # status
-tvms logs -f app        # logs
-tvms up -d --build      # deploy update (after git pull)
-tvms exec postgres pg_dump -U visitor_system -d visitor_system > backup.sql
+curl http://<VM_PRIVATE_IP>:3000/api/health
 ```
 
-Your app lives at **`https://tms.example.com/`** and the admin dashboard at
-**`https://tms.example.com/admin`**.
+**On the host:** route `tms.company.com` → `http://<VM_PRIVATE_IP>:3000`,
+terminate HTTPS, forward `X-Forwarded-Proto: https`.
+
+Public URL: **`https://tms.company.com/`** · Admin: **`/admin`**
