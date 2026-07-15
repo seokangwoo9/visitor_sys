@@ -61,8 +61,8 @@ export function AdminFilterForm({
       action={handleSubmit}
       className={
         variant === "standalone"
-          ? "grid gap-5 rounded-[1.75rem] border border-border bg-card p-5 lg:grid-cols-3"
-          : "grid gap-5 lg:grid-cols-3"
+          ? "grid gap-4 rounded-xl border border-border bg-card p-4 lg:grid-cols-3"
+          : "grid gap-4 lg:grid-cols-3"
       }
     >
       <label className="space-y-2">
@@ -71,7 +71,7 @@ export function AdminFilterForm({
           Search Name, Company, Vehicle, PIC, Phone
         </span>
         <Input
-          className="h-12 rounded-2xl bg-bg-base"
+          className="h-10 rounded-lg bg-bg-base"
           defaultValue={initialQuery}
           name="query"
           placeholder="e.g. Ahmad, ACME, V1234"
@@ -83,7 +83,7 @@ export function AdminFilterForm({
           Date Filter
         </span>
         <select
-          className="h-12 w-full rounded-2xl border border-input bg-bg-base px-4 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full rounded-lg border border-input bg-bg-base px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           defaultValue={initialDateFilter}
           name="date"
         >
@@ -100,7 +100,7 @@ export function AdminFilterForm({
           Sort
         </span>
         <select
-          className="h-12 w-full rounded-2xl border border-input bg-bg-base px-4 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full rounded-lg border border-input bg-bg-base px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           defaultValue={initialSort}
           name="sort"
         >
@@ -112,7 +112,7 @@ export function AdminFilterForm({
       <label className="space-y-2">
         <span className="text-sm font-semibold text-text-secondary">Custom From</span>
         <Input
-          className="h-12 rounded-2xl bg-bg-base"
+          className="h-10 rounded-lg bg-bg-base"
           defaultValue={initialCustomFrom}
           name="from"
           type="date"
@@ -122,20 +122,20 @@ export function AdminFilterForm({
         <span className="text-sm font-semibold text-text-secondary">Custom To</span>
         <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
           <Input
-            className="h-12 rounded-2xl bg-bg-base"
+            className="h-10 rounded-lg bg-bg-base"
             defaultValue={initialCustomTo}
             name="to"
             type="date"
           />
           <Button
-            className="h-12 rounded-2xl bg-visitor-success px-7 hover:bg-visitor-success-deep"
+            className="h-10 rounded-lg bg-visitor-success px-5 hover:bg-visitor-success-deep"
             disabled={isPending}
             type="submit"
           >
             {isPending ? "Applying" : "Apply"}
           </Button>
           <Button
-            className="h-12 rounded-2xl px-7"
+            className="h-10 rounded-lg px-5"
             disabled={isPending}
             onClick={handleReset}
             type="button"

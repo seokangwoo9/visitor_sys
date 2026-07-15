@@ -247,25 +247,25 @@ export function AdminQrCodeCard({
   }
 
   return (
-    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6">
-      <div className="flex items-start gap-4">
-        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
-          <QrCode className="size-5" aria-hidden="true" />
+    <section className="rounded-xl border border-visitor-success/10 bg-admin-panel p-5">
+      <div className="flex items-start gap-3">
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-visitor-success-soft text-visitor-success-deep">
+          <QrCode className="size-4" aria-hidden="true" />
         </span>
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+          <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
             Visitor QR Code
           </p>
-          <h2 className="mt-3 text-2xl font-bold text-visitor-ink">
+          <h2 className="mt-1 text-lg font-semibold text-visitor-ink">
             Check-in and Check-out QR
           </h2>
-          <p className="mt-3 text-sm leading-6 text-text-secondary">
+          <p className="mt-1 text-sm leading-6 text-text-secondary">
             Print separate codes for the entrance and exit visitor stations.
           </p>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-4">
         {visitorQrCodeDefinitions.map((definition) => {
           const qrCode = generatedQrCodes[definition.id];
 
@@ -283,7 +283,7 @@ export function AdminQrCodeCard({
         })}
       </div>
 
-      <p className="mt-5 text-xs font-semibold text-text-muted">
+      <p className="mt-4 text-xs text-text-muted">
         {statusMessage}
       </p>
     </section>
@@ -321,14 +321,14 @@ function QrCodePanel({
   const Icon = qrCode.icon;
 
   return (
-    <div className="rounded-3xl bg-card p-5">
+    <div className="rounded-xl bg-card p-4">
       <div className="flex items-start gap-3 text-left">
-        <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
-          <Icon className="size-5" aria-hidden={true} />
+        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-visitor-success-soft text-visitor-success-deep">
+          <Icon className="size-4" aria-hidden={true} />
         </span>
         <div>
-          <h3 className="text-lg font-bold text-visitor-ink">{qrCode.title}</h3>
-          <p className="mt-2 text-sm leading-6 text-text-secondary">
+          <h3 className="text-base font-semibold text-visitor-ink">{qrCode.title}</h3>
+          <p className="mt-1 text-sm leading-5 text-text-secondary">
             {qrCode.description}
           </p>
         </div>
@@ -336,21 +336,21 @@ function QrCodePanel({
 
       <canvas
         aria-label={`Visitor ${qrCode.title}`}
-        className="mx-auto mt-5 size-[240px] rounded-2xl bg-card"
+        className="mx-auto mt-4 size-50 rounded-xl bg-card"
         height={qrCodeCanvasSize}
         ref={refCallback}
         width={qrCodeCanvasSize}
       />
-      <p className="mt-4 break-all text-sm font-semibold leading-6 text-text-primary">
+      <p className="mt-3 break-all text-sm font-medium leading-5 text-text-primary">
         {qrCode.url || "Preparing QR code..."}
       </p>
-      <p className="mt-2 text-xs font-semibold text-text-muted">
+      <p className="mt-1 text-xs text-text-muted">
         {qrCode.statusMessage}
       </p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <Button
-          className="h-12 rounded-2xl bg-visitor-success px-5 font-bold text-primary-foreground hover:bg-visitor-success-deep"
+          className="h-10 rounded-lg bg-visitor-success px-4 font-semibold text-primary-foreground hover:bg-visitor-success-deep"
           disabled={!qrCode.dataUrl}
           onClick={onDownload}
           type="button"
@@ -359,7 +359,7 @@ function QrCodePanel({
           Download PNG
         </Button>
         <Button
-          className="h-12 rounded-2xl border-border bg-card px-5 font-bold text-text-primary hover:bg-visitor-success-soft hover:text-visitor-success-deep"
+          className="h-10 rounded-lg border-border bg-card px-4 font-semibold text-text-primary hover:bg-visitor-success-soft hover:text-visitor-success-deep"
           disabled={!qrCode.dataUrl}
           onClick={onPrint}
           type="button"

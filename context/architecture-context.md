@@ -37,9 +37,9 @@ The application follows a modern full-stack architecture using Next.js and Postg
 | Authentication | Better Auth | Admin authentication |
 | Session | Secure HTTP Cookie | Visitor session management |
 | Excel Export | ExcelJS | Enterprise Excel reports |
-| Deployment | Docker | Containerized deployment |
-| Reverse Proxy | Nginx | HTTPS & reverse proxy |
-| SSL | Let's Encrypt | Secure HTTPS |
+| Deployment | Docker Compose | Containerized app, database, and proxy |
+| Reverse Proxy | Caddy | HTTPS entry point & reverse proxy |
+| SSL | Let's Encrypt (via Caddy) | Automatic HTTPS certificate & renewal |
 | Logging | Pino | Application logging |
 
 ---
@@ -380,6 +380,42 @@ The system follows:
 - KISS (Keep It Simple)
 - Mobile-first Design
 - Secure by Default
+
+---
+
+# Deployment Architecture
+
+The system is deployed Docker-first. All runtime components run as containers
+orchestrated by Docker Compose.
+
+Container topology:
+
+```
+Browser → Caddy (container, auto-HTTPS) → App (Next.js container) → PostgreSQL (container)
+```
+
+- **App container**: built from the repository `Dockerfile` (multi-stage Node
+  build). On start, `docker-entrypoint.sh` runs `prisma migrate deploy` before
+  launching `next start`. The Next.js container serves both pages and `/api`
+  routes.
+- **PostgreSQL container**: data persisted in a named Docker volume.
+- **Caddy container**: the public HTTPS entry point. It automatically obtains
+  and renews a Let's Encrypt certificate for the configured domain and reverse
+  proxies all traffic to the app container.
+
+Compose files:
+
+- `docker-compose.prod.yml` — base stack (app + postgres).
+- `docker-compose.prod.https.yml` — overlay that adds Caddy and moves the app
+  behind it (published only on localhost).
+- `deploy/Caddyfile` — reverse-proxy and TLS configuration.
+- `deploy/prod.env` — production secrets and domain configuration (git-ignored;
+  templated by `deploy/prod.env.example`).
+
+Local development continues to use the root `compose.yaml`, which runs only the
+PostgreSQL service on host port `5433`.
+
+Deployment steps are documented in `DEPLOY_VPS_UBUNTU_DOMAIN_HTTPS.md`.
 
 ---
 

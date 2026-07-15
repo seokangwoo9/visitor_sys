@@ -1,0 +1,63 @@
+# Production stack: application + PostgreSQL.
+#
+# Usage (HTTP, app exposed directly for testing):
+#   docker compose -f docker-compose.prod.yml --env-file deploy/prod.env up -d --build
+#
+# For domain + HTTPS, add the overlay file:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.https.yml \
+#     --env-file deploy/prod.env up -d --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tvms_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-visitor_system}
+      POSTGRES_USER: ${POSTGRES_USER:-visitor_system}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - tvms_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-visitor_system} -d ${POSTGRES_DB:-visitor_system}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tvms
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tvms-app:latest
+    container_name: tvms_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-visitor_system}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-visitor_system}?schema=public
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?BETTER_AUTH_URL is required}
+      ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-System Administrator}
+      ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@example.com}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-}
+    # Exposed directly only in the base (HTTP) stack. The HTTPS overlay
+    # replaces this with a localhost-only binding behind Caddy.
+    ports:
+      - "3000:3000"
+    networks:
+      - tvms
+
+volumes:
+  tvms_postgres_data:
+
+networks:
+  tvms:
+    driver: bridge

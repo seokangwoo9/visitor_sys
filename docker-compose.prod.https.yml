@@ -1,0 +1,39 @@
+# HTTPS overlay: adds a Caddy reverse proxy that terminates TLS and
+# automatically requests/renews Let's Encrypt certificates.
+#
+# Stack this file on top of the base compose file:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.https.yml \
+#     --env-file deploy/prod.env up -d --build
+#
+# Caddy serves 80/443 to the public and proxies to the app container.
+# The app is no longer published to the public interface; it is only
+# reachable on the internal Docker network (and localhost for debugging).
+
+services:
+  app:
+    # Stop publishing the app to all interfaces; Caddy fronts it instead.
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: tvms_caddy
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN is required}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - tvms_caddy_data:/data
+      - tvms_caddy_config:/config
+    networks:
+      - tvms
+
+volumes:
+  tvms_caddy_data:
+  tvms_caddy_config:

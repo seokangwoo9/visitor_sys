@@ -1,0 +1,22 @@
+# Caddyfile for the TOE Visitor Management System.
+#
+# {$DOMAIN} and {$ACME_EMAIL} are provided by the caddy service
+# environment (see docker-compose.prod.https.yml / deploy/prod.env).
+#
+# Caddy automatically obtains and renews a Let's Encrypt certificate
+# for {$DOMAIN} and reverse-proxies all traffic to the Next.js app
+# container, which serves both the pages and the /api routes.
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	reverse_proxy app:3000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+}

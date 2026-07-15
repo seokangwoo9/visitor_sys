@@ -161,7 +161,7 @@ export function VisitorRegistrationForm({
   }
 
   return (
-    <form className="space-y-5" onSubmit={handleSubmit(submitRegistration)}>
+    <form className="space-y-4" onSubmit={handleSubmit(submitRegistration)}>
       <FormSection icon={UserRound} title="Personal Information">
         <Field
           autoComplete="name"
@@ -199,11 +199,11 @@ export function VisitorRegistrationForm({
       </FormSection>
 
       <FormSection icon={Car} title="Vehicle">
-        <label className="flex h-14 items-center gap-3 rounded-2xl border border-border bg-bg-base px-4 text-sm font-medium text-text-secondary">
+        <label className="flex h-12 items-center gap-3 rounded-xl border border-border bg-bg-base px-4 text-sm font-medium text-text-secondary">
           <input
             aria-invalid={Boolean(errors.hasVehicle)}
             checked={!hasVehicle}
-            className="size-5 rounded border-border-subtle bg-card text-visitor-success-deep"
+            className="size-4 rounded border-border-subtle bg-card text-visitor-success-deep"
             disabled={isSubmitting}
             onChange={(event) => {
               const nextHasVehicle = !event.target.checked;
@@ -253,34 +253,34 @@ export function VisitorRegistrationForm({
 
       <FormSection icon={ShieldCheck} title="Safety Acknowledgment">
         <input type="hidden" {...register("safetyAcknowledgmentVersionId")} />
-        <div className="rounded-2xl border border-border bg-bg-base p-4">
+        <div className="rounded-xl border border-border bg-bg-base p-4">
           <Dialog>
             <DialogTrigger
               render={
                 <button
-                  className="block min-h-10 w-full rounded-xl py-1 text-left text-sm font-bold text-visitor-success-deep underline underline-offset-4 transition hover:text-visitor-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-visitor-success"
+                  className="block min-h-9 w-full rounded-lg py-1 text-left text-sm font-semibold text-visitor-success-deep underline underline-offset-4 transition hover:text-visitor-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-visitor-success"
                   type="button"
                 />
               }
             >
               {safetyAcknowledgment.title}
             </DialogTrigger>
-            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 sm:max-w-xl">
+            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-xl">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-visitor-ink">
+                <DialogTitle className="text-lg font-semibold text-visitor-ink">
                   {safetyAcknowledgment.title}
                 </DialogTitle>
               </DialogHeader>
-              <div className="mt-4 whitespace-pre-wrap rounded-2xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
+              <div className="mt-4 whitespace-pre-wrap rounded-xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
                 {safetyAcknowledgment.content}
               </div>
             </DialogContent>
           </Dialog>
         </div>
-        <label className="flex items-start gap-3 rounded-2xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
           <input
             aria-invalid={Boolean(errors.safetyAcknowledged)}
-            className="mt-0.5 size-5 rounded border-border-subtle bg-card text-visitor-success-deep"
+            className="mt-0.5 size-4 rounded border-border-subtle bg-card text-visitor-success-deep"
             disabled={isSubmitting}
             type="checkbox"
             {...register("safetyAcknowledged")}
@@ -303,7 +303,7 @@ export function VisitorRegistrationForm({
       ) : null}
 
       <Button
-        className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold hover:bg-visitor-success-deep"
+        className="h-12 w-full rounded-xl bg-visitor-success text-base font-semibold hover:bg-visitor-success-deep"
         disabled={isSubmitting}
         type="submit"
       >
@@ -328,14 +328,14 @@ interface FormSectionProps {
 
 function FormSection({ children, icon: Icon, title }: FormSectionProps) {
   return (
-    <section className="rounded-[1.75rem] bg-card px-5 py-6">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
-          <Icon className="size-5" aria-hidden={true} />
+    <section className="rounded-xl bg-card px-5 py-5">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-visitor-success-soft text-visitor-success-deep">
+          <Icon className="size-4" aria-hidden={true} />
         </div>
-        <h2 className="text-lg font-bold text-visitor-ink">{title}</h2>
+        <h2 className="text-base font-semibold text-visitor-ink">{title}</h2>
       </div>
-      <div className="space-y-5">{children}</div>
+      <div className="space-y-4">{children}</div>
     </section>
   );
 }
@@ -364,15 +364,15 @@ function Field({
   type = "text",
 }: FieldProps) {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-semibold text-text-secondary" htmlFor={registration.name}>
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium text-text-secondary" htmlFor={registration.name}>
         {label}
       </Label>
       <Input
         aria-invalid={Boolean(error)}
         autoComplete={autoComplete}
         className={cn(
-          "h-14 rounded-2xl border-border bg-card px-4 text-base placeholder:text-text-muted",
+          "h-12 rounded-xl border-border bg-card px-4 text-base placeholder:text-text-muted",
           error ? "border-destructive" : null
         )}
         disabled={disabled}
@@ -408,14 +408,14 @@ function TextAreaField({
   registration,
 }: TextAreaFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-semibold text-text-secondary" htmlFor={registration.name}>
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium text-text-secondary" htmlFor={registration.name}>
         {label}
       </Label>
       <Textarea
         aria-invalid={Boolean(error)}
         className={cn(
-          "min-h-28 rounded-2xl border-border bg-card px-4 py-4 text-base placeholder:text-text-muted",
+          "min-h-24 rounded-xl border-border bg-card px-4 py-3 text-base placeholder:text-text-muted",
           error ? "border-destructive" : null
         )}
         disabled={disabled}

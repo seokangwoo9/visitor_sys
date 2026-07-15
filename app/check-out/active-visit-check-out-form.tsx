@@ -97,7 +97,7 @@ export function ActiveVisitCheckOutForm() {
   }
 
   return (
-    <div className="space-y-5 text-left">
+    <div className="space-y-4 text-left">
       <form className="space-y-4" onSubmit={handleLookup}>
         <Field
           disabled={isLookingUp || isCheckingOut}
@@ -112,7 +112,7 @@ export function ActiveVisitCheckOutForm() {
         />
 
         <Button
-          className="h-14 w-full rounded-2xl bg-visitor-ink text-base font-bold text-primary-foreground hover:bg-visitor-ink/90"
+          className="h-12 w-full rounded-xl bg-visitor-success text-base font-semibold text-primary-foreground hover:bg-visitor-success-deep"
           disabled={isLookingUp || isCheckingOut}
           type="submit"
         >
@@ -131,17 +131,17 @@ export function ActiveVisitCheckOutForm() {
       </form>
 
       {match ? (
-        <div className="space-y-4 rounded-3xl border border-visitor-success/10 bg-visitor-success-soft p-5 text-center">
-          <p className="text-xs font-bold uppercase text-visitor-success-deep">
+        <div className="space-y-3 rounded-xl border border-visitor-success/10 bg-visitor-success-soft p-4 text-center">
+          <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-text-muted">
             Active Visit Found
           </p>
-          <h2 className="text-xl font-bold text-visitor-ink">{match.fullName}</h2>
-          <div className="grid gap-3 text-left">
+          <h2 className="text-lg font-semibold text-visitor-ink">{match.fullName}</h2>
+          <div className="grid gap-2 text-left">
             <MatchPanel label="Company" value={match.companyName} />
             <MatchPanel label="Check In" value={formatDateTime(match.checkInAt)} />
           </div>
           <Button
-            className="h-14 w-full rounded-2xl bg-visitor-success text-base font-bold text-primary-foreground hover:bg-visitor-success-deep"
+            className="h-12 w-full rounded-xl bg-visitor-success text-base font-semibold text-primary-foreground hover:bg-visitor-success-deep"
             disabled={isCheckingOut || isLookingUp}
             onClick={handleConfirmCheckOut}
             type="button"
@@ -192,14 +192,14 @@ function Field({
   const id = label.toLowerCase().replaceAll(" ", "-");
 
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-semibold text-text-secondary" htmlFor={id}>
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium text-text-secondary" htmlFor={id}>
         {label}
       </Label>
       <Input
         aria-invalid={Boolean(error)}
         className={cn(
-          "h-14 rounded-2xl border-border bg-card px-4 text-base placeholder:text-text-muted",
+          "h-12 rounded-xl border-border bg-card px-4 text-base placeholder:text-text-muted",
           error ? "border-destructive" : null
         )}
         disabled={disabled}
@@ -230,9 +230,9 @@ function MatchPanel({
   value: string;
 }) {
   return (
-    <div className={cn("rounded-2xl bg-card p-4", className)}>
-      <p className="text-xs font-bold uppercase text-text-muted">{label}</p>
-      <p className="mt-2 text-sm font-bold text-visitor-ink">{value}</p>
+    <div className={cn("rounded-lg bg-card p-3", className)}>
+      <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">{label}</p>
+      <p className="mt-1.5 text-sm font-semibold text-visitor-ink">{value}</p>
     </div>
   );
 }

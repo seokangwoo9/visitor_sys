@@ -100,9 +100,9 @@ export default async function AdminPage(props: PageProps<"/admin">) {
   return (
     <main className="min-h-screen bg-admin-page text-text-primary">
       <div className="flex min-h-screen">
-        <aside className="hidden w-72 shrink-0 border-r border-border bg-card px-5 py-6 lg:flex lg:flex-col">
+        <aside className="hidden w-60 shrink-0 border-r border-border bg-bg-base px-4 py-5 lg:flex lg:flex-col">
           <AdminBrand />
-          <nav className="mt-8 space-y-3">
+          <nav className="mt-6 space-y-0.5">
             {adminSections.map((item) => (
               <AdminNavItem
                 active={section === item.value}
@@ -314,45 +314,35 @@ function ExportView({
         description="Download visitor reports for the selected date range and search filters."
         title="Export"
       />
-      <section className="grid gap-6 xl:grid-cols-[1.35fr_1fr]">
-        <section className="rounded-[1.75rem] border border-border bg-card p-6">
-          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
-            Excel Export
-          </p>
-          <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
-            Visitor Records Workbook
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-text-secondary">
-            Export visitor records with the same filters used in the Visitors section.
-          </p>
-          <div className="mt-6 border-t border-border pt-6">
-            <AdminFilterForm
-              initialCustomFrom={customFrom}
-              initialCustomTo={customTo}
-              initialDateFilter={dateFilter}
-              initialQuery={query}
-              initialSort={sortMode}
-              variant="embedded"
-            />
-            <Link
-              className={cn(
-                buttonVariants({ variant: "default" }),
-                "mt-5 h-12 rounded-2xl bg-visitor-success px-7 hover:bg-visitor-success-deep"
-              )}
-              href={`/api/admin/export?${exportParams.toString()}`}
-            >
-              Download Excel
-            </Link>
-          </div>
-        </section>
-          <InfoPanel
-            eyebrow="Report Includes"
-            items={[
-              "Visitor contact, company, PIC, vehicle, visit time, duration, status, and safety acknowledgment.",
-              "A formatted spreadsheet that is ready to review, print, or archive.",
-              "Report summary with generated time, admin user, and total visitor count.",
-            ]}
-        />
+      <section className="rounded-xl border border-border bg-card p-5">
+        <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
+          Excel Export
+        </p>
+        <h2 className="mt-2 text-lg font-semibold text-visitor-ink">
+          Visitor Records Workbook
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
+          Export visitor records with the same filters used in the Visitors section.
+        </p>
+        <div className="mt-5 border-t border-border pt-5">
+          <AdminFilterForm
+            initialCustomFrom={customFrom}
+            initialCustomTo={customTo}
+            initialDateFilter={dateFilter}
+            initialQuery={query}
+            initialSort={sortMode}
+            variant="embedded"
+          />
+          <Link
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "mt-5 h-10 rounded-lg bg-visitor-success px-6 hover:bg-visitor-success-deep"
+            )}
+            href={`/api/admin/export?${exportParams.toString()}`}
+          >
+            Download Excel
+          </Link>
+        </div>
       </section>
     </>
   );
@@ -373,36 +363,36 @@ function SettingsView({
         description="Manage visitor timing rules, QR codes, and the safety acknowledgment text."
         title="Settings"
       />
-      <section className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
+      <section className="grid gap-6 xl:grid-cols-2">
         <div className="space-y-6">
-          <section className="rounded-[1.75rem] border border-border bg-card p-6">
-            <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+          <section className="rounded-xl border border-border bg-card p-5">
+            <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
               Operational Settings
             </p>
-            <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
+            <h2 className="mt-2 text-lg font-semibold text-visitor-ink">
               Visitor Timeout Rules
             </h2>
-            <p className="mt-3 text-sm text-text-secondary">
+            <p className="mt-2 text-sm text-text-secondary">
               Set when active visits should be highlighted as overdue and when they should expire.
             </p>
-            <div className="mt-6 border-t border-border pt-6">
+            <div className="mt-5 border-t border-border pt-5">
               <AdminSettingsForm
                 autoExpireHours={settingsValues.autoExpireHours}
                 overdueThresholdHours={settingsValues.overdueThresholdHours}
               />
             </div>
           </section>
-          <section className="rounded-[1.75rem] border border-border bg-card p-6">
-            <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+          <section className="rounded-xl border border-border bg-card p-5">
+            <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
               Safety Form
             </p>
-            <h2 className="mt-4 text-2xl font-bold text-visitor-ink">
+            <h2 className="mt-2 text-lg font-semibold text-visitor-ink">
               Visitor Safety Acknowledgment
             </h2>
-            <p className="mt-3 text-sm text-text-secondary">
+            <p className="mt-2 text-sm text-text-secondary">
               Update the English safety and indemnity text visitors must accept before check-in.
             </p>
-            <div className="mt-6 border-t border-border pt-6">
+            <div className="mt-5 border-t border-border pt-5">
               <AdminSafetyAcknowledgmentForm safetyAcknowledgment={safetyAcknowledgment} />
             </div>
           </section>
@@ -422,15 +412,15 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
         description="Review important admin actions and visitor activity."
         title="Activity Log"
       />
-      <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="p-5">
-          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+          <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
             Recent Activity
           </p>
-          <h2 className="mt-4 text-xl font-bold text-visitor-ink">Activity History</h2>
+          <h2 className="mt-2 text-base font-semibold text-visitor-ink">Activity History</h2>
         </div>
         <div className="px-5 pb-5">
-          <div className="overflow-hidden rounded-2xl border border-border">
+          <div className="overflow-hidden rounded-lg border border-border">
             <Table>
               <TableHeader className="bg-bg-base">
                 <TableRow>
@@ -447,11 +437,11 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
                     <TableRow key={auditLog.id}>
                       <TableCell className="pl-4">{formatDateTime(auditLog.createdAt)}</TableCell>
                       <TableCell>
-                        <span className="text-xs font-bold text-visitor-success-deep">
+                        <span className="text-xs font-semibold text-visitor-success-deep">
                           {formatAuditActionLabel(auditLog)}
                         </span>
                       </TableCell>
-                      <TableCell className="font-semibold text-visitor-ink">
+                      <TableCell className="font-medium text-visitor-ink">
                         {describeAuditLog(auditLog)}
                       </TableCell>
                       <TableCell>{auditLog.visitorId ? "Visitor" : "System"}</TableCell>
@@ -477,14 +467,14 @@ function AuditView({ auditLogs }: { auditLogs: AdminAuditLogItem[] }) {
 function AdminBrand() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex size-12 items-center justify-center rounded-2xl bg-visitor-ink text-primary-foreground">
-        <ShieldCheck className="size-6" aria-hidden="true" />
+      <div className="flex size-8 items-center justify-center rounded-lg bg-visitor-success-soft text-visitor-success-deep">
+        <ShieldCheck className="size-4" aria-hidden="true" />
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+        <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-text-muted">
           TVMS Admin
         </p>
-        <p className="text-lg font-bold text-visitor-ink">
+        <p className="text-sm font-semibold text-visitor-ink">
           TOE Visitor Management System
         </p>
       </div>
@@ -506,14 +496,14 @@ function AdminNavItem({
   return (
     <Link
       className={cn(
-        "flex h-11 items-center gap-3 rounded-2xl px-4 text-sm font-bold text-text-secondary",
+        "flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors",
         active
-          ? "bg-visitor-success text-primary-foreground"
-          : "hover:bg-bg-base"
+          ? "bg-visitor-success-soft text-visitor-success-deep font-semibold"
+          : "hover:bg-card"
       )}
       href={`/admin?section=${section}`}
     >
-      <Icon className="size-5" aria-hidden="true" />
+      <Icon className="size-4" aria-hidden="true" />
       {label}
     </Link>
   );
@@ -521,12 +511,12 @@ function AdminNavItem({
 
 function SignedInCard({ displayName }: { displayName: string }) {
   return (
-    <section className="rounded-2xl border border-border bg-bg-base p-4">
-      <p className="text-xs font-bold uppercase tracking-[0.28em] text-text-muted">
+    <section className="rounded-xl border border-border bg-card p-3">
+      <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-text-muted">
         Signed In As
       </p>
-      <p className="mt-3 font-bold text-visitor-ink">{displayName}</p>
-      <div className="mt-5">
+      <p className="mt-2 text-sm font-semibold text-visitor-ink">{displayName}</p>
+      <div className="mt-3">
         <SignOutButton />
       </div>
     </section>
@@ -535,13 +525,10 @@ function SignedInCard({ displayName }: { displayName: string }) {
 
 function AdminHero({ description, title }: { description: string; title: string }) {
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-6">
-      <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
-        Admin
-      </p>
-      <h1 className="mt-4 text-3xl font-bold text-visitor-ink">{title}</h1>
-      <p className="mt-4 text-sm text-text-secondary">{description}</p>
-    </section>
+    <div className="pb-2">
+      <h1 className="text-xl font-semibold text-visitor-ink">{title}</h1>
+      <p className="mt-1 text-sm text-text-muted">{description}</p>
+    </div>
   );
 }
 
@@ -566,15 +553,15 @@ function MetricCard({
         : "bg-visitor-success-soft text-visitor-success-deep";
 
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-3">
-        <div className={cn("flex size-11 items-center justify-center rounded-2xl", iconClassName)}>
-          <Icon className="size-5" aria-hidden="true" />
+        <div className={cn("flex size-9 items-center justify-center rounded-lg", iconClassName)}>
+          <Icon className="size-4" aria-hidden="true" />
         </div>
       </div>
-      <p className="mt-6 text-sm font-semibold text-text-secondary">{label}</p>
-      <p className="mt-3 text-3xl font-bold text-visitor-ink">{value}</p>
-      {note ? <p className="mt-2 text-xs font-semibold text-text-muted">{note}</p> : null}
+      <p className="mt-4 text-sm font-medium text-text-secondary">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-visitor-ink">{value}</p>
+      {note ? <p className="mt-1.5 text-xs text-text-muted">{note}</p> : null}
     </section>
   );
 }
@@ -591,35 +578,35 @@ function TrendCard({
   const maxValue = Math.max(...points.map((point) => point.value), 1);
 
   return (
-    <section className="rounded-[1.75rem] border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-lg font-bold text-visitor-ink">{title}</h2>
-          <p className="mt-2 text-sm text-text-secondary">{subtitle}</p>
+          <h2 className="text-base font-semibold text-visitor-ink">{title}</h2>
+          <p className="mt-1 text-sm text-text-muted">{subtitle}</p>
         </div>
-        <div className="flex size-10 items-center justify-center rounded-2xl bg-visitor-success-soft text-visitor-success-deep">
-          <ArrowUpRight className="size-5" aria-hidden="true" />
+        <div className="flex size-8 items-center justify-center rounded-lg bg-visitor-success-soft text-visitor-success-deep">
+          <ArrowUpRight className="size-4" aria-hidden="true" />
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-7 items-end gap-2">
+      <div className="mt-5 grid grid-cols-7 items-end gap-1.5">
         {points.map((point) => {
           const height = Math.max(Math.round((point.value / maxValue) * 7), 1);
 
           return (
             <div className="space-y-2 text-center" key={point.label}>
-              <div className="flex h-32 items-end">
+              <div className="flex h-28 items-end">
                 <div
                   className={cn(
-                    "w-full rounded-3xl",
+                    "w-full rounded",
                     point.value === maxValue && point.value > 0
                       ? "bg-visitor-success"
-                      : "bg-bg-base"
+                      : "bg-bg-subtle"
                   )}
                   style={{ height: `${height * 12.5}%` }}
                 />
               </div>
-              <p className="text-xs font-bold text-visitor-ink">{point.value}</p>
-              <p className="text-xs font-semibold text-text-muted">{point.label}</p>
+              <p className="text-xs font-semibold text-visitor-ink">{point.value}</p>
+              <p className="text-xs text-text-muted">{point.label}</p>
             </div>
           );
         })}
@@ -630,20 +617,20 @@ function TrendCard({
 
 function CurrentVisitorsTable({ visitors }: { visitors: AdminVisitorListItem[] }) {
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="flex items-start justify-between gap-3 p-5">
         <div>
-          <h2 className="text-xl font-bold text-visitor-ink">Current Visitors</h2>
-          <p className="mt-2 text-sm text-text-secondary">
+          <h2 className="text-base font-semibold text-visitor-ink">Current Visitors</h2>
+          <p className="mt-1 text-sm text-text-muted">
             Visitors currently inside, ordered by longest stay.
           </p>
         </div>
-        <span className="rounded-2xl bg-visitor-success-soft px-4 py-2 text-sm font-bold text-visitor-success-deep">
+        <span className="rounded-lg bg-visitor-success-soft px-3 py-1.5 text-xs font-semibold text-visitor-success-deep">
           {visitors.length} inside
         </span>
       </div>
       <div className="px-5 pb-5">
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="overflow-hidden rounded-lg border border-border">
           <Table>
             <TableHeader className="bg-bg-base">
               <TableRow>
@@ -690,9 +677,9 @@ function CurrentVisitorsTable({ visitors }: { visitors: AdminVisitorListItem[] }
 
 function VisitorHistoryTable({ visitors }: { visitors: AdminVisitorListItem[] }) {
   return (
-    <section className="overflow-hidden rounded-[1.75rem] border border-border bg-card">
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="p-5">
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="overflow-hidden rounded-lg border border-border">
           <Table>
             <TableHeader className="bg-bg-base">
               <TableRow>
@@ -757,7 +744,7 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
       <DialogTrigger
         render={
           <button
-            className="inline-flex h-9 items-center gap-2 rounded-2xl bg-visitor-success-soft px-4 text-xs font-bold text-visitor-success-deep transition hover:bg-visitor-success/15"
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-visitor-success-soft px-4 text-xs font-semibold text-visitor-success-deep transition hover:bg-visitor-success/15"
             type="button"
           />
         }
@@ -765,17 +752,17 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
         <Eye className="size-4" aria-hidden="true" />
         View
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-[1.75rem] border border-border bg-card p-5 sm:!max-w-[calc(100vw-3rem)] sm:p-6 lg:!max-w-5xl xl:!max-w-6xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-[calc(100vw-3rem)]! sm:p-6 lg:max-w-5xl! xl:max-w-6xl!">
         <DialogHeader>
-          <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+          <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
             Visitor Details
           </p>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <DialogTitle className="text-2xl font-bold text-visitor-ink">
+              <DialogTitle className="text-xl font-semibold text-visitor-ink">
                 {visitor.fullName}
               </DialogTitle>
-              <DialogDescription className="mt-2 text-sm text-text-secondary">
+              <DialogDescription className="mt-1 text-sm text-text-secondary">
                 Complete information for this visitor record.
               </DialogDescription>
             </div>
@@ -838,24 +825,24 @@ function VisitorDetailItem({
   value: string;
 }) {
   return (
-    <div className={cn("rounded-2xl bg-bg-base px-4 py-3", className)}>
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-text-muted">
+  <div className={cn("rounded-lg bg-bg-base px-3 py-2.5", className)}>
+      <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
         {label}
       </p>
-      <p className="mt-2 break-words text-sm font-bold text-visitor-ink">{value}</p>
+      <p className="mt-1.5 break-words text-sm font-semibold text-visitor-ink">{value}</p>
     </div>
   );
 }
 
 function InfoPanel({ eyebrow, items }: { eyebrow: string; items: string[] }) {
   return (
-    <section className="rounded-[1.75rem] border border-visitor-success/10 bg-admin-panel p-6">
-      <p className="text-sm font-bold uppercase tracking-[0.32em] text-visitor-success-deep">
+    <section className="rounded-xl border border-visitor-success/10 bg-admin-panel p-5">
+      <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
         {eyebrow}
       </p>
-      <div className="mt-6 space-y-4">
+      <div className="mt-5 space-y-3">
         {items.map((item) => (
-          <div className="rounded-2xl bg-card px-4 py-4 text-sm font-semibold leading-6 text-text-primary" key={item}>
+          <div className="rounded-lg bg-card px-4 py-3 text-sm leading-6 text-text-primary" key={item}>
             {item}
           </div>
         ))}
@@ -883,7 +870,7 @@ function StatusBadge({ status }: { status: VisitorStatus }) {
           : "bg-state-warning/10 text-text-primary";
 
   return (
-    <span className={cn("inline-flex rounded-2xl px-3 py-1 text-xs font-bold", className)}>
+    <span className={cn("inline-flex rounded-md px-2.5 py-0.5 text-xs font-semibold", className)}>
       {label}
     </span>
   );

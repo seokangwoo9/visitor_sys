@@ -1,0 +1,29 @@
+# Dependencies (reinstalled inside the image)
+node_modules
+
+# Build output (regenerated inside the image)
+.next
+out
+
+# Environment files (provided at runtime via env_file)
+.env
+.env.*
+!.env.example
+
+# Version control and IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Local Docker / deploy artifacts
+deploy/prod.env
+
+# Logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
+
+# Docs not needed in the image
+*.md
+!prisma/**/*.md
