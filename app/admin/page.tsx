@@ -59,9 +59,11 @@ import { AdminFilterForm } from "./admin-filter-form";
 import { AdminPagination } from "./admin-pagination";
 import { AdminQrCodeCard } from "./admin-qr-code-card";
 import { AdminSafetyAcknowledgmentForm } from "./admin-safety-acknowledgment-form";
+import { AdminPdpaConsentForm } from "./admin-pdpa-consent-form";
 import { AdminSettingsForm } from "./admin-settings-form";
 import { SignOutButton } from "./sign-out-button";
 import { getActiveSafetyAcknowledgmentPolicy } from "@/services/safety-acknowledgment-service";
+import { getActivePdpaConsentPolicy } from "@/services/pdpa-consent-service";
 
 type AdminSection = "dashboard" | "visitors" | "export" | "settings" | "audit";
 
@@ -167,6 +169,7 @@ export default async function AdminPage(props: PageProps<"/admin">) {
               <SettingsView
                 qrCodeOrigin={resolveVisitorQrCodeOrigin(headersList)}
                 safetyAcknowledgment={await getActiveSafetyAcknowledgmentPolicy()}
+                pdpaConsent={await getActivePdpaConsentPolicy()}
                 settingsValues={await getSettingsValues()}
               />
             ) : (
@@ -351,10 +354,12 @@ function ExportView({
 function SettingsView({
   qrCodeOrigin,
   safetyAcknowledgment,
+  pdpaConsent,
   settingsValues,
 }: {
   qrCodeOrigin?: string;
   safetyAcknowledgment: Awaited<ReturnType<typeof getActiveSafetyAcknowledgmentPolicy>>;
+  pdpaConsent: Awaited<ReturnType<typeof getActivePdpaConsentPolicy>>;
   settingsValues: Awaited<ReturnType<typeof getSettingsValues>>;
 }) {
   return (
@@ -394,6 +399,20 @@ function SettingsView({
             </p>
             <div className="mt-5 border-t border-border pt-5">
               <AdminSafetyAcknowledgmentForm safetyAcknowledgment={safetyAcknowledgment} />
+            </div>
+          </section>
+          <section className="rounded-xl border border-border bg-card p-5">
+            <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
+              PDPA Consent
+            </p>
+            <h2 className="mt-2 text-lg font-semibold text-visitor-ink">
+              Personal Data Protection Consent
+            </h2>
+            <p className="mt-2 text-sm text-text-secondary">
+              Update the PDPA consent text visitors must accept before check-in.
+            </p>
+            <div className="mt-5 border-t border-border pt-5">
+              <AdminPdpaConsentForm pdpaConsent={pdpaConsent} />
             </div>
           </section>
         </div>
@@ -805,6 +824,21 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
             }
           />
           <VisitorDetailItem
+            label="PDPA Accepted"
+            value={visitor.pdpaConsent ? "Yes" : "No"}
+          />
+          <VisitorDetailItem
+            label="PDPA Accepted At"
+            value={visitor.pdpaConsentedAt ? formatDateTime(visitor.pdpaConsentedAt) : "-"}
+          />
+          <VisitorDetailItem
+            label="PDPA Version"
+            value={visitor.pdpaConsentVersion
+              ? `Version ${visitor.pdpaConsentVersion}`
+              : "-"
+            }
+          />
+          <VisitorDetailItem
             className="md:col-span-2 lg:col-span-3"
             label="Purpose of Visit"
             value={visitor.purposeOfVisit}
@@ -831,23 +865,6 @@ function VisitorDetailItem({
       </p>
       <p className="mt-1.5 break-words text-sm font-semibold text-visitor-ink">{value}</p>
     </div>
-  );
-}
-
-function InfoPanel({ eyebrow, items }: { eyebrow: string; items: string[] }) {
-  return (
-    <section className="rounded-xl border border-visitor-success/10 bg-admin-panel p-5">
-      <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
-        {eyebrow}
-      </p>
-      <div className="mt-5 space-y-3">
-        {items.map((item) => (
-          <div className="rounded-lg bg-card px-4 py-3 text-sm leading-6 text-text-primary" key={item}>
-            {item}
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 

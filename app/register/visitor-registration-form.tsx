@@ -26,7 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import type { SafetyAcknowledgmentPolicy } from "@/types/visitor";
+import { useLanguage } from "@/lib/i18n/language-context";
+import type { SafetyAcknowledgmentPolicy, PdpaConsentPolicy } from "@/types/visitor";
 import {
   type VisitorRegistrationFormInput,
   visitorRegistrationSchema,
@@ -61,19 +62,25 @@ const fieldLabels: Record<FieldName, string> = {
   hostName: "Person to Meet",
   safetyAcknowledged: "Safety Acknowledgment",
   safetyAcknowledgmentVersionId: "Safety Acknowledgment Version",
+  pdpaConsent: "PDPA Consent",
+  pdpaConsentVersionId: "PDPA Consent Version",
 };
 
 export function VisitorRegistrationForm({
   safetyAcknowledgment,
+  pdpaConsent,
 }: {
   safetyAcknowledgment: SafetyAcknowledgmentPolicy;
+  pdpaConsent: PdpaConsentPolicy;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const hasRestoredDraft = useRef(false);
   const [serverMessage, setServerMessage] = useState("");
   const initialValues: VisitorRegistrationFormInput = {
     ...defaultVisitorRegistrationValues,
     safetyAcknowledgmentVersionId: safetyAcknowledgment.id,
+    pdpaConsentVersionId: pdpaConsent.id,
   };
   const {
     control,
@@ -101,13 +108,18 @@ export function VisitorRegistrationForm({
             ? restoredDraft.safetyAcknowledged
             : false,
         safetyAcknowledgmentVersionId: safetyAcknowledgment.id,
+        pdpaConsent:
+          restoredDraft.pdpaConsentVersionId === pdpaConsent.id
+            ? restoredDraft.pdpaConsent
+            : false,
+        pdpaConsentVersionId: pdpaConsent.id,
       });
     }
 
     queueMicrotask(() => {
       hasRestoredDraft.current = true;
     });
-  }, [reset, safetyAcknowledgment.id]);
+  }, [reset, safetyAcknowledgment.id, pdpaConsent.id]);
 
   useEffect(() => {
     if (!hasRestoredDraft.current) {
@@ -151,7 +163,7 @@ export function VisitorRegistrationForm({
         }
       }
 
-      setServerMessage(message ?? "Unable to register visitor. Please try again.");
+      setServerMessage(message ?? t("defaultError"));
       return;
     }
 
@@ -162,28 +174,28 @@ export function VisitorRegistrationForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit(submitRegistration)}>
-      <FormSection icon={UserRound} title="Personal Information">
+      <FormSection icon={UserRound} title={t("personalInformation")}>
         <Field
           autoComplete="name"
           disabled={isSubmitting}
           error={errors.fullName?.message}
-          label={fieldLabels.fullName}
-          placeholder="Enter your full name"
+          label={t("fullName")}
+          placeholder={t("enterFullName")}
           registration={register("fullName")}
         />
         <Field
           disabled={isSubmitting}
           error={errors.identificationNumber?.message}
-          label={fieldLabels.identificationNumber}
-          placeholder="IC or passport number"
+          label={t("identificationNumber")}
+          placeholder={t("enterIcPassport")}
           registration={register("identificationNumber")}
         />
         <Field
           autoComplete="tel"
           disabled={isSubmitting}
           error={errors.contactNumber?.message}
-          label={fieldLabels.contactNumber}
-          placeholder="0123456789"
+          label={t("contactNumber")}
+          placeholder={t("enterPhone")}
           registration={register("contactNumber")}
           type="tel"
         />
@@ -191,14 +203,14 @@ export function VisitorRegistrationForm({
           autoComplete="email"
           disabled={isSubmitting}
           error={errors.email?.message}
-          label={fieldLabels.email}
-          placeholder="you@company.com"
+          label={t("email")}
+          placeholder={t("enterEmail")}
           registration={register("email")}
           type="email"
         />
       </FormSection>
 
-      <FormSection icon={Car} title="Vehicle">
+      <FormSection icon={Car} title={t("vehicle")}>
         <label className="flex h-12 items-center gap-3 rounded-xl border border-border bg-bg-base px-4 text-sm font-medium text-text-secondary">
           <input
             aria-invalid={Boolean(errors.hasVehicle)}
@@ -215,55 +227,62 @@ export function VisitorRegistrationForm({
             }}
             type="checkbox"
           />
-          No Vehicle
+          {t("noVehicle")}
         </label>
         <Field
           disabled={isSubmitting || !hasVehicle}
           error={errors.vehiclePlateNumber?.message}
-          label={fieldLabels.vehiclePlateNumber}
-          placeholder="ABC1234"
+          label={t("vehiclePlateNumber")}
+          placeholder={t("enterPlateNumber")}
           registration={register("vehiclePlateNumber")}
         />
       </FormSection>
 
-      <FormSection icon={UsersRound} title="Company">
+      <FormSection icon={UsersRound} title={t("company")}>
         <Field
           autoComplete="organization"
           disabled={isSubmitting}
           error={errors.companyName?.message}
-          label={fieldLabels.companyName}
-          placeholder="Company name"
+          label={t("companyName")}
+          placeholder={t("enterCompanyName")}
           registration={register("companyName")}
         />
         <TextAreaField
           disabled={isSubmitting}
           error={errors.purposeOfVisit?.message}
-          label={fieldLabels.purposeOfVisit}
-          placeholder="Briefly describe your visit purpose"
+          label={t("purposeOfVisit")}
+          placeholder={t("enterPurpose")}
           registration={register("purposeOfVisit")}
         />
         <Field
           disabled={isSubmitting}
           error={errors.hostName?.message}
-          label={fieldLabels.hostName}
-          placeholder="Host or PIC name"
+          label={t("hostName")}
+          placeholder={t("enterHostName")}
           registration={register("hostName")}
         />
       </FormSection>
 
-      <FormSection icon={ShieldCheck} title="Safety Acknowledgment">
+      <FormSection icon={ShieldCheck} title={t("safetyAcknowledgment")}>
         <input type="hidden" {...register("safetyAcknowledgmentVersionId")} />
-        <div className="rounded-xl border border-border bg-bg-base p-4">
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
+          <input
+            aria-invalid={Boolean(errors.safetyAcknowledged)}
+            className="mt-0.5 size-4 shrink-0 rounded border-border-subtle bg-card text-visitor-success-deep"
+            disabled={isSubmitting}
+            type="checkbox"
+            {...register("safetyAcknowledged")}
+          />
           <Dialog>
             <DialogTrigger
               render={
                 <button
-                  className="block min-h-9 w-full rounded-lg py-1 text-left text-sm font-semibold text-visitor-success-deep underline underline-offset-4 transition hover:text-visitor-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-visitor-success"
+                  className="text-left text-sm font-medium text-text-secondary underline decoration-visitor-success-deep underline-offset-4 transition hover:text-visitor-ink"
                   type="button"
                 />
               }
             >
-              {safetyAcknowledgment.title}
+              {t("safetyAcknowledgmentCheckbox")}
             </DialogTrigger>
             <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-xl">
               <DialogHeader>
@@ -276,22 +295,50 @@ export function VisitorRegistrationForm({
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-        <label className="flex items-start gap-3 rounded-xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
-          <input
-            aria-invalid={Boolean(errors.safetyAcknowledged)}
-            className="mt-0.5 size-4 rounded border-border-subtle bg-card text-visitor-success-deep"
-            disabled={isSubmitting}
-            type="checkbox"
-            {...register("safetyAcknowledged")}
-          />
-          <span>
-            I acknowledge that I have read and agree to the Visitor Safety Acknowledgment and Indemnity Form.
-          </span>
         </label>
         {errors.safetyAcknowledged?.message ? (
           <p className="text-sm font-medium text-destructive" role="alert">
             {errors.safetyAcknowledged.message}
+          </p>
+        ) : null}
+      </FormSection>
+
+      <FormSection icon={ShieldCheck} title={t("pdpaConsent")}>
+        <input type="hidden" {...register("pdpaConsentVersionId")} />
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-bg-base px-4 py-4 text-sm font-medium text-text-secondary">
+          <input
+            aria-invalid={Boolean(errors.pdpaConsent)}
+            className="mt-0.5 size-4 shrink-0 rounded border-border-subtle bg-card text-visitor-success-deep"
+            disabled={isSubmitting}
+            type="checkbox"
+            {...register("pdpaConsent")}
+          />
+          <Dialog>
+            <DialogTrigger
+              render={
+                <button
+                  className="text-left text-sm font-medium text-text-secondary underline decoration-visitor-success-deep underline-offset-4 transition hover:text-visitor-ink"
+                  type="button"
+                />
+              }
+            >
+              {t("pdpaConsentCheckbox")}
+            </DialogTrigger>
+            <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold text-visitor-ink">
+                  {pdpaConsent.title}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="mt-4 whitespace-pre-wrap rounded-xl bg-bg-base p-4 text-sm leading-7 text-text-secondary">
+                {pdpaConsent.content}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </label>
+        {errors.pdpaConsent?.message ? (
+          <p className="text-sm font-medium text-destructive" role="alert">
+            {errors.pdpaConsent.message}
           </p>
         ) : null}
       </FormSection>
@@ -310,10 +357,10 @@ export function VisitorRegistrationForm({
         {isSubmitting ? (
           <>
             <LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
-            Submitting
+            {t("submitting")}
           </>
         ) : (
-          "Submit Check In"
+          t("submitCheckIn")
         )}
       </Button>
     </form>

@@ -42,7 +42,7 @@ export default async function VisitorStatusPage(props: PageProps<"/visitor/statu
 
           <div className="mt-6 space-y-3">
             <p className="text-xs font-medium uppercase tracking-[0.08em] text-primary-foreground/70">
-              Welcome
+              Welcome 
             </p>
             <div className="space-y-2">
               <h1 className="text-xl font-semibold">{activeSession.fullName}</h1>

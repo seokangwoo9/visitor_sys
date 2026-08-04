@@ -28,6 +28,10 @@ export const visitorRegistrationSchema = z.object({
     message: "Safety acknowledgment is required before check in.",
   }),
   safetyAcknowledgmentVersionId: z.uuid("Safety acknowledgment version is required."),
+  pdpaConsent: z.boolean().refine((value) => value, {
+    message: "PDPA consent is required before check in.",
+  }),
+  pdpaConsentVersionId: z.uuid("PDPA consent version is required."),
 }).superRefine((value, context) => {
   if (value.hasVehicle && value.vehiclePlateNumber.length === 0) {
     context.addIssue({

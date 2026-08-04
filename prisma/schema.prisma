@@ -34,6 +34,10 @@ model Visitor {
   safetyAcknowledgedAt          DateTime?
   safetyAcknowledgmentVersion   Int?
   safetyAcknowledgmentVersionId String?                      @db.Uuid
+  pdpaConsent                   Boolean                      @default(false)
+  pdpaConsentedAt               DateTime?
+  pdpaConsentVersion            Int?
+  pdpaConsentVersionId          String?                      @db.Uuid
   checkInAt                     DateTime
   checkOutAt                    DateTime?
   status                        VisitorStatus                @default(CHECKED_IN)
@@ -41,7 +45,8 @@ model Visitor {
   updatedAt                     DateTime                     @updatedAt
   sessions                      VisitorSession[]
   auditLogs                     AuditLog[]
-  safetyAcknowledgmentPolicy    SafetyAcknowledgmentVersion? @relation(fields: [safetyAcknowledgmentVersionId], references: [id], onDelete: SetNull)
+  safetyAcknowledgmentPolicy    SafetyAcknowledgmentVersion? @relation("SafetyAcknowledgment", fields: [safetyAcknowledgmentVersionId], references: [id], onDelete: SetNull)
+  pdpaConsentPolicy             PdpaConsentVersion?          @relation("PdpaConsent", fields: [pdpaConsentVersionId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([checkInAt])
@@ -50,6 +55,8 @@ model Visitor {
   @@index([contactNumber, status])
   @@index([safetyAcknowledged])
   @@index([safetyAcknowledgmentVersionId])
+  @@index([pdpaConsent])
+  @@index([pdpaConsentVersionId])
   @@map("visitors")
 }
 
@@ -164,12 +171,29 @@ model SafetyAcknowledgmentVersion {
   publishedByAdminId String?   @db.Uuid
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
-  acceptedVisitors   Visitor[]
+  acceptedVisitors   Visitor[] @relation("SafetyAcknowledgment")
 
   @@index([isActive])
   @@index([createdAt])
   @@index([publishedByAdminId])
   @@map("safety_acknowledgment_versions")
+}
+
+model PdpaConsentVersion {
+  id                 String    @id @default(uuid()) @db.Uuid
+  version            Int       @unique
+  title              String    @db.VarChar(200)
+  content            String    @db.Text
+  isActive           Boolean   @default(true)
+  publishedByAdminId String?   @db.Uuid
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  acceptedVisitors   Visitor[] @relation("PdpaConsent")
+
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([publishedByAdminId])
+  @@map("pdpa_consent_versions")
 }
 
 model AuditLog {

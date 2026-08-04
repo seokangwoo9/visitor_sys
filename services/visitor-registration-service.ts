@@ -8,6 +8,7 @@ import {
 } from "@/lib/visitor-session";
 import { createCheckedInVisitorRecord } from "@/repositories/visitor-repository";
 import { verifySafetyAcknowledgmentVersion } from "@/services/safety-acknowledgment-service";
+import { verifyPdpaConsentVersion } from "@/services/pdpa-consent-service";
 
 export async function registerVisitor(
   input: VisitorRegistrationInput
@@ -16,9 +17,11 @@ export async function registerVisitor(
   const sessionToken = createVisitorSessionToken();
   const sessionTokenHash = hashVisitorSessionToken(sessionToken);
   const expiresAt = createVisitorSessionExpiresAt(now);
-  const safetyAcknowledgment = await verifySafetyAcknowledgmentVersion(
-    input.safetyAcknowledgmentVersionId
-  );
+
+  const [safetyAcknowledgment, pdpaConsent] = await Promise.all([
+    verifySafetyAcknowledgmentVersion(input.safetyAcknowledgmentVersionId),
+    verifyPdpaConsentVersion(input.pdpaConsentVersionId),
+  ]);
 
   const visitor = await createCheckedInVisitorRecord({
     visitor: {
@@ -39,6 +42,14 @@ export async function registerVisitor(
           id: safetyAcknowledgment.id,
         },
       },
+      pdpaConsent: true,
+      pdpaConsentedAt: now,
+      pdpaConsentVersion: pdpaConsent.version,
+      pdpaConsentPolicy: {
+        connect: {
+          id: pdpaConsent.id,
+        },
+      },
       checkInAt: now,
       status: "CHECKED_IN",
     },
@@ -51,6 +62,12 @@ export async function registerVisitor(
         acceptedAt: now.toISOString(),
         version: safetyAcknowledgment.version,
         versionId: safetyAcknowledgment.id,
+      },
+      pdpaConsent: {
+        accepted: true,
+        acceptedAt: now.toISOString(),
+        version: pdpaConsent.version,
+        versionId: pdpaConsent.id,
       },
     },
   });

@@ -51,6 +51,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     { header: "Safety acknowledged", key: "safetyAcknowledged", width: 22 },
     { header: "Safety acknowledged at", key: "safetyAcknowledgedAt", width: 26 },
     { header: "Safety version", key: "safetyAcknowledgmentVersion", width: 18 },
+    { header: "PDPA consent", key: "pdpaConsent", width: 18 },
+    { header: "PDPA consented at", key: "pdpaConsentedAt", width: 26 },
+    { header: "PDPA version", key: "pdpaConsentVersion", width: 18 },
   ];
 
   for (const visitor of visitors) {
@@ -82,6 +85,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       safetyAcknowledgmentVersion: visitor.safetyAcknowledgmentVersion
         ? `Version ${visitor.safetyAcknowledgmentVersion}`
         : "",
+      pdpaConsent: visitor.pdpaConsent ? "Yes" : "No",
+      pdpaConsentedAt: visitor.pdpaConsentedAt
+        ? formatExportDateTime(visitor.pdpaConsentedAt)
+        : "",
+      pdpaConsentVersion: visitor.pdpaConsentVersion
+        ? `Version ${visitor.pdpaConsentVersion}`
+        : "",
     });
   }
 
@@ -89,7 +99,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   worksheet.views = [{ state: "frozen", ySplit: 1 }];
   worksheet.autoFilter = {
     from: "A1",
-    to: "P1",
+    to: "S1",
   };
 
   const buffer = await workbook.xlsx.writeBuffer();

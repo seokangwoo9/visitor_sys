@@ -1,14 +1,44 @@
+"use client";
+
 import { ShieldCheck } from "lucide-react";
-import { connection } from "next/server";
+import { useEffect, useState } from "react";
 
-import { getActiveSafetyAcknowledgmentPolicy } from "@/services/safety-acknowledgment-service";
+import { useLanguage } from "@/lib/i18n/language-context";
+import type { SafetyAcknowledgmentPolicy, PdpaConsentPolicy } from "@/types/visitor";
 
+import { LanguageSelector } from "./language-selector";
 import { VisitorRegistrationForm } from "./visitor-registration-form";
 
-export async function RegistrationPageContent() {
-  await connection();
+export function RegistrationPageContent() {
+  const { t } = useLanguage();
+  const [safetyAcknowledgment, setSafetyAcknowledgment] =
+    useState<SafetyAcknowledgmentPolicy | null>(null);
+  const [pdpaConsent, setPdpaConsent] = useState<PdpaConsentPolicy | null>(null);
 
-  const safetyAcknowledgment = await getActiveSafetyAcknowledgmentPolicy();
+  useEffect(() => {
+    async function loadPolicies() {
+      const [safetyResponse, pdpaResponse] = await Promise.all([
+        fetch("/api/visitor/safety-acknowledgment"),
+        fetch("/api/visitor/pdpa-consent"),
+      ]);
+
+      if (safetyResponse.ok) {
+        const data = (await safetyResponse.json()) as SafetyAcknowledgmentPolicy;
+        setSafetyAcknowledgment(data);
+      }
+
+      if (pdpaResponse.ok) {
+        const data = (await pdpaResponse.json()) as PdpaConsentPolicy;
+        setPdpaConsent(data);
+      }
+    }
+
+    loadPolicies();
+  }, []);
+
+  if (!safetyAcknowledgment || !pdpaConsent) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-register-page px-4 py-8 text-text-primary sm:px-6">
@@ -23,19 +53,21 @@ export async function RegistrationPageContent() {
                 TOMY Visitor Management System
               </p>
               <p className="text-xs font-semibold text-visitor-ink">
-                Visitor Registration
+                {t("pageTitle")}
               </p>
             </div>
           </div>
           <h1 className="mt-4 text-xl font-semibold leading-snug text-visitor-ink">
-            Check in with your visit details
+            {t("pageSubtitle")}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-text-secondary">
-            Please complete the secure registration form before entering the premises.
-          </p>
         </section>
 
-        <VisitorRegistrationForm safetyAcknowledgment={safetyAcknowledgment} />
+        <LanguageSelector />
+
+        <VisitorRegistrationForm
+          safetyAcknowledgment={safetyAcknowledgment}
+          pdpaConsent={pdpaConsent}
+        />
       </div>
     </main>
   );

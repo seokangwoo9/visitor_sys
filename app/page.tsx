@@ -1,5 +1,11 @@
+import { LanguageProvider } from "@/lib/i18n/language-context";
+
 import { RegistrationPageContent } from "./register/registration-page-content";
 
 export default function Home() {
-  return <RegistrationPageContent />;
+  return (
+    <LanguageProvider>
+      <RegistrationPageContent />
+    </LanguageProvider>
+  );
 }
