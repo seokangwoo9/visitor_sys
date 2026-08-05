@@ -771,7 +771,7 @@ function VisitorDetailDialog({ visitor }: { visitor: AdminVisitorListItem }) {
         <Eye className="size-4" aria-hidden="true" />
         View
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] !max-w-none overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-[calc(100vw-3rem)]! sm:p-6 lg:max-w-5xl! xl:max-w-6xl!">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-none! overflow-y-auto rounded-2xl border border-border bg-card p-5 sm:max-w-[calc(100vw-3rem)]! sm:p-6 lg:max-w-5xl! xl:max-w-6xl!">
         <DialogHeader>
           <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
             Visitor Details
@@ -863,7 +863,7 @@ function VisitorDetailItem({
       <p className="text-xs font-medium uppercase tracking-[0.08em] text-text-muted">
         {label}
       </p>
-      <p className="mt-1.5 break-words text-sm font-semibold text-visitor-ink">{value}</p>
+      <p className="mt-1.5 wrap-break-word text-sm font-semibold text-visitor-ink">{value}</p>
     </div>
   );
 }
