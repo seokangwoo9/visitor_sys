@@ -122,7 +122,8 @@ function formatExportDateTime(date: Date): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   }).format(date);
 }
