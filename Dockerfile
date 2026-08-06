@@ -36,9 +36,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+# Set the container timezone to Malaysia so server-side Date math (daily/weekly
+# metric buckets, start-of-day calculations) and any timezone-unaware formatting
+# operate in local time instead of the container default (UTC).
+ENV TZ=Asia/Kuala_Lumpur
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && apt-get install -y --no-install-recommends openssl ca-certificates tzdata \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy the full built application from the builder stage.
